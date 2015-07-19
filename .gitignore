@@ -1,4 +1,9 @@
 Library/
 ProjectSettings/
+External Assets/
+Temp/
+build/
+desktop.ini
+udeadgame2.userprefs
 *.sln
 *.csproj
