@@ -14,7 +14,7 @@ public class WalkToClick : MonoBehaviour {
 		//Debug.Log (collision.gameObject.tag);
 		if(collision.gameObject.tag == "Barricade")
 		{
-			GetComponent<Animator> ().SetFloat ("speed", 0.0f );
+			GetComponent<Animator> ().SetFloat ("speed", 0.2f );
 			//m_oldPosition = this.GetComponent<Transform>().position;
 			GetComponent<NavMeshAgent>().SetDestination(this.GetComponent<Transform>().position); //this.GetComponent<Transform>().position );
 
