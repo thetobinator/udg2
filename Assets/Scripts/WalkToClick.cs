@@ -9,7 +9,20 @@ public class WalkToClick : MonoBehaviour {
 	void Start () {
 
 	}
-	
+	// stop the character at a barricade
+	void OnCollisionEnter(Collision collision) {
+		//Debug.Log (collision.gameObject.tag);
+		if(collision.gameObject.tag == "Barricade")
+		{
+			GetComponent<Animator> ().SetFloat ("speed", 0.0f );
+			//m_oldPosition = this.GetComponent<Transform>().position;
+			GetComponent<NavMeshAgent>().SetDestination(this.GetComponent<Transform>().position); //this.GetComponent<Transform>().position );
+
+			m_hasDestination = true;
+			
+		}
+	}
+
 	// Update is called once per frame
 	void Update () {
 		if (Input.GetMouseButtonUp (0)) {
@@ -34,7 +47,7 @@ public class WalkToClick : MonoBehaviour {
 			else
 			{
 				GetComponent<Animator> ().SetFloat ("speed", 0.0f );
-				print ( "REACHED" );
+				//print ( "REACHED" );
 				m_hasDestination = false;
 			}
 
