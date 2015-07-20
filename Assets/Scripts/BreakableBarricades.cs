@@ -6,6 +6,7 @@ public class BreakableBarricades : MonoBehaviour {
 	private GameObject thisObject;
 	public int hitpoints;
 	private Rigidbody hasRigidBody;
+	private Vector3 childscale;
 	// Use this for initialization
 
 
@@ -38,16 +39,7 @@ public class BreakableBarricades : MonoBehaviour {
 			if (hasRigidBody != null) {
 			DisableRagdoll();
 			}
-				// iterate over child objects and give them rigidbody
-				foreach (Transform child in transform) {
-					hasRigidBody = child.gameObject.GetComponent<Rigidbody>();
-					// or do something else with child.gameObject
-					if(hasRigidBody == null)
-					{
-						Rigidbody gameObjectsRigidBody = child.gameObject.AddComponent<Rigidbody> (); // Add the rigidbody.
-					gameObjectsRigidBody.mass = 1; // Set the GO's mass to 5 via the Rigidbody.
-					}
-				}
+			
 			}
 	}
 	}
@@ -61,14 +53,21 @@ public class BreakableBarricades : MonoBehaviour {
 				if (hasRigidBody != null) {
 					DisableRagdoll();
 				}
-				//for (int i = 0; i <= 5; i++) {
-				//	hasRigidBody = theseObjects [i].GetComponent<Rigidbody>();
+				// iterate over child objects and give them rigidbody
 				foreach (Transform child in transform) {
 					hasRigidBody = child.gameObject.GetComponent<Rigidbody>();
+					// break the object apart
 					if(hasRigidBody == null)
 					{
+						Vector3 childscale = child.gameObject.transform.localScale;
+						
+						childscale.x = childscale.x * 0.75F;
+						childscale.y = childscale.y * 0.75F;
+						childscale.z = childscale.z * 0.75F;
+						child.gameObject.transform.localScale = new Vector3(childscale.x, childscale.y, childscale.z);
 						Rigidbody gameObjectsRigidBody = child.gameObject.AddComponent<Rigidbody> (); // Add the rigidbody.
 						gameObjectsRigidBody.mass = 1; // Set the GO's mass to 5 via the Rigidbody.
+
 					}
 				}
 			}
@@ -78,7 +77,6 @@ public class BreakableBarricades : MonoBehaviour {
 		
 	}
 	/*void OnMouseDown() {
-		//Application.LoadLevel("SomeLevel");
 		for (int i = 1; i <= 5; i++) {
 			hasRigidBody = theseObjects [i].GetComponent<Rigidbody>();
 			if(hasRigidBody == null)
