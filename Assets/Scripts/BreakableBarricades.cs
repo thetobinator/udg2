@@ -34,13 +34,12 @@ public class BreakableBarricades : MonoBehaviour {
 			hitpoints+= -2; // remove hit points
 			if (hitpoints <= 0){
 			hasRigidBody = this.GetComponent<Rigidbody>();
-			
 			//turn off the rigid body of the main object
 			if (hasRigidBody != null) {
 			DisableRagdoll();
+			}		
 			}
-			
-			}
+
 	}
 	}
 

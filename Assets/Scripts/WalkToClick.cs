@@ -3,6 +3,12 @@ using System.Collections;
 
 public class WalkToClick : MonoBehaviour {
 	public Camera m_camera;
+	public GameObject taskObject;
+	public GameObject furniture;
+	public GameObject humans;
+	public GameObject zombies;
+	public GameObject Player;
+	GameObject previousObject;
 	bool m_hasDestination = false;
 	Vector3 m_oldPosition;
 	
@@ -10,6 +16,10 @@ public class WalkToClick : MonoBehaviour {
 	// stop the character at a barricade
 	void OnCollisionEnter(Collision collision) {
 		//Debug.Log (collision.gameObject.tag);
+		if (collision.gameObject.tag == "Human")
+		{
+			if (this.tag == "Human"){GoToABarricade(taskObject);}
+		}
 		if(collision.gameObject.tag == "Barricade")
 		{
 			GetComponent<Animator> ().SetFloat ("speed", 0.2f );
@@ -17,20 +27,104 @@ public class WalkToClick : MonoBehaviour {
 			GetComponent<NavMeshAgent>().SetDestination(this.GetComponent<Transform>().position); //this.GetComponent<Transform>().position );
 
 			m_hasDestination = true;
-			
+			if (this.tag == "Human"){GoToABarricade(taskObject);}
 		}
 	}
+
+	void GoToABarricade(GameObject gameObject){
+		//Debug.Log (  taskObject.transform.childCount);
+		
+		// if you want the transform component
+		Transform[] childsT = new Transform[gameObject.transform.childCount];
+		// if you want the underlying GameObject
+		GameObject[] childsG = new GameObject[gameObject.transform.childCount];
+		int i=0;
+		int RNDObject =  Random.Range (0, gameObject.transform.childCount-1);
+
+		if (childsG[RNDObject] == previousObject) {
+			gameObject = furniture;
+			RNDObject =  Random.Range (0, gameObject.transform.childCount-1);
+		}
+		foreach(Transform child in taskObject.transform)
+		{
+
+			childsT[i] = child.transform;
+			childsG[i] = child.gameObject;
+			i++;
+		}
+
+		previousObject = childsG[RNDObject];
+		GetComponent<NavMeshAgent> ().SetDestination (childsT[RNDObject].transform.position);
+		m_hasDestination = true;
+		m_oldPosition = GetComponent<Transform> ().position;
+	}
+
+	void GoToAHuman(GameObject gameObject){
+		//Debug.Log (  taskObject.transform.childCount);
+		// if you want the transform component
+		Transform[] childsT = new Transform[gameObject.transform.childCount];
+		// if you want the underlying GameObject
+		GameObject[] childsG = new GameObject[gameObject.transform.childCount];
+		int i=0;
+		int RNDObject =  Random.Range (0, gameObject.transform.childCount-1);
+		foreach(Transform child in taskObject.transform)
+		{
+			childsT[i] = child.transform;
+			childsG[i] = child.gameObject;
+			i++;
+		}
+		previousObject = childsG [RNDObject];
+		GetComponent<NavMeshAgent> ().SetDestination (childsT[RNDObject].transform.position);
+		m_hasDestination = true;
+		m_oldPosition = GetComponent<Transform> ().position;
+	}
+
+
+
+
 
 	// Update is called once per frame
 	void Update () {
 		if (Input.GetMouseButtonUp (0)) {
+			previousObject = null;
 			Ray ray = m_camera.GetComponent<Camera> ().ScreenPointToRay (Input.mousePosition);
 			RaycastHit hit = new RaycastHit ();
 			if (Physics.Raycast (ray, out hit)) {
 				GetComponent<NavMeshAgent> ().SetDestination (hit.point);
 				m_hasDestination = true;
 				m_oldPosition = GetComponent<Transform> ().position;
+				previousObject = null;
 			}
+		}
+
+		if (Input.GetKeyDown ("f")){
+			if (this.tag == "Zombie"){
+			
+				previousObject = Player;
+			}				
+		}
+
+		if (Input.GetKeyDown ("r")){
+			if (this.tag == "Zombie"){
+				m_hasDestination = true;
+				m_oldPosition = GetComponent<Transform> ().position;
+				GoToAHuman(humans);
+			}				
+		}
+
+
+		if (!m_hasDestination) {
+			if (this.tag == "Human"){
+				m_hasDestination = true;
+				m_oldPosition = GetComponent<Transform> ().position;
+				GoToABarricade(taskObject);
+				}	
+			}
+
+		if (this.tag == "Zombie" && previousObject != null){
+			GetComponent<NavMeshAgent> ().SetDestination (previousObject.transform.position);
+			m_hasDestination = true;
+			//m_oldPosition = GetComponent<Transform> ().position;
 		}
 
 		if (m_hasDestination) {
@@ -50,6 +144,7 @@ public class WalkToClick : MonoBehaviour {
 			}
 
 		}
+
 	}// end update
 
 			//m_oldPosition = GetComponent<Transform> ().position;
