@@ -9,3 +9,5 @@ udeadgame2.userprefs
 *.csproj
 Assets/Scenes/Modeling_Scene.unity.meta
 Assets/Scenes/Modeling_Scene.unity
+Assets/AssetStore.meta
+Assets/AssetStore/AssetTesting.meta
