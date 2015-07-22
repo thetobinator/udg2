@@ -31,59 +31,69 @@ public class GhostFreeRoamCamera : MonoBehaviour
         }
     }
 
+	private void RightMouseCameraMove(){
+
+	}
+
     private void Update()
     {
-        if (allowMovement)
-        {
-            bool lastMoving = moving;
-            Vector3 deltaPosition = Vector3.zero;
+		if (Input.GetMouseButtonUp (1)) {
+			Screen.lockCursor = false;
+			Cursor.visible = true;;
+		}
 
-            if (moving)
-                currentSpeed += increaseSpeed * Time.deltaTime;
-
-            moving = false;
-
-            CheckMove(forwardButton, ref deltaPosition, transform.forward);
-            CheckMove(backwardButton, ref deltaPosition, -transform.forward);
-            CheckMove(rightButton, ref deltaPosition, transform.right);
-            CheckMove(leftButton, ref deltaPosition, -transform.right);
-
-            if (moving)
-            {
-                if (moving != lastMoving)
-                    currentSpeed = initialSpeed;
-
-                transform.position += deltaPosition * currentSpeed * Time.deltaTime;
-            }
-            else currentSpeed = 0f;            
-        }
-
-        if (allowRotation)
-        {
-            Vector3 eulerAngles = transform.eulerAngles;
-            eulerAngles.x += -Input.GetAxis("Mouse Y") * 359f * cursorSensitivity;
-            eulerAngles.y += Input.GetAxis("Mouse X") * 359f * cursorSensitivity;
-            transform.eulerAngles = eulerAngles;
-        }
-
-        if (cursorToggleAllowed)
-        {
-            if (Input.GetKey(cursorToggleButton))
-            {
-                if (!togglePressed)
-                {
-                    togglePressed = true;
-                    Screen.lockCursor = !Screen.lockCursor;
-                    Cursor.visible = !Cursor.visible;
-                }
-            }
-            else togglePressed = false;
-        }
-        else
-        {
-            togglePressed = false;
-            Cursor.visible = false;
-        }
+		if (allowMovement)
+		{
+			bool lastMoving = moving;
+			Vector3 deltaPosition = Vector3.zero;
+			
+			if (moving)
+				currentSpeed += increaseSpeed * Time.deltaTime;
+			
+			moving = false;
+			
+			CheckMove(forwardButton, ref deltaPosition, transform.forward);
+			CheckMove(backwardButton, ref deltaPosition, -transform.forward);
+			CheckMove(rightButton, ref deltaPosition, transform.right);
+			CheckMove(leftButton, ref deltaPosition, -transform.right);
+			
+			if (moving)
+			{
+				if (moving != lastMoving)
+					currentSpeed = initialSpeed;
+				
+				transform.position += deltaPosition * currentSpeed * Time.deltaTime;
+			}
+			else currentSpeed = 0f;            
+		}
+		
+		if (allowRotation)
+		{
+			Vector3 eulerAngles = transform.eulerAngles;
+			eulerAngles.x += -Input.GetAxis("Mouse Y") * 359f * cursorSensitivity;
+			eulerAngles.y += Input.GetAxis("Mouse X") * 359f * cursorSensitivity;
+			transform.eulerAngles = eulerAngles;
+		}
+		
+		if (cursorToggleAllowed)
+		{
+			if (Input.GetKey(cursorToggleButton))
+			{
+				if (!togglePressed)
+				{
+					togglePressed = true;
+					Screen.lockCursor = !Screen.lockCursor;
+					Cursor.visible = !Cursor.visible;
+				}
+			}
+			else togglePressed = false;
+		}
+		else
+		{
+			togglePressed = false;
+			Cursor.visible = false;
+		}
+       
     }
 
     private void CheckMove(KeyCode keyCode, ref Vector3 deltaPosition, Vector3 directionVector)

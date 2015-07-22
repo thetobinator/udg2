@@ -9,12 +9,15 @@ public class GUIHelper : MonoBehaviour
 		GUI.Box(new Rect(10, 10, 430, 220), "Click here to start Camera");
        // GUI.DrawTexture(new Rect(20, 20, 32, 32), icon);
         GUI.Label(new Rect(20, 52, 500, 600), "Click on map to send characters to point.\n" +
-                                              "Use the mouse to turn\n" +
-                                              "Use W,A,S,D to move\n" +
-		         							  "Use Escape to toggle the cursor (maximize on play in editor)\n" +
+                                              "Mouse to turn\n" +
+                                              " W,A,S,D to move\n" +
 		          							  "F key makes zombies follow\n" +
-		          							  "R key cause zombies to attack random target\n" +
-		         							  "Humans choose random barricades and furniture to go to"
+		          							  "R key cause zombies to follow random target\n" +
+		                                      "Escape hide the cursor (maximize on play in editor)\n" +
+		          							  "Right Click to show cursor\n"+
+		          							  "Space bar will activate Zoe's pistol\n" +
+		         							  "Humans choose random barricades,doors,boxes furniture to go to\n"
+		                                    
 		         
 		          																							
 		          );//end GUI.Label

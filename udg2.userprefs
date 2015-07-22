@@ -1,6 +1,15 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\GUIHelper.cs">
+    <Files>
+      <File FileName="Assets\ThirdParty\VolumetricLines\ExampleScenes\ExampleScripts\CreateSinShapedLineStrip.cs" Line="1" Column="6" />
+      <File FileName="Assets\ThirdParty\VolumetricLines\Scripts\VolumetricLineBehavior.cs" Line="1" Column="1" />
+      <File FileName="Assets\ThirdParty\VolumetricLines\ExampleScenes\ExampleScripts\CannonBehavior.cs" Line="37" Column="5" />
+      <File FileName="Assets\Scripts\WalkToClick.cs" Line="74" Column="2" />
+      <File FileName="Assets\Scripts\GhostFreeRoamCamera.cs" Line="80" Column="39" />
+      <File FileName="Assets\Scripts\GUIHelper.cs" Line="17" Column="53" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
