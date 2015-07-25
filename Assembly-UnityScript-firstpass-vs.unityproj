@@ -50,10 +50,7 @@
      <Compile Include="Assets\Standard Assets\Character Controllers\Sources\Scripts\FPSInputController.js" />
      <None Include="Assets\ThirdParty\GhostFreeRoamCamera\READEME.txt" />
      <None Include="Assets\ThirdParty\VolumetricLines\Shaders\VolumetricLineShaderAlphaBlended.shader" />
-     <None Include="Assets\MoveMotionPack\SampleScene\Shaders\ReflectiveDiffuseSpecTransp.shader" />
-     <None Include="Assets\MoveMotionPack\SampleScene\Shaders\DiffuseReflectiveShader.shader" />
      <None Include="Assets\ThirdParty\VolumetricLines\Shaders\VolumetricLineShaderAdditive.shader" />
-     <None Include="Assets\MoveMotionPack\SampleScene\Shaders\ReflectiveDiffuseSpec.shader" />
      <None Include="Assets\Standard Assets\CrossPlatformInput\CrossPlatformInputGuidelines.txt" />
      <None Include="Assets\ThirdParty\VolumetricLines\Shaders\VolumetricLineShaderAdditiveFast.shader" />
      <None Include="Assets\ThirdParty\VolumetricLines\Shaders\VolumetricLineStripShaderAdditive.shader" />
