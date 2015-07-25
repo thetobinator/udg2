@@ -3,8 +3,9 @@ using System.Collections;
 
 public class WalkToClick : MonoBehaviour {
 	public Camera m_camera;
-	public GameObject taskObject;
-	public GameObject FollowTarget;
+	public GameObject managedObject;
+	public GameObject[] taskObject;
+	public GameObject[] FollowTarget;
 	public GameObject[] furniture; // = GameObject.FindGameObjectsWithTag("Furniture");
 	public GameObject[] humans; // = GameObject.FindGameObjectsWithTag("Human");
 	public GameObject[] zombies; // = GameObject.FindGameObjectsWithTag("Zombie");
@@ -12,16 +13,17 @@ public class WalkToClick : MonoBehaviour {
 	public GameObject[] glass; // = GameObject.FindGameObjectsWithTag ("Window");
 	public GameObject[] door; // = GameObject.FindGameObjectsWithTag ("Door");
 	public GameObject[] barricade; // = GameObject.FindGameObjectsWithTag ("Barricade");
-	string[] Taglist = new string[] {"Barricade","Box","Door","Furniture","Human","Zombie"};
-	string TargetTag;
-	GameObject previousObject;
-	bool m_hasDestination = false;
-	Vector3 m_oldPosition;
+	public string[] Taglist = new string[] {"Barricade","Box","Door","Furniture","Human","Zombie"};
+	public string[] TargetTag;
+	public GameObject[] previousObject;
+	bool[] m_hasDestination;
+	Vector3[] m_oldPosition;
+	int managedIndex;
 
 	//Transform[] hinges = GameObject.FindObjectsOfType (typeof(Transform)) as Transform[];
 
 	void Start() {
-
+	
 	}
 
 	// stop the character at a barricade
@@ -29,10 +31,10 @@ public class WalkToClick : MonoBehaviour {
 		//Debug.Log (collision.gameObject.tag);
 		if (collision.gameObject.tag == "Human")
 		{
-			if (this.tag == "Human"){
-				m_hasDestination = false;
-				previousObject = taskObject;
-				taskObject = null;
+			if (managedObject.tag == "Human"){
+				m_hasDestination[managedIndex] = false;
+				previousObject[managedIndex] = taskObject[managedIndex];
+				taskObject[managedIndex] = null;
 			}
 		}
 		// if hit a door, barricade or human go somewhere else. or if zombie target the object
@@ -40,36 +42,41 @@ public class WalkToClick : MonoBehaviour {
 		{
 			GetComponent<Animator> ().SetFloat ("speed", 0.0f );
 		
-				if (this.tag == "Human")
+			if (managedObject.tag == "Human")
 				{
-				previousObject = taskObject;
-				taskObject = null;
-				m_hasDestination = false;
+				previousObject[managedIndex] = taskObject[managedIndex];
+				taskObject[managedIndex] = null;
+				m_hasDestination[managedIndex] = false;
 				}
 				else
 				{
-				previousObject = taskObject;
-				taskObject = collision.gameObject;
-				m_hasDestination = true;
+				previousObject[managedIndex] = taskObject[managedIndex];
+				taskObject[managedIndex] = collision.gameObject;
+				m_hasDestination[managedIndex] = true;
 				}
 
 		}
 	}
 
 
-		void GoToTag(string Tag){
+		void GoToTag(string Tag , GameObject managedObject){
 		GameObject[] taggedObjects = GameObject.FindGameObjectsWithTag (Tag);
 		if (taggedObjects.Length >= 1)
 		{
 		int RandNum =  Random.Range (1, taggedObjects.Length);
 	//	print (Tag + "\t" + "R=" + RandNum + "\tLength=" + taggedObjects.Length);
 
-		taskObject = taggedObjects [RandNum];
+			taskObject[managedIndex] = taggedObjects [RandNum];
 		}
 		}
 
 	// Update is called once per frame
 	void Update () {
+		GameObject[] taggedObjects = GameObject.FindGameObjectsWithTag ("Zombie");
+
+		for (int i=0;i<taggedObjects.Length;i++) {
+			GameObject managedObject = taggedObjects[i];
+			managedIndex = i; 
 
 		if (Input.GetMouseButtonUp (0)) {
 			previousObject = null;
@@ -77,70 +84,70 @@ public class WalkToClick : MonoBehaviour {
 			RaycastHit hit = new RaycastHit ();
 			if (Physics.Raycast (ray, out hit)) {
 
-				if (this.tag == "Zombie"){
+					if (managedObject.tag == "Zombie"){
 					if( hit.collider.tag != "Terrain" || hit.collider.tag != "Zombie")
 					{
-					previousObject = taskObject;
-					taskObject = hit.collider.gameObject;
+							previousObject[managedIndex] = taskObject[managedIndex];
+							taskObject[managedIndex] = hit.collider.gameObject;
 					}
 					else
 					{
 					   GetComponent<NavMeshAgent> ().SetDestination (hit.point);
-						previousObject = taskObject;
-						taskObject = null;
+							previousObject[managedIndex] = taskObject[managedIndex];
+							taskObject[managedIndex] = null;
 					}
 				}
 
-				m_hasDestination = true;
-				m_oldPosition = GetComponent<Transform> ().position;
+					m_hasDestination[managedIndex] = true;
+					m_oldPosition[managedIndex] = GetComponent<Transform> ().position;
 			}
 		}
 
 		if (Input.GetKeyDown ("f")){
-			if (this.tag == "Zombie"){
-				taskObject =  GameObject.FindWithTag("Player");
+				if (tag == "Zombie"){
+					taskObject[managedIndex] =  GameObject.FindWithTag("Player");
 			}				
 		}
 		
 		if (Input.GetKeyDown ("r")){
-			if (this.tag == "Zombie"){
-				GoToTag ("Human");
+				if (managedObject.tag == "Zombie"){
+				GoToTag ("Human",managedObject);
 			
 			}				
 		}
 
 
-		if (!m_hasDestination) {
-			if (this.tag == "Human"){
-				if (!taskObject) {
+			if (!m_hasDestination[managedIndex]) {
+				if (managedObject.tag == "Human"){
+					if (!taskObject[managedIndex]) {
 					//do some tag decisions.
 					//string[] Taglist = new string[] {"Barricade","Box","Door","Furniture","Human","Zombie"};
-					 TargetTag = Taglist[Random.Range (0,Taglist.Length)];
+						TargetTag[managedIndex] = Taglist[Random.Range (0,Taglist.Length)];
 					}
 			}
 			else
 			{
-				TargetTag = "Human";
+					TargetTag[managedIndex] = "Human";
 			}		
-					if (TargetTag != null)
+				if (taskObject[managedIndex] != null)
 					{
-					GoToTag (TargetTag);
+					GoToTag (taskObject[managedIndex], taggedObjects[i]);//why won't this work? I must sleep.
 					}
 					
 						
 					
 			}
 
-		if (taskObject) {
+			if (taskObject[managedIndex]) {
 			GetComponent<NavMeshAgent> ().SetDestination (taskObject.transform.position);
-			m_hasDestination = true;
+				m_hasDestination[managedIndex] = true;
 		}
 
 	
 
-		if (m_hasDestination) {
+			if (m_hasDestination[managedIndex]) {
 			Vector3 movement = GetComponent<Transform> ().position - m_oldPosition;
-			m_oldPosition = GetComponent<Transform> ().position;
+				m_oldPosition[managedIndex] = GetComponent<Transform> ().position;
 			Vector3 diff = GetComponent<Transform> ().position - GetComponent<NavMeshAgent> ().destination;
 			if (GetComponent<Animator> ()) {
 				if (diff.magnitude > 0.7f) {
@@ -148,12 +155,12 @@ public class WalkToClick : MonoBehaviour {
 				} else {
 					GetComponent<Animator> ().SetFloat ("speed", 0.0f);
 					//print ( "REACHED" );
-					m_hasDestination = false;
-					previousObject = taskObject;
-					taskObject = null;
+						m_hasDestination[managedIndex] = false;
+						previousObject[managedIndex] = taskObject[managedIndex];
+						taskObject[managedIndex] = null;
 				}
 			} else {
-				this.transform.Translate (Vector3.forward * Time.deltaTime);
+					managedObject.transform.Translate (Vector3.forward * Time.deltaTime);
 			}
 
 		}
@@ -168,6 +175,6 @@ public class WalkToClick : MonoBehaviour {
 				m_hasDestination = false;
 			}
 			*/
-		
+	}//end loop through all tagged objects
 	//end WalkToClick.cs
 }

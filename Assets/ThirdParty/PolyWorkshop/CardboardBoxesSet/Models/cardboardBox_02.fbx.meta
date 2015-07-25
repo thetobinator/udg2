@@ -3,8 +3,13 @@ guid: 8a07748a10d783d4abb6dbd7272e6ab1
 ModelImporter:
   serializedVersion: 18
   fileIDToRecycleName:
+    100000: //RootNode
+    400000: //RootNode
+    2300000: //RootNode
+    3300000: //RootNode
     4300000: Plane.007
     4300002: cardboardBox_02
+    11100000: //RootNode
   materials:
     importMaterials: 0
     materialName: 0
