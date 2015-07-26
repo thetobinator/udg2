@@ -70,6 +70,65 @@ public class MainGameManager : MonoBehaviour {
 
 	//this is from a tutorial, it's a working example while I breakthings
 	public static MainGameManager instance; //local tCurrentLevel=ig3dGetLevelNames()
+
+	public GameObject[] zombies;
+	public GameObject[] humans;
+	struct PopulationData
+	{
+		uint m_poolSize;
+		uint m_targetCount;
+		float m_spawnInterval;
+		float m_lastSpawnTime;
+		float m_time;
+		string m_factionTag;
+		string m_spawnPointTag;
+		GameObject[] m_entities;
+		GameObject[] m_prefabs;
+
+		public void setup( uint poolSize, uint targetCount, float spawnInterval, string factionTag, GameObject[] prefabs, string spawnPointTag )
+		{
+			m_poolSize = poolSize;
+			m_targetCount = targetCount;
+			m_spawnInterval = spawnInterval;
+			m_factionTag = factionTag;
+			m_spawnPointTag = spawnPointTag;
+			m_prefabs = prefabs;
+			m_lastSpawnTime = -m_spawnInterval;
+			m_time = 0.0f;
+			if (prefabs.Length == 0) {
+				print ( "There are no prefabs, spawning is disabled" );
+				m_poolSize = 0;
+			}
+		}
+
+		public void update( float timeStep )
+		{
+			m_time += timeStep;
+			m_entities = GameObject.FindGameObjectsWithTag (m_factionTag);
+
+			if (m_entities.Length < m_targetCount && m_poolSize != 0u) {
+				if( m_time - m_lastSpawnTime >= m_spawnInterval )
+				{
+					m_lastSpawnTime += m_spawnInterval;
+					GameObject[] spawnPoints = GameObject.FindGameObjectsWithTag( m_spawnPointTag );
+					if( spawnPoints.Length == 0 )
+					{
+						print ( "No spawn points with tag '" + m_spawnPointTag + "' found in scene! Cannot spawn any '" + m_factionTag + "s'!");
+					}
+					else{
+						GameObject spawnPoint = spawnPoints[ Random.Range(0, spawnPoints.Length) ];
+						Instantiate(m_prefabs[Random.Range(0,m_prefabs.Length)], spawnPoint.transform.position, spawnPoint.transform.rotation);
+						--m_poolSize;
+					}
+
+				}
+			}
+		}
+	}
+
+	private PopulationData m_zombies;
+	private PopulationData m_humans;
+
 	
 	void Awake()
 	{
@@ -80,7 +139,7 @@ public class MainGameManager : MonoBehaviour {
 		currentLevel = Application.loadedLevelName;
 
 	}
-	
+
 	// OnGUI is auto updating.
 	
 	public void OnGUI( )
@@ -104,6 +163,14 @@ public class MainGameManager : MonoBehaviour {
 		if (currentLevel != "UDGInstructions")	{
             writeCurrentLevel(currentLevel);
 		}
+
+		m_humans.setup (2u, 2u, 4.0f, "Human", humans, "SpawnPoint_Human");
+		m_zombies.setup (8u, 6u, 4.0f, "Zombie", zombies, "SpawnPoint_Zombie");
+	}
+
+	public void Update() {
+		m_humans.update (Time.deltaTime);
+		m_zombies.update (Time.deltaTime);
 	}
 	
 	// this saves the current level , in theory, back when it was a text file.

@@ -62,7 +62,7 @@ public class WalkToClick : MonoBehaviour {
 		GameObject[] taggedObjects = GameObject.FindGameObjectsWithTag (Tag);
 		if (taggedObjects.Length >= 1)
 		{
-			int RandNum =  Random.Range (1, taggedObjects.Length);
+			int RandNum =  Random.Range (0, taggedObjects.Length);
 			//	print (Tag + "\t" + "R=" + RandNum + "\tLength=" + taggedObjects.Length);
 			
 			taskObject = taggedObjects [RandNum];
