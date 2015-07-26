@@ -2,26 +2,30 @@
 using System.Collections;
 
 public class HumanBehavior : MonoBehaviour {
-	public Camera m_camera;
+	//public Camera m_camera;
 	public GameObject taskObject;
-	public GameObject FollowTarget;
-	public GameObject[] furniture; // = GameObject.FindGameObjectsWithTag("Furniture");
+    public string TargetTag;
+    public GameObject previousObject;
+    
+    
+	/*public GameObject[] furniture; // = GameObject.FindGameObjectsWithTag("Furniture");
 	public GameObject[] humans; // = GameObject.FindGameObjectsWithTag("Human");
 	public GameObject[] zombies; // = GameObject.FindGameObjectsWithTag("Zombie");
 	public GameObject[] boxes; // = GameObject.FindGameObjectsWithTag ("Box");
 	public GameObject[] glass; // = GameObject.FindGameObjectsWithTag ("Window");
 	public GameObject[] door; // = GameObject.FindGameObjectsWithTag ("Door");
 	public GameObject[] barricade; // = GameObject.FindGameObjectsWithTag ("Barricade");
+    */
+
     string[] Taglist = new string[] { "Barricade", "Box", "Door", "Furniture", "Human", "Window", "Zombie" };
-	string TargetTag;
-	GameObject previousObject;
+	
 	bool m_hasDestination = false;
 	Vector3 m_oldPosition;
 	
 	//Transform[] hinges = GameObject.FindObjectsOfType (typeof(Transform)) as Transform[];
 	
 	void Start() {
-		
+        //m_camera = Camera.main;
 	}
 	
 	// stop the character at a barricade

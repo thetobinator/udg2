@@ -138,6 +138,7 @@ public class MainGameManager : MonoBehaviour {
 		levelPath = Application.dataPath  + "/Data/Levels/"; 
 		currentLevel = Application.loadedLevelName;
 
+   
 	}
 
 	// OnGUI is auto updating.
@@ -160,12 +161,14 @@ public class MainGameManager : MonoBehaviour {
 	private void Start(){
 
 		guiText = "Data Path: " + gameRoot + "\n" + "Scene " + currentLevel + "\n";
-		if (currentLevel != "UDGInstructions")	{
+         if (currentLevel != "UDGInstructions")
+        {
             writeCurrentLevel(currentLevel);
-		}
+        }
 
-		m_humans.setup (2u, 2u, 4.0f, "Human", humans, "SpawnPoint_Human");
-		m_zombies.setup (8u, 6u, 4.0f, "Zombie", zombies, "SpawnPoint_Zombie");
+        m_humans.setup(2u, 2u, 4.0f, "Human", humans, "SpawnPoint_Human");
+        m_zombies.setup(8u, 6u, 4.0f, "Zombie", zombies, "SpawnPoint_Zombie");
+
 	}
 
 	public void Update() {

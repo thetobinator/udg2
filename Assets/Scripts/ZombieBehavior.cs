@@ -2,27 +2,34 @@
 using System.Collections;
 
 public class ZombieBehavior : MonoBehaviour {
-	public Camera m_camera;
+    public Camera m_camera;
 	public GameObject taskObject;
-	public GameObject FollowTarget;
-	public GameObject[] furniture; // = GameObject.FindGameObjectsWithTag("Furniture");
-	public GameObject[] humans; // = GameObject.FindGameObjectsWithTag("Human");
-	public GameObject[] zombies; // = GameObject.FindGameObjectsWithTag("Zombie");
-	public GameObject[] boxes; // = GameObject.FindGameObjectsWithTag ("Box");
-	public GameObject[] glass; // = GameObject.FindGameObjectsWithTag ("Window");
-	public GameObject[] door; // = GameObject.FindGameObjectsWithTag ("Door");
-	public GameObject[] barricade; // = GameObject.FindGameObjectsWithTag ("Barricade");
-    string[] Taglist = new string[] { "Barricade", "Box", "Door", "Furniture", "Human", "Window", "Zombie" };
-	string TargetTag;
+
 	GameObject previousObject;
 	bool m_hasDestination = false;
 	Vector3 m_oldPosition;
 	
 	//Transform[] hinges = GameObject.FindObjectsOfType (typeof(Transform)) as Transform[];
-	
-	void Start() {
-		
-	}
+
+    void GoToTag(string Tag)
+    {
+        GameObject[] taggedObjects = GameObject.FindGameObjectsWithTag(Tag);
+        if (taggedObjects.Length >= 1)
+        {
+           Random.seed = (int) Time.time;
+            int RandNum = Random.Range(1, taggedObjects.Length);
+         
+            taskObject = taggedObjects[RandNum];
+            GetComponent<NavMeshAgent>().SetDestination(taskObject.transform.position);
+            m_oldPosition = GetComponent<Transform>().position;
+            m_hasDestination = true;
+        }
+    }
+
+    void Start()
+    {
+        GoToTag("Player");
+    }
 	
 	// stop the character at a barricade
 	void OnCollisionEnter(Collision collision) {
@@ -32,114 +39,88 @@ public class ZombieBehavior : MonoBehaviour {
 		{
 			if (this.tag == "Human"){
 				m_hasDestination = false;
-				previousObject = taskObject;
+				
 				taskObject = null;
 			}
 		}
 		// if hit a door, barricade or human go somewhere else. or if zombie target the object
         if (collision.gameObject.tag == "Barricade" || collision.gameObject.tag == "Door" || collision.gameObject.tag == "Window" || collision.gameObject.tag == "Human")
 		{
-			GetComponent<Animator> ().SetFloat ("speed", 0.0f );
+			GetComponent<Animator> ().SetFloat ("speed", 0.2f );
 			
 			if (this.tag == "Human")
 			{
-				previousObject = taskObject;
-				taskObject = null;
-				m_hasDestination = false;
+				
+                taskObject = collision.gameObject;
+				m_hasDestination = true;
 			}
 			else
 			{
-				previousObject = taskObject;
+				
 				taskObject = collision.gameObject;
 				m_hasDestination = true;
 			}
 			
 		}
 	}
-	
-	
-	void GoToTag(string Tag){
-		GameObject[] taggedObjects = GameObject.FindGameObjectsWithTag (Tag);
-		if (taggedObjects.Length >= 1)
-		{
-			int RandNum =  Random.Range (1, taggedObjects.Length);
-			//	print (Tag + "\t" + "R=" + RandNum + "\tLength=" + taggedObjects.Length);
-            //print("taggedObjects =" + taggedObjects[RandNum]);
-			taskObject = taggedObjects[RandNum];
-		}
-	}
+
+
 	
 	// Update is called once per frame
 	void Update () {
-		
+		m_camera =   Camera.main;
+       
 		if (Input.GetMouseButtonUp (0)) {
-			previousObject = null;
+			
 			Ray ray = m_camera.GetComponent<Camera> ().ScreenPointToRay (Input.mousePosition);
 			RaycastHit hit = new RaycastHit ();
 			if (Physics.Raycast (ray, out hit)) {
-				
-				if (this.tag == "Zombie"){
-					if( hit.collider.tag != "Terrain" || hit.collider.tag != "Zombie")
-					{
-						previousObject = taskObject;
-						taskObject = hit.collider.gameObject;
-					}
-					else
-					{
+
 						GetComponent<NavMeshAgent> ().SetDestination (hit.point);
-						previousObject = taskObject;
-						taskObject = null;
-					}
-				}
-				
+						
+                        if (hit.collider.tag == "Terrain" ) { taskObject = null; }
 				m_hasDestination = true;
-				m_oldPosition = GetComponent<Transform> ().position;
+                m_oldPosition = GetComponent<Transform>().position;
 			}
 		}
-		
+
 		if (Input.GetKeyDown ("f")){
-			if (this.tag == "Zombie"){
+           // print("f key");
 				taskObject =  GameObject.FindWithTag("Player");
-			}				
+                GetComponent<NavMeshAgent>().SetDestination(taskObject.transform.position);
+                m_oldPosition = GetComponent<Transform>().position;
+                m_hasDestination = true;					
 		}
-		
+
 		if (Input.GetKeyDown ("r")){
-			if (this.tag == "Zombie"){
+           // print("r key");
 				GoToTag ("Human");
-				
-			}				
+                m_oldPosition = GetComponent<Transform>().position;					
 		}
-		
-		
-		if (!m_hasDestination) {
-			if (this.tag == "Human"){
-				if (!taskObject) {
-					//do some tag decisions.
-					//string[] Taglist = new string[] {"Barricade","Box","Door","Furniture","Human","Zombie"};
-					TargetTag = Taglist[Random.Range (0,Taglist.Length)];
-				}
-			}
-			else
-			{
-				TargetTag = "Human";
-			}		
-			if (TargetTag != null)
-			{
-				GoToTag (TargetTag);
-			}
-			
-			
-			
-		}
-		
+
+        if (Input.GetKeyDown("b"))
+        {
+            // print("r key");
+            GoToTag("Barricade");
+            m_oldPosition = GetComponent<Transform>().position;
+        }
+
+        if (Input.GetKeyDown("g"))
+        {
+            // print("r key");
+            GoToTag("Window");
+            m_oldPosition = GetComponent<Transform>().position;
+        }
+
 		if (taskObject) {
            // print("ZombieBehavior:" + " Parent: " + this.transform.parent.gameObject + " This Object = " + this.gameObject + " taskObject = " + taskObject + "\n");
-			m_hasDestination = true;
+            GetComponent<NavMeshAgent>().SetDestination(taskObject.transform.position);
+           
+            m_hasDestination = true;
 		}
-		
-		
-		
+
 		if (m_hasDestination) {
+            
 			Vector3 movement = GetComponent<Transform> ().position - m_oldPosition;
 			m_oldPosition = GetComponent<Transform> ().position;
 			Vector3 diff = GetComponent<Transform> ().position - GetComponent<NavMeshAgent> ().destination;
@@ -161,14 +142,6 @@ public class ZombieBehavior : MonoBehaviour {
 		
 	}// end update
 	
-	//m_oldPosition = GetComponent<Transform> ().position;
-	/*
-			if( diff.magnitude * 5.0f < 0.1f )
-			{
-				GetComponent<Animator> ().SetFloat ("speed", 0.0f );
-				m_hasDestination = false;
-			}
-			*/
 	
-	//end WalkToClick.cs
+	//end ZombieBehavior.cs
 }
