@@ -12,7 +12,7 @@ public class HumanBehavior : MonoBehaviour {
 	public GameObject[] glass; // = GameObject.FindGameObjectsWithTag ("Window");
 	public GameObject[] door; // = GameObject.FindGameObjectsWithTag ("Door");
 	public GameObject[] barricade; // = GameObject.FindGameObjectsWithTag ("Barricade");
-	string[] Taglist = new string[] {"Barricade","Box","Door","Furniture","Human","Zombie"};
+    string[] Taglist = new string[] { "Barricade", "Box", "Door", "Furniture", "Human", "Window", "Zombie" };
 	string TargetTag;
 	GameObject previousObject;
 	bool m_hasDestination = false;
@@ -36,7 +36,7 @@ public class HumanBehavior : MonoBehaviour {
 			}
 		}
 		// if hit a door, barricade or human go somewhere else. or if zombie target the object
-		if(collision.gameObject.tag == "Barricade" || collision.gameObject.tag == "Door" || collision.gameObject.tag == "Human")
+        if (collision.gameObject.tag == "Barricade" || collision.gameObject.tag == "Door" || collision.gameObject.tag == "Window" || collision.gameObject.tag == "Human")
 		{
 			GetComponent<Animator> ().SetFloat ("speed", 0.0f );
 			
@@ -49,8 +49,8 @@ public class HumanBehavior : MonoBehaviour {
 			else
 			{
 				previousObject = taskObject;
-				taskObject = collision.gameObject;
-				m_hasDestination = true;
+                taskObject = null;//collision.gameObject;
+				m_hasDestination = false;
 			}
 			
 		}
@@ -69,46 +69,6 @@ public class HumanBehavior : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		
-		/*if (Input.GetMouseButtonUp (0)) {
-			previousObject = null;
-			Ray ray = m_camera.GetComponent<Camera> ().ScreenPointToRay (Input.mousePosition);
-			RaycastHit hit = new RaycastHit ();
-			if (Physics.Raycast (ray, out hit)) {
-				
-				if (this.tag == "Zombie"){
-					if( hit.collider.tag != "Terrain" || hit.collider.tag != "Zombie")
-					{
-						previousObject = taskObject;
-						taskObject = hit.collider.gameObject;
-					}
-					else
-					{
-						GetComponent<NavMeshAgent> ().SetDestination (hit.point);
-						previousObject = taskObject;
-						taskObject = null;
-					}
-				}
-				
-				m_hasDestination = true;
-				m_oldPosition = GetComponent<Transform> ().position;
-			}
-		}
-		
-		if (Input.GetKeyDown ("f")){
-			if (this.tag == "Zombie"){
-				taskObject =  GameObject.FindWithTag("Player");
-			}				
-		}
-		
-		if (Input.GetKeyDown ("r")){
-			if (this.tag == "Zombie"){
-				GoToTag ("Human");
-				
-			}				
-		}
-*/
-		
 		if (!m_hasDestination) {
 			if (this.tag == "Human"){
 				if (!taskObject) {

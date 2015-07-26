@@ -102,18 +102,24 @@ public class MainGameManager : MonoBehaviour {
 
 		guiText = "Data Path: " + gameRoot + "\n" + "Scene " + currentLevel + "\n";
 		if (currentLevel != "UDGInstructions")	{
-			writeCurrentLevel();
+            writeCurrentLevel(currentLevel);
 		}
 	}
 	
 	// this saves the current level , in theory, back when it was a text file.
-	public void writeCurrentLevel()
+    public void writeCurrentLevel(string currentLevel)
 	{// Add some text to the file.
-		using (StreamWriter currentLevelFile = new StreamWriter(gameroot + "/Data/Levels/UDG/currentlevel.txt"))
+		using (StreamWriter currentLevelFile = new StreamWriter(gameroot + "/Data/Levels/UDG/" + currentLevel + ".txt"))
 		{
-			string thislevelout = "CurrentLevel =" + Q + currentLevel + Q + "\n";
-			currentLevelFile.Write(thislevelout);	
+			string thislevelout = "currentLevel =" + Q + currentLevel + Q + "\n";
+			currentLevelFile.Write(thislevelout);
+            if (System.IO.File.Exists(gameroot + "/Data/Levels/UDG/" + currentLevel + ".txt"))
+            {
+                print(thislevelout); //do stuff
+            }
 		}
+
+        
 	}
 
 

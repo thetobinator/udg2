@@ -12,7 +12,7 @@ public class ZombieBehavior : MonoBehaviour {
 	public GameObject[] glass; // = GameObject.FindGameObjectsWithTag ("Window");
 	public GameObject[] door; // = GameObject.FindGameObjectsWithTag ("Door");
 	public GameObject[] barricade; // = GameObject.FindGameObjectsWithTag ("Barricade");
-	string[] Taglist = new string[] {"Barricade","Box","Door","Furniture","Human","Zombie"};
+    string[] Taglist = new string[] { "Barricade", "Box", "Door", "Furniture", "Human", "Window", "Zombie" };
 	string TargetTag;
 	GameObject previousObject;
 	bool m_hasDestination = false;
@@ -36,7 +36,7 @@ public class ZombieBehavior : MonoBehaviour {
 			}
 		}
 		// if hit a door, barricade or human go somewhere else. or if zombie target the object
-		if(collision.gameObject.tag == "Barricade" || collision.gameObject.tag == "Door" || collision.gameObject.tag == "Human")
+        if (collision.gameObject.tag == "Barricade" || collision.gameObject.tag == "Door" || collision.gameObject.tag == "Window" || collision.gameObject.tag == "Human")
 		{
 			GetComponent<Animator> ().SetFloat ("speed", 0.0f );
 			

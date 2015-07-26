@@ -5,6 +5,8 @@ using System.Collections;
 public class BreakableBarricades : MonoBehaviour {
 	private GameObject thisObject;
 	public int hitpoints;
+    public float radius = 15.0F;
+    public float power = 110.0F;
 	private Rigidbody hasRigidBody;
 	private Vector3 childscale;
 	// Use this for initialization
@@ -66,7 +68,12 @@ public class BreakableBarricades : MonoBehaviour {
 						child.gameObject.transform.localScale = new Vector3(childscale.x, childscale.y, childscale.z);
 						Rigidbody gameObjectsRigidBody = child.gameObject.AddComponent<Rigidbody> (); // Add the rigidbody.
 						gameObjectsRigidBody.mass = 1; // Set the GO's mass to 5 via the Rigidbody.
-
+                        // Rigidbody rb = hit.GetComponent<Rigidbody>();
+            
+            if (gameObjectsRigidBody != null){
+                gameObjectsRigidBody.AddExplosionForce(power, child.gameObject.transform.position, radius, 3.0F);
+            
+        }
 					}
 				}
 			}
