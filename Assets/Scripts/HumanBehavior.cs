@@ -60,10 +60,9 @@ public class HumanBehavior : MonoBehaviour {
 		GameObject[] taggedObjects = GameObject.FindGameObjectsWithTag (Tag);
 		if (taggedObjects.Length >= 1)
 		{
-			int RandNum =  Random.Range (1, taggedObjects.Length);
-			//	print (Tag + "\t" + "R=" + RandNum + "\tLength=" + taggedObjects.Length);
+			int RandNum =  Random.Range (0, taggedObjects.Length);
 			
-			taskObject = taggedObjects [RandNum];
+			taskObject = taggedObjects [RandNum].gameObject;
 		}
 	}
 	
@@ -89,6 +88,8 @@ public class HumanBehavior : MonoBehaviour {
 		}
 		
 		if (taskObject) {
+            //print("HumanBehavior:"  + " Parent: " + this.transform.parent.gameObject + " This Object = " + this.gameObject + " taskObject = " + taskObject +"\n");
+          
 			GetComponent<NavMeshAgent> ().SetDestination (taskObject.transform.position);
 			m_hasDestination = true;
 		}

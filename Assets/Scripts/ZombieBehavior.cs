@@ -26,6 +26,7 @@ public class ZombieBehavior : MonoBehaviour {
 	
 	// stop the character at a barricade
 	void OnCollisionEnter(Collision collision) {
+    
 		//Debug.Log (collision.gameObject.tag);
 		if (collision.gameObject.tag == "Human")
 		{
@@ -63,8 +64,8 @@ public class ZombieBehavior : MonoBehaviour {
 		{
 			int RandNum =  Random.Range (1, taggedObjects.Length);
 			//	print (Tag + "\t" + "R=" + RandNum + "\tLength=" + taggedObjects.Length);
-			
-			taskObject = taggedObjects [RandNum];
+            //print("taggedObjects =" + taggedObjects[RandNum]);
+			taskObject = taggedObjects[RandNum];
 		}
 	}
 	
@@ -132,7 +133,7 @@ public class ZombieBehavior : MonoBehaviour {
 		}
 		
 		if (taskObject) {
-			GetComponent<NavMeshAgent> ().SetDestination (taskObject.transform.position);
+           // print("ZombieBehavior:" + " Parent: " + this.transform.parent.gameObject + " This Object = " + this.gameObject + " taskObject = " + taskObject + "\n");
 			m_hasDestination = true;
 		}
 		
