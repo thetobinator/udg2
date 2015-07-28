@@ -7,17 +7,10 @@ public class HumanBehavior : MonoBehaviour {
     public string TargetTag;
     public GameObject previousObject;
     
-    
-	/*public GameObject[] furniture; // = GameObject.FindGameObjectsWithTag("Furniture");
-	public GameObject[] humans; // = GameObject.FindGameObjectsWithTag("Human");
-	public GameObject[] zombies; // = GameObject.FindGameObjectsWithTag("Zombie");
-	public GameObject[] boxes; // = GameObject.FindGameObjectsWithTag ("Box");
-	public GameObject[] glass; // = GameObject.FindGameObjectsWithTag ("Window");
-	public GameObject[] door; // = GameObject.FindGameObjectsWithTag ("Door");
-	public GameObject[] barricade; // = GameObject.FindGameObjectsWithTag ("Barricade");
-    */
 
-    string[] Taglist = new string[] { "Barricade", "Box", "Door", "Furniture", "Human", "Window", "Zombie" };
+
+
+    string[] humansSeekTaglist = new string[] { "Barricade", "Box", "Door", "Furniture", "Human", "Window", "Zombie" };
 	
 	bool m_hasDestination = false;
 	Vector3 m_oldPosition;
@@ -77,7 +70,7 @@ public class HumanBehavior : MonoBehaviour {
 				if (!taskObject) {
 					//do some tag decisions.
 					//string[] Taglist = new string[] {"Barricade","Box","Door","Furniture","Human","Zombie"};
-					TargetTag = Taglist[Random.Range (0,Taglist.Length)];
+                    TargetTag = humansSeekTaglist[Random.Range(0, humansSeekTaglist.Length)];
 				}
 			}
 			else

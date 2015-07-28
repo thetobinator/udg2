@@ -17,7 +17,7 @@ public class ZombieBehavior : MonoBehaviour {
         if (taggedObjects.Length >= 1)
         {
            Random.seed = (int) Time.time;
-            int RandNum = Random.Range(1, taggedObjects.Length);
+            int RandNum = Random.Range(0, taggedObjects.Length-1);
          
             taskObject = taggedObjects[RandNum];
             GetComponent<NavMeshAgent>().SetDestination(taskObject.transform.position);
@@ -50,13 +50,12 @@ public class ZombieBehavior : MonoBehaviour {
 			
 			if (this.tag == "Human")
 			{
-				
+                //attack the human
                 taskObject = collision.gameObject;
 				m_hasDestination = true;
 			}
 			else
 			{
-				
 				taskObject = collision.gameObject;
 				m_hasDestination = true;
 			}

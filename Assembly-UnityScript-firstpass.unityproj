@@ -53,6 +53,8 @@
      <None Include="Assets\ThirdParty\VolumetricLines\Shaders\VolumetricLineShaderAlphaBlended.shader" />
      <None Include="Assets\Data\Levels\UDG\UDG2009Maps_Staging.txt" />
      <None Include="Assets\ThirdParty\VolumetricLines\Shaders\VolumetricLineShaderAdditive.shader" />
+     <None Include="Assets\Data\Levels\UDG\LoaderObject_Staging.txt" />
+     <None Include="Assets\Data\Levels\UDG\SpawnPoint_staging.txt" />
      <None Include="Assets\Standard Assets\CrossPlatformInput\CrossPlatformInputGuidelines.txt" />
      <None Include="Assets\ThirdParty\VolumetricLines\Shaders\VolumetricLineShaderAdditiveFast.shader" />
      <None Include="Assets\ThirdParty\VolumetricLines\Shaders\VolumetricLineStripShaderAdditive.shader" />
@@ -62,6 +64,7 @@
      <None Include="Assets\Data\Levels\UDG\MainGameManager_Staging.txt" />
      <None Include="Assets\Standard Assets\Characters\FirstPersonCharacter\FirstPersonCharacterGuidelines.txt" />
      <None Include="Assets\Standard Assets\Characters\RollerBall\RollerBallGuidelines.txt" />
+     <None Include="Assets\Data\Levels\UDG\MainGameInit_Staging.txt" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>
