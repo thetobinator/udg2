@@ -73,12 +73,9 @@ public class MainGameInit : MonoBehaviour
     public int currentText = 1;
     public bool hideHUD = false;
     public bool wonThisLevel = false;
-  
-    // end of old igame3d udeadgame variables.
     */
+    // variables off for working clean inspector
     public char Q = '\"';
-
-
 
     // global text box update
     public  List<string> screenText = new List<string>();
@@ -88,11 +85,12 @@ public class MainGameInit : MonoBehaviour
     public List<string> UDGFUNCTIONS = new List<string>(new string[] { "Editor", "Lights", "AI", "Utilities", "Sounds", "Fallback", "Textboxes", "Keyboard", "Game", "Music" });
     // assign UDG entities behavior Now in its own UDG Folder
     public List<string> UDGENTITIES = new List<string>(new string[] { "Teams", "Emitters", "Human", "Zombie", "Building", "Gun", "Car", "GUI", "Window", "Door", "Scenery", "BloodPencil", "MeleeWeapons", "LevelExits", "Furniture", "Grenade", "Menu" });
-
     // List of old uDeadGame Lua files at Init // perhaps use again?
     public List<string> initFileList = new List<string>();
+     //end of old igame3d udeadgame variables.
 
-    //maybe this is a per level thing
+
+    //maybe these gameobject arrays is a per level thing, maybe shoulds be List<string>?
     public GameObject[] furniture; 
     public GameObject[] windows;
     public GameObject[] boxes;
@@ -100,8 +98,7 @@ public class MainGameInit : MonoBehaviour
     public GameObject[] door;
     public GameObject[] barricade; 
 
-    private Transform mapHolder; //parent the map to this
-
+    private Transform mapHolder; //parent the map to this...eventually?
     private Transform SpawnHolder; // this will parent spawns in the editor
     
     private List <Vector3> gridPositions = new List<Vector3>(); //Track all objects 3D position and avoid spawn same spot
@@ -163,12 +160,15 @@ public class MainGameInit : MonoBehaviour
     {
         // gridPositions is for identifying spawn locations
         gridPositions.Clear(); // empty the list
-        //old igame3d udeadgame lua initialisation scripts LIST, just a list for now.
+   
+    }
+
+    void OldUDGLuaFilesList()
+    { //old igame3d udeadgame lua initialisation scripts LIST, just a list for now.
         // probably need to    load script component on runtime
         foreach (string tFile in RTSFUNCTIONS) { initFileList.Add(gameroot + "Data/Scripts/RTS_Functions/RTS_" + tFile + ".lua"); }
         foreach (string tFile in UDGFUNCTIONS) { initFileList.Add(gameroot + "Data/Scripts/UDG_Functions/RTS_" + tFile + ".lua"); }
-        foreach (string tFile in UDGENTITIES)
-        { initFileList.Add(gameroot + "Data/Scripts/UDG_Functions/UDG_Entities/UDG_" + tFile + ".lua"); }
+        foreach (string tFile in UDGENTITIES) { initFileList.Add(gameroot + "Data/Scripts/UDG_Functions/UDG_Entities/UDG_" + tFile + ".lua"); }
         // concatenate the list to an array string with delimiter
         print("OLD _Initalization Files List:\n\t" + String.Join("\n\t", initFileList.ToArray()));
     }
@@ -209,5 +209,128 @@ public class MainGameInit : MonoBehaviour
         }
     }// end writecurrentlevel
 
-   // end UDG_INIT
+    //  -- init_all_objects from RTS.Attributes.lua came before the udg_init
+
+
+    //function udg_init()
+    /*
+     *  void udg_init(){
+	setObjectInfo(playerBox, IG3D_CAST_SHADOW, false)
+	gObjects[playerBox].alive=false
+	gObjects[playerBox].team=12
+	-- further initialization
+	randomWalking= walk_between_safe_places --replace the random walking
+	standard_flee= flee_to_safe_place --replace flee
+	
+	gZombieBehaviour=zombie_hold_behaviour
+
+	
+	playerGunSound = assign_free_sound_emitter()
+	setSound_emitterInfo(playerGunSound, IG3D_SAMPLE, "Data/Sounds/rifle.ogg")
+	setSound_emitterInfo(playerGunSound, IG3D_LOOP, false)--true
+	
+	local i
+	for i=1,#gObjects,1 do
+		setObjectInfo(gObjects[i].cObj, IG3D_BONE_COLL, false)--no bone colls for heavens sake!
+		if gObjects[i].team==0 or gObjects[i].team==1 then
+			setObjectInfo(gObjects[i].cObj, IG3D_SHAPE, ig3d_sphere)
+			setObjectInfo(gObjects[i].cObj, IG3D_COLLBOX_MULTIPLICATORS, 0.5,1,1)--brave new world!
+		end
+		
+		if gObjects[i].team==1 and gObjects[i].alive then
+			gObjects[i].behaviour= gZombieBehaviour
+			gObjects[i].noise=0.2
+			--gObjects[i].meleeDistance=2
+		end
+		
+		if gObjects[i].team==0 then
+			--dead on a papercut
+			--gObjects[i].behaviour=stand_and_cry
+			if string.sub(tCurrentLevel,-4,-1) ~= "Hard" then 
+			gObjects[i].behaviour= idle_until_zombie_in_sight
+			end
+			if isFemale(gObjects[i]) then
+				--gObjects[i].health=1
+			end
+			gObjects[i].health=1
+			gObjects[i].voiceSndEmt=assign_free_sound_emitter()--people need to scream etc.
+			
+		end
+		setSound_emitterInfo(gObjects[i].voiceSndEmt, IG3D_VOLUME, 80)--3
+		setSound_emitterInfo(gObjects[i].noiseSndEmt, IG3D_VOLUME, 80)--3
+	end
+	
+	setObjectInfo(playerBox, IG3D_COLLBOX_MULTIPLICATORS, 1,1,1)--brave new world!
+	setObjectInfo(playerBox, IG3D_SHAPE, ig3d_sphere)--sphere
+	
+	xa,ya,za=getCameraInfo(IG3D_ROTATION)
+	setLightInfo(2, IG3D_POSITION, 0,5,7,1)
+	setCameraInfo(IG3D_POSITION, 0,15,0)
+	setObjectInfo(playerBox, IG3D_POSITION, getCameraInfo(IG3D_POSITION))
+	
+	--setSceneInfo(IG3D_RECEIVE_SHADOW, gDoShadows)--do we cast shadows?
+
+	--ignore reset
+	for i=1,#gObjectWTFs,1 do
+	setObjectInfo(gObjects[i].cObj, IG3D_POSITION, gObjectPositions[i][1],gObjectPositions[i][2],gObjectPositions[i][3])
+end
+	
+
+	
+	--setObjectInfo(playerBox, IG3D_IGNORE_OBJECT_COLLS, true)
+	crosshair=gObjects[get(ig3d_object, "crosshair1")]
+	crosshair.alive=false
+	setObjectInfo(crosshair.cObj, IG3D_GRAVITY_MULTIPLIER, 0)
+	crosshair.team=12
+	setObjectInfo(crosshair.cObj, IG3D_POSITION, 0,0,-0.1)
+	bloodonfloor=get(ig3d_particle_emitter, "bloodonfloor")
+end
+
+-----------------------------------------------------------
+-- if not game mode don't do all this stuff
+if ig3d_GetMode__i() == 4 then 	
+HumansWithGuns()
+HumansWithMeleeWeapons()
+SoldiersWithGrenades()
+--set hit sound and level of depth
+allEntitySoundCollLOD() -- see RTS_Attributes.lua
+setupAStarGrid()
+end
+
+-------------------------------------------------------------
+-- Copied from FPS Init 
+FPSgun = get(ig3d_particle_emitter,"fpsgun")
+playerBox = get(ig3d_object, "playerbox")
+--
+
+setObjectInfo(playerBox,IG3D_POSITION,0.0,1,0.0)
+setObjectInfo(playerBox,IG3D_SIZE,50,50,50)
+looker=get(ig3d_bone, playerBox, "None")
+setBoneInfo(looker, IG3D_ENABLED, false)
+first=true
+if FPSgun ==nil then print("Missing \"fpsgun\" emitter\n") end
+if playerBox ==nil then print("Missing \"playerbox\" object\n") end
+setSceneInfo(IG3D_MOUSE_VIEW, true, 1)
+setObjectInfo(playerBox, IG3D_VECTOR_CONSTRAINT, 0,1,0)
+setObjectInfo(playerBox, IG3D_GRAVITY_MULTIPLIER, 0.1)
+setObjectInfo(playerBox, IG3D_IGNORE_COLL, true, ig3d_particle_emitter, FPSgun)
+setParticle_emitterInfo(FPSgun, IG3D_IGNORE_COLL, true, ig3d_particle_emitter, FPSgun)--dont collide bullets with bullets
+setObjectInfo(playerBox, IG3D_SHAPE, ig3d_sphere)
+xa,ya,za=getCameraInfo(IG3D_ROTATION)
+setLightInfo(2, IG3D_POSITION, 0,5,7,1)
+
+-------------------------------------------------------------		
+
+
+
+if ig3d_GetMode__i() == 4 then
+--init phase
+udg_init()
+udg_place_objects_randomly()--haha!
+udg_create_safe_places_randomly()--ho ho ho
+
+rts_update_living_and_dead_counts()
+end  -- if not game mode don't do all this stuff
+     */
+    // end UDG_INIT.lua
 }
