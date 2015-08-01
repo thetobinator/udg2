@@ -1,0 +1,10 @@
+newmtl Default_Prototype
+s 1 1
+map_Kd GridBox_Default.png
+
+newmtl urbanflats2Ab_wtf-acmat_2
+Kd 0.8 0.8 0.8
+d 0
+s 1 1
+map_Kd CONC_01.png
+

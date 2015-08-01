@@ -50,11 +50,14 @@
      <Compile Include="Assets\Standard Assets\Character Controllers\Sources\Scripts\FPSInputController.js" />
      <None Include="Assets\Data\Levels\UDG\Breakables_staging.txt" />
      <None Include="Assets\ThirdParty\GhostFreeRoamCamera\READEME.txt" />
+     <None Include="Assets\Breakable Glass\Shaders\SimpleGlass.shader" />
      <None Include="Assets\ThirdParty\VolumetricLines\Shaders\VolumetricLineShaderAlphaBlended.shader" />
+     <None Include="Assets\GDG_Assets\Particles\Sources\Shaders\Particle Alpha Blend (Queue +100).shader" />
      <None Include="Assets\Data\Levels\UDG\UDG2009Maps_Staging.txt" />
      <None Include="Assets\ThirdParty\VolumetricLines\Shaders\VolumetricLineShaderAdditive.shader" />
      <None Include="Assets\Data\Levels\UDG\LoaderObject_Staging.txt" />
      <None Include="Assets\Data\Levels\UDG\SpawnPoint_staging.txt" />
+     <None Include="Assets\Breakable Glass\README.txt" />
      <None Include="Assets\Standard Assets\CrossPlatformInput\CrossPlatformInputGuidelines.txt" />
      <None Include="Assets\ThirdParty\VolumetricLines\Shaders\VolumetricLineShaderAdditiveFast.shader" />
      <None Include="Assets\ThirdParty\VolumetricLines\Shaders\VolumetricLineStripShaderAdditive.shader" />
@@ -63,6 +66,7 @@
      <None Include="Assets\ThirdParty\VolumetricLines\Shaders\VolumetricLineShaderAlphaBlendedFast.shader" />
      <None Include="Assets\Data\Levels\UDG\MainGameManager_Staging.txt" />
      <None Include="Assets\Standard Assets\Characters\FirstPersonCharacter\FirstPersonCharacterGuidelines.txt" />
+     <None Include="Assets\GDG_Assets\Sounds\Sounds.txt" />
      <None Include="Assets\Standard Assets\Characters\RollerBall\RollerBallGuidelines.txt" />
      <None Include="Assets\Data\Levels\UDG\MainGameInit_Staging.txt" />
  <Reference Include="UnityEngine.UI">
@@ -73,6 +77,9 @@
  </Reference>
  <Reference Include="UnityEngine.Analytics">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnityAnalytics/UnityEngine.Analytics.dll</HintPath>
+ </Reference>
+ <Reference Include="GDGPhysicsDllV1_1">
+ <HintPath>C:/Users/Bill2014/Documents/GitHub/udg2/Assets/GDG_Assets/Scripts/Physics/PhysicsController/DLL/GDGPhysicsDllV1_1.dll</HintPath>
  </Reference>
  <Reference Include="UnityEditor.iOS.Extensions.Xcode">
  <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/iOSSupport/UnityEditor.iOS.Extensions.Xcode.dll</HintPath>
