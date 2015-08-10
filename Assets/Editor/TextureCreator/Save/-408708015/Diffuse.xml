@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<DiffuseData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <specShadows>
+    <float>1</float>
+    <float>1</float>
+  </specShadows>
+  <HSV_diffuse>
+    <float>0</float>
+    <float>0</float>
+    <float>0</float>
+  </HSV_diffuse>
+  <contrast>
+    <float>0</float>
+    <float>0.5</float>
+  </contrast>
+</DiffuseData>

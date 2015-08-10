@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<LoadData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <xoff>0</xoff>
+  <yoff>0</yoff>
+  <seamless>true</seamless>
+  <periodize>
+    <float>0</float>
+    <float>0</float>
+  </periodize>
+  <factorTwo>0</factorTwo>
+  <seamlessMaskIdx>0</seamlessMaskIdx>
+  <outputDir>UDG_WAD1_ThisMap</outputDir>
+</LoadData>

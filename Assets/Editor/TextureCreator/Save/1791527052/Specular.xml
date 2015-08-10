@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<SpecularData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <specular>
+    <float>0</float>
+    <float>0.69</float>
+    <float>0.05</float>
+    <float>0.75</float>
+  </specular>
+</SpecularData>

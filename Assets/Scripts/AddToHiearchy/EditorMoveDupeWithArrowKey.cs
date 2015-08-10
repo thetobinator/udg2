@@ -16,6 +16,7 @@ public class EditorMoveDupeWithArrowKey : MonoBehaviour
     //Private
     void Awake()
     {
+		
      string info="EditorMoveDupeWithArrowKey use Right Control and Arrow Keys to nudge Items in editor \n" +
    "Right Shift + Right Control + Arrow will duplicate the object.\n" +
    "Update is checking for a box collider to get size";
@@ -46,6 +47,7 @@ public class EditorMoveDupeWithArrowKey : MonoBehaviour
     }
     public void GetSize()
     {
+		// lets try using this! GameTile.GetComponent<MeshFilter>().mesh.bounds? 
         Vector3 objectSize;
         SceneView.lastActiveSceneView.Focus();
         staticTransform = Selection.activeGameObject.transform;

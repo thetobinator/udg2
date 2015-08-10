@@ -19,7 +19,7 @@
 	<DebugType>full</DebugType>
 	<Optimize>false</Optimize>
 	<OutputPath>Temp\bin\Debug\</OutputPath>
-	<DefineConstants>DEBUG;TRACE;UNITY_5_1_2;UNITY_5_1;UNITY_5;ENABLE_NEW_BUGREPORTER;ENABLE_2D_PHYSICS;ENABLE_4_6_FEATURES;ENABLE_AUDIO;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_DUCK_TYPING;ENABLE_FRAME_DEBUGGER;ENABLE_GENERICS;ENABLE_HOME_SCREEN;ENABLE_IMAGEEFFECTS;ENABLE_LIGHT_PROBES_LEGACY;ENABLE_MICROPHONE;ENABLE_MULTIPLE_DISPLAYS;ENABLE_PHYSICS;ENABLE_PHYSICS_PHYSX3;ENABLE_PLUGIN_INSPECTOR;ENABLE_SHADOWS;ENABLE_SINGLE_INSTANCE_BUILD_SETTING;ENABLE_SPRITES;ENABLE_TERRAIN;ENABLE_UNET;ENABLE_UNITYEVENTS;ENABLE_VR;ENABLE_WEBCAM;ENABLE_WWW;ENABLE_CLOUD_SERVICES;ENABLE_CLOUD_SERVICES_ANALYTICS;ENABLE_CLOUD_SERVICES_UNET;ENABLE_CLOUD_LICENSE;ENABLE_AUDIOMIXER_SUSPEND;ENABLE_EDITOR_METRICS;INCLUDE_DYNAMIC_GI;INCLUDE_GI;INCLUDE_IL2CPP;INCLUDE_DIRECTX12;PLATFORM_SUPPORTS_MONO;RENDER_SOFTWARE_CURSOR;ENABLE_LOCALIZATION;UNITY_STANDALONE_WIN;UNITY_STANDALONE;ENABLE_SUBSTANCE;ENABLE_TEXTUREID_MAP;ENABLE_RUNTIME_GI;ENABLE_MOVIES;ENABLE_NETWORK;ENABLE_CRUNCH_TEXTURE_COMPRESSION;ENABLE_WEBSOCKET_HOST;ENABLE_MONO;ENABLE_PROFILER;DEBUG;TRACE;UNITY_ASSERTIONS;UNITY_EDITOR;UNITY_EDITOR_64;UNITY_EDITOR_WIN;CROSS_PLATFORM_INPUT</DefineConstants>
+	<DefineConstants>DEBUG;TRACE;UNITY_5_1_2;UNITY_5_1;UNITY_5;ENABLE_NEW_BUGREPORTER;ENABLE_2D_PHYSICS;ENABLE_4_6_FEATURES;ENABLE_AUDIO;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_DUCK_TYPING;ENABLE_FRAME_DEBUGGER;ENABLE_GENERICS;ENABLE_HOME_SCREEN;ENABLE_IMAGEEFFECTS;ENABLE_LIGHT_PROBES_LEGACY;ENABLE_MICROPHONE;ENABLE_MULTIPLE_DISPLAYS;ENABLE_PHYSICS;ENABLE_PHYSICS_PHYSX3;ENABLE_PLUGIN_INSPECTOR;ENABLE_SHADOWS;ENABLE_SINGLE_INSTANCE_BUILD_SETTING;ENABLE_SPRITES;ENABLE_TERRAIN;ENABLE_UNET;ENABLE_UNITYEVENTS;ENABLE_VR;ENABLE_WEBCAM;ENABLE_WWW;ENABLE_CLOUD_SERVICES;ENABLE_CLOUD_SERVICES_ANALYTICS;ENABLE_CLOUD_SERVICES_UNET;ENABLE_CLOUD_LICENSE;ENABLE_AUDIOMIXER_SUSPEND;ENABLE_EDITOR_METRICS;INCLUDE_DYNAMIC_GI;INCLUDE_GI;INCLUDE_IL2CPP;INCLUDE_DIRECTX12;PLATFORM_SUPPORTS_MONO;RENDER_SOFTWARE_CURSOR;ENABLE_LOCALIZATION;UNITY_STANDALONE_WIN;UNITY_STANDALONE;ENABLE_SUBSTANCE;ENABLE_TEXTUREID_MAP;ENABLE_RUNTIME_GI;ENABLE_MOVIES;ENABLE_NETWORK;ENABLE_CRUNCH_TEXTURE_COMPRESSION;ENABLE_WEBSOCKET_HOST;ENABLE_MONO;DEVELOPMENT_BUILD;ENABLE_PROFILER;DEBUG;TRACE;UNITY_ASSERTIONS;UNITY_EDITOR;UNITY_EDITOR_64;UNITY_EDITOR_WIN;CROSS_PLATFORM_INPUT</DefineConstants>
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
 	<NoWarn>0169</NoWarn>
@@ -48,18 +48,33 @@
   <ItemGroup>
      <Compile Include="Assets\Standard Assets\Character Controllers\Sources\Scripts\CharacterMotor.js" />
      <Compile Include="Assets\Standard Assets\Character Controllers\Sources\Scripts\FPSInputController.js" />
+     <None Include="Assets\GDG_Assets\GDGreadmeText.txt" />
+     <None Include="Assets\Editor\TextureCreator\Save\1791527052\Diffuse.xml" />
      <None Include="Assets\Data\Levels\UDG\Breakables_staging.txt" />
      <None Include="Assets\ThirdParty\GhostFreeRoamCamera\READEME.txt" />
+     <None Include="Assets\Editor\TextureCreator\Save\1791527052\Occlusion.xml" />
      <None Include="Assets\Breakable Glass\Shaders\SimpleGlass.shader" />
+     <None Include="Assets\Editor\TextureCreator\Save\-408708015\Height.xml" />
      <None Include="Assets\ThirdParty\VolumetricLines\Shaders\VolumetricLineShaderAlphaBlended.shader" />
+     <None Include="Assets\Editor\TextureCreator\Save\1791527052\Specular.xml" />
+     <None Include="Assets\Editor\Texture-Creator-master\Assets\TextureCreator\Shaders\HSV.shader" />
      <None Include="Assets\GDG_Assets\Particles\Sources\Shaders\Particle Alpha Blend (Queue +100).shader" />
+     <None Include="Assets\Editor\TextureCreator\Save\-408708015\Diffuse.xml" />
      <None Include="Assets\Data\Levels\UDG\UDG2009Maps_Staging.txt" />
      <None Include="Assets\ThirdParty\VolumetricLines\Shaders\VolumetricLineShaderAdditive.shader" />
      <None Include="Assets\Data\Levels\UDG\LoaderObject_Staging.txt" />
      <None Include="Assets\Data\Levels\UDG\SpawnPoint_staging.txt" />
+     <None Include="Assets\Editor\TextureCreator\Save\-408708015\Load.xml" />
      <None Include="Assets\Breakable Glass\README.txt" />
+     <None Include="Assets\Editor\TextureCreator\Save\1791527052\Load.xml" />
      <None Include="Assets\Standard Assets\CrossPlatformInput\CrossPlatformInputGuidelines.txt" />
+     <None Include="Assets\Editor\Texture-Creator-master\Assets\TextureCreator\Shaders\Normal.shader" />
+     <None Include="Assets\Editor\TextureCreator\Save\1791527052\Normal.xml" />
      <None Include="Assets\ThirdParty\VolumetricLines\Shaders\VolumetricLineShaderAdditiveFast.shader" />
+     <None Include="Assets\Editor\Texture-Creator-master\Assets\TextureCreator\Shaders\Contrast.shader" />
+     <None Include="Assets\Editor\Texture-Creator-master\Assets\TextureCreator\Shaders\Periodize.shader" />
+     <None Include="Assets\Editor\TextureCreator\Save\-408708015\Normal.xml" />
+     <None Include="Assets\Editor\TextureCreator\Save\1791527052\Height.xml" />
      <None Include="Assets\ThirdParty\VolumetricLines\Shaders\VolumetricLineStripShaderAdditive.shader" />
      <None Include="Assets\Standard Assets\Characters\ThirdPersonCharacter\ThirdPersonCharacterGuidelines.txt" />
      <None Include="Assets\ThirdParty\VolumetricLines\Shaders\VolumetricLineStripShaderAlphaBlended.shader" />
@@ -69,6 +84,10 @@
      <None Include="Assets\GDG_Assets\Sounds\Sounds.txt" />
      <None Include="Assets\Standard Assets\Characters\RollerBall\RollerBallGuidelines.txt" />
      <None Include="Assets\Data\Levels\UDG\MainGameInit_Staging.txt" />
+     <None Include="Assets\Editor\Texture-Creator-master\Assets\TextureCreator\Shaders\Downsample.shader" />
+     <None Include="Assets\Editor\Texture-Creator-master\Assets\TextureCreator\Shaders\SpecShadows.shader" />
+     <None Include="Assets\Editor\Texture-Creator-master\Assets\TextureCreator\Shaders\GaussianBlur.shader" />
+     <None Include="Assets\Editor\Texture-Creator-master\Assets\TextureCreator\Shaders\Heightmap.shader" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>
@@ -79,7 +98,10 @@
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/UnityAnalytics/UnityEngine.Analytics.dll</HintPath>
  </Reference>
  <Reference Include="GDGPhysicsDllV1_1">
- <HintPath>C:/Users/Bill2014/Documents/GitHub/udg2/Assets/GDG_Assets/Scripts/Physics/PhysicsController/DLL/GDGPhysicsDllV1_1.dll</HintPath>
+ <HintPath>C:/Users/Bill2014/Documents/GitHub/udg2/Assets/GDG_Assets/Breakable Cube01/Scripts/GDGPhysicsDllV1_1.dll</HintPath>
+ </Reference>
+ <Reference Include="GDGPhysicsDllV1_01_b">
+ <HintPath>C:/Users/Bill2014/Documents/GitHub/udg2/Assets/GDG_Assets/Scripts/GDGPhysicsDllV1_01_b.dll</HintPath>
  </Reference>
  <Reference Include="UnityEditor.iOS.Extensions.Xcode">
  <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/iOSSupport/UnityEditor.iOS.Extensions.Xcode.dll</HintPath>

@@ -44,7 +44,7 @@ public class ZombieBehavior : MonoBehaviour {
 			}
 		}
 		// if hit a door, barricade or human go somewhere else. or if zombie target the object
-        if (collision.gameObject.tag == "Barricade" || collision.gameObject.tag == "Door" || collision.gameObject.tag == "Window" || collision.gameObject.tag == "Human")
+        if (collision.gameObject.tag == "Breakable" || collision.gameObject.tag == "Barricade" || collision.gameObject.tag == "Door" || collision.gameObject.tag == "Window" || collision.gameObject.tag == "Human")
 		{
 			GetComponent<Animator> ().SetFloat ("speed", 0.2f );
 			
@@ -77,7 +77,7 @@ public class ZombieBehavior : MonoBehaviour {
 
 						GetComponent<NavMeshAgent> ().SetDestination (hit.point);
 						
-                        if (hit.collider.tag == "Terrain" ) { taskObject = null; }
+                        //if (hit.collider.tag == "Terrain" ) { taskObject = null; }
 				m_hasDestination = true;
                 m_oldPosition = GetComponent<Transform>().position;
 			}
@@ -99,14 +99,14 @@ public class ZombieBehavior : MonoBehaviour {
 
         if (Input.GetKeyDown("b"))
         {
-            // print("r key");
-            GoToTag("Barricade");
+            
+            GoToTag("Breakable");
             m_oldPosition = GetComponent<Transform>().position;
         }
 
         if (Input.GetKeyDown("g"))
         {
-            // print("r key");
+           
             GoToTag("Window");
             m_oldPosition = GetComponent<Transform>().position;
         }

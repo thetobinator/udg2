@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<OcclusionData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <occlusion>
+    <float>0</float>
+    <float>0.5</float>
+    <float>0</float>
+    <float>1</float>
+  </occlusion>
+  <blurOcclusion>
+    <float>0.05</float>
+  </blurOcclusion>
+</OcclusionData>

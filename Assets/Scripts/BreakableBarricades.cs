@@ -13,10 +13,16 @@ public class BreakableBarricades : MonoBehaviour {
 
 
 		public Rigidbody rb;
+        void Awake()
+        {
+            rb = this.GetComponent<Rigidbody>();
+        }
 		void Start() {
-			rb = GetComponent<Rigidbody>();
-		EnableRagdoll ();	
+            rb = this.GetComponent<Rigidbody>();
+            if (rb != null) { EnableRagdoll(); }
+			
 		}
+
 		void EnableRagdoll() {
 			rb.isKinematic = false;
 			rb.detectCollisions = true;
@@ -30,8 +36,8 @@ public class BreakableBarricades : MonoBehaviour {
 		
 
 	void OnTriggerEnter(Collider other) {
-
-		if (other.tag == "Zombie")
+       // print(other.name);
+		if (other.tag != "Barricade")
 		{
 			hitpoints+= -2; // remove hit points
 			if (hitpoints <= 0){
@@ -62,8 +68,8 @@ public class BreakableBarricades : MonoBehaviour {
 					{
 						Vector3 childscale = child.gameObject.transform.localScale;
 						
-						childscale.x = childscale.x * 0.75F;
-						childscale.y = childscale.y * 0.75F;
+						childscale.x = childscale.x * 0.45F;
+						childscale.y = childscale.y * 0.45F;
 						childscale.z = childscale.z * 0.75F;
 						child.gameObject.transform.localScale = new Vector3(childscale.x, childscale.y, childscale.z);
 						Rigidbody gameObjectsRigidBody = child.gameObject.AddComponent<Rigidbody> (); // Add the rigidbody.

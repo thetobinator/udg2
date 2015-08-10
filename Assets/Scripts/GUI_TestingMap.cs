@@ -25,6 +25,7 @@ public class GUI_TestingMap : MonoBehaviour
         return GUITextColor;
     }
 
+
     private void OnGUI()
     {
         //GUI.Box(new Rect(10, 10, 430, 220), "Click here to start Camera");
