@@ -2,13 +2,112 @@
 using System.Collections;
 
 public class ZombieBehavior : MonoBehaviour {
-    public Camera m_camera;
-	public GameObject taskObject;
+	enum State
+	{
+		Spawning,			// go from spawn point to idle point
+		Idle,				// no humans sensed, just stand there
+		Alerted,			// sensed humans without exact localization, look around, moaning sounds
+		ApproachTarget,		// a human is localized, approach target
+		TargetInRange,		// the target can be attacked
+		Attack,				// attacking the target
+		EatFlesh,			// eat dead target
+		Stunned,			// stunned, target has some time to escape
+		Undead,				// down, appears to be dead but will resurrect
+		Resurrecting,		// getting up from the dead again
+		Dead,				// dead, this time really
+		Dissolve,			// dead for some time, dissolve or disappear in some other way (maybe move slowly under the floor)
+		Remove				// fully dissolved/under the floor, game object will be removed
+	};
 
+	GameObject m_nonLocalizedTargetCandidate = null;
+	GameObject m_localizedTargetCandidate = null;
+	GameObject m_targetObject = null;
+	Vector3 m_targetPosition;
+	State m_state;
+	
+	void updateSenses()
+	{
+		// :TODO: :TO: implement this first, add some debug visualization of sensed humans (maybe by turning them red in the shader)
+		// basic approach: query surrounding humans (use some sort of grid) with a certain frequency and check if they can be seen, heard or smelled, TBD
+		// fill m_nonLocalizedTargetCandidate and m_localizedTargetCandidate accordingly
+	}
+
+	void approachPosition( Vector3 targetPosition )
+	{
+		
+	}
+
+	bool reachedPosition( Vector3 targetPosition )
+	{
+		return false;
+	}
+
+	void updateSpawnBehaviour()
+	{
+		updateSenses();
+		if( m_localizedTargetCandidate != null )
+		{
+			m_targetObject = m_localizedTargetCandidate;
+			m_state = State.ApproachTarget;
+			return;
+		}
+
+		approachPosition( m_targetPosition );
+		if( reachedPosition( m_targetPosition ) )
+		{
+			m_state = State.Idle;
+		}
+	}
+		
+	void updateIdleBehaviour()
+	{
+		updateSenses ();
+		if( m_localizedTargetCandidate != null )
+		{
+			m_targetObject = m_localizedTargetCandidate;
+			m_state = State.ApproachTarget;
+			return;
+		}
+		else if( m_nonLocalizedTargetCandidate != null )
+		{
+			m_state = State.Alerted;
+			return;
+		}
+	}
+		
+	void updateState()
+	{
+		switch( m_state )
+		{
+			case State.Spawning:
+				updateSpawnBehaviour();
+				break;
+				
+			case State.Idle:
+				updateIdleBehaviour();
+				break;
+
+			case State.Alerted:
+			case State.ApproachTarget:
+			case State.TargetInRange:
+			case State.Attack:
+			case State.EatFlesh:
+			case State.Stunned:
+			case State.Undead:
+			case State.Resurrecting:
+			case State.Dead:
+			case State.Dissolve:
+			case State.Remove:
+				break;
+		}
+	}
+
+	public Camera m_camera;
+	public GameObject taskObject;
 	GameObject previousObject;
 	bool m_hasDestination = false;
 	Vector3 m_oldPosition;
-	
+
 	//Transform[] hinges = GameObject.FindObjectsOfType (typeof(Transform)) as Transform[];
 
     void GoToTag(string Tag)
@@ -29,6 +128,8 @@ public class ZombieBehavior : MonoBehaviour {
     void Start()
     {
         GoToTag("Player");
+
+		m_state = State.Spawning;
     }
 	
 	// stop the character at a barricade
@@ -66,7 +167,16 @@ public class ZombieBehavior : MonoBehaviour {
 
 	
 	// Update is called once per frame
-	void Update () {
+	void Update ()
+	{
+		updateState();
+
+		//
+		//
+		// :TODO: :TO: control animation controller parameters and nav mesh agent parameters based on the state
+		//
+		//
+
 		m_camera =   Camera.main;
        
 		if (Input.GetMouseButtonUp (0)) {
@@ -138,9 +248,7 @@ public class ZombieBehavior : MonoBehaviour {
 			}
 			
 		}
-		
 	}// end update
 	
-	
-	//end ZombieBehavior.cs
+
 }
