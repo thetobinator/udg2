@@ -62,6 +62,7 @@
      <None Include="Assets\Editor\TextureCreator\Save\-408708015\Diffuse.xml" />
      <None Include="Assets\Data\Levels\UDG\UDG2009Maps_Staging.txt" />
      <None Include="Assets\ThirdParty\VolumetricLines\Shaders\VolumetricLineShaderAdditive.shader" />
+     <None Include="Assets\Editor\Todo\README.txt" />
      <None Include="Assets\Data\Levels\UDG\LoaderObject_Staging.txt" />
      <None Include="Assets\Data\Levels\UDG\SpawnPoint_staging.txt" />
      <None Include="Assets\Editor\TextureCreator\Save\-408708015\Load.xml" />
