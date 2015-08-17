@@ -30,6 +30,29 @@ public class ZombieBehavior : MonoBehaviour {
 		// :TODO: :TO: implement this first, add some debug visualization of sensed humans (maybe by turning them red in the shader)
 		// basic approach: query surrounding humans (use some sort of grid) with a certain frequency and check if they can be seen, heard or smelled, TBD
 		// fill m_nonLocalizedTargetCandidate and m_localizedTargetCandidate accordingly
+
+		// DUMMY, tint closest human red, everyone else white
+		GameObject[] humans = GameObject.FindGameObjectsWithTag ("Human");
+		GameObject closestHuman = null;
+		float closestHumanSqrDistance = float.MaxValue;
+		
+		foreach (GameObject human in humans) {
+			DebugTint debugTint = human.GetComponent<DebugTint>();
+			if( debugTint != null )
+			{
+				debugTint.tintColor = Color.white;
+				float sqrDistanceToHuman = ( human.GetComponent<Transform>().position - GetComponent<Transform>().position ).sqrMagnitude;
+				if( sqrDistanceToHuman < closestHumanSqrDistance )
+				{
+					closestHumanSqrDistance = sqrDistanceToHuman;
+					closestHuman = human;
+				}
+			}
+		}
+
+		if (closestHuman != null) {
+			closestHuman.GetComponent<DebugTint>().tintColor = Color.red;
+		}
 	}
 
 	void approachPosition( Vector3 targetPosition )
