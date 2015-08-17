@@ -1,0 +1,5 @@
+AnimationAssets
+
+Leap Motion Examples
+https://www.assetstore.unity3d.com/en/#!/content/11699
+

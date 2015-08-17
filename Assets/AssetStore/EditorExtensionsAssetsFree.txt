@@ -1,0 +1,30 @@
+EditorExtensionsAssetsFree
+
+Barker's Retro Text Print Free
+https://www.assetstore.unity3d.com/en/#!/content/19953
+
+$5 version is nice
+https://www.assetstore.unity3d.com/en/#!/content/19678
+
+Typogenic
+https://www.assetstore.unity3d.com/en/#!/content/19182
+
+Fluvio Fluid Physics
+https://www.assetstore.unity3d.com/en/#!/content/2888
+
+Animator TimeLine Editor
+https://www.assetstore.unity3d.com/en/#!/content/3485
+https://github.com/absameen/Animator_Timeline
+https://github.com/ddionisio/MateAnimator
+It don't work
+
+Quick CutScene Creator
+https://www.assetstore.unity3d.com/en/#!/content/17353
+Check this one out again later
+
+Material Animator Lite -- Very Nice for Arcade
+https://www.assetstore.unity3d.com/en/#!/content/2265
+
+Behavior Machine Free
+https://www.assetstore.unity3d.com/en/#!/content/20280
+
