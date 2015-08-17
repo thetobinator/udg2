@@ -172,7 +172,7 @@ public class MainGameManager : MonoBehaviour
         }
 
         m_humans.setup(2u, 2u, 4.0f, "Human", humans, "SpawnPoint_Human");
-        m_zombies.setup(8u, 6u, 4.0f, "Zombie", zombies, "SpawnPoint_Zombie");
+        m_zombies.setup(2u, 2u, 4.0f, "Zombie", zombies, "SpawnPoint_Zombie");
 
     }
 
