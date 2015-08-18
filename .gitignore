@@ -1,16 +1,11 @@
 Library/
 ProjectSettings/
-External Assets/
 Temp/
 build/
 desktop.ini
 *.sln
 *.csproj
-Assets/AssetStore.meta
-Assets/AssetStore/AssetTesting.meta
 udg2.userprefs
-Assets/Standard Assets/Character Controllers/Sources/Scripts/MouseLookNYC.cs
-Assets/Standard Assets/Character Controllers/Sources/Scripts/MouseLookNYC.cs.meta
 ProjectSettings/QualitySettings.asset
 obj/Debug/DesignTimeResolveAssemblyReferencesInput.cache
 udg2-csharp.v12.suo

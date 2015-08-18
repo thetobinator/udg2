@@ -320,7 +320,7 @@ public class CopyChildTransforms : MonoBehaviour
     void MaintainCopiedTransform()
     {
         int ii = 0;
-        foreach (Transform child in destinationObject.GetComponent<Transform>())
+        foreach (Transform child in sourceObject.GetComponent<Transform>())
         {
             Transform sourceChild = sourceChildren[ii].GetComponent<Transform>() as Transform;
             destChildren[ii] = (GameObject)child.gameObject;

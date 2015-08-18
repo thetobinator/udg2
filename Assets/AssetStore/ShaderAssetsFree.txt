@@ -1,0 +1,11 @@
+ShaderAssetsFree
+
+MatCap Shaders
+https://www.assetstore.unity3d.com/en/#!/content/8221
+
+
+MatcapFX
+https://www.assetstore.unity3d.com/en/#!/content/4814
+
+Fast Fake Skin
+https://www.assetstore.unity3d.com/en/#!/content/42535

@@ -11,15 +11,20 @@ public class MainGameInit : MonoBehaviour
 {
     // Singleton;
     public static MainGameInit mainGameInit;
+    public static MainGameManager mainGameManager;
     //
-    public MainGameManager mainGameManager;
+
+    /*  08 17 2015 conflict with entityspawning
+   
     public List<GameObject> zombies;
     public GameObject[] humans;
+     */
+
     public List<GameObject> levelMaps;
     public GameObject loadedLevel;
-    public int currentMap = 1;
+    public int currentMap = 1; // 
 
-    // UDGInit.lua to C# 07 25 2015
+    // UDGInit.lua to C# 08 17 2015
     // -- UDGInit with copies from RTS Init 01 03 09; 
     // 
     // 
@@ -27,7 +32,8 @@ public class MainGameInit : MonoBehaviour
     public string levelPath;// = Application.dataPath  + "/Data/Levels/"; 
     public string gameRoot;// = gameroot; //break and fix this all at once ...later;
     public string currentLevel;// = Application.loadedLevelName;
-    /*
+
+    /*    // variables off for working clean inspector 08 17 2015
     public bool doShadows = true;
     public string masterAnimSource = "mcTrueBones.wtf";
     public string selectionRectModel = "selectionRect.wtf";
@@ -73,31 +79,32 @@ public class MainGameInit : MonoBehaviour
     public int currentText = 1;
     public bool hideHUD = false;
     public bool wonThisLevel = false;
-    */
-    // variables off for working clean inspector
-    public char Q = '\"';
+  
+
+   
+   // these were those files
+   // USING RTS SCRIPTS?!? ARGH Lets move what we can to UDG specifics!
+   public List<string> RTSFUNCTIONS = new List<string>(new string[] { "Attributes", "Utilities", "Sounds", "Tasks", "Behaviours", "Senses", "Vehicles", "Weapons", "Orders", "Events", "AI", "Collisions", "Keyboard", "astar", "Game" });
+   public List<string> UDGFUNCTIONS = new List<string>(new string[] { "Editor", "Lights", "AI", "Utilities", "Sounds", "Fallback", "Textboxes", "Keyboard", "Game", "Music" });
+   // assign UDG entities behavior Now in its own UDG Folder
+   public List<string> UDGENTITIES = new List<string>(new string[] { "Teams", "Emitters", "Human", "Zombie", "Building", "Gun", "Car", "GUI", "Window", "Door", "Scenery", "BloodPencil", "MeleeWeapons", "LevelExits", "Furniture", "Grenade", "Menu" });
+   // List of old uDeadGame Lua files at Init // perhaps use again?
+   public List<string> initFileList = new List<string>();
+    //end of old igame3d udeadgame variables.
+
+   //maybe these gameobject arrays is a per level/character thing, maybe shoulds be List<string>s?
+   public GameObject[] furniture; 
+   public GameObject[] windows;
+   public GameObject[] boxes;
+   public GameObject[] glass; 
+   public GameObject[] door;
+   public GameObject[] barricade; 
+   */
 
     // global text box update
-    public  List<string> screenText = new List<string>();
-    // these were those files
-    // USING RTS SCRIPTS?!? ARGH Lets move what we can to UDG specifics!
-    public List<string> RTSFUNCTIONS = new List<string>(new string[] { "Attributes", "Utilities", "Sounds", "Tasks", "Behaviours", "Senses", "Vehicles", "Weapons", "Orders", "Events", "AI", "Collisions", "Keyboard", "astar", "Game" });
-    public List<string> UDGFUNCTIONS = new List<string>(new string[] { "Editor", "Lights", "AI", "Utilities", "Sounds", "Fallback", "Textboxes", "Keyboard", "Game", "Music" });
-    // assign UDG entities behavior Now in its own UDG Folder
-    public List<string> UDGENTITIES = new List<string>(new string[] { "Teams", "Emitters", "Human", "Zombie", "Building", "Gun", "Car", "GUI", "Window", "Door", "Scenery", "BloodPencil", "MeleeWeapons", "LevelExits", "Furniture", "Grenade", "Menu" });
-    // List of old uDeadGame Lua files at Init // perhaps use again?
-    public List<string> initFileList = new List<string>();
-     //end of old igame3d udeadgame variables.
-
-
-    //maybe these gameobject arrays is a per level thing, maybe shoulds be List<string>?
-    public GameObject[] furniture; 
-    public GameObject[] windows;
-    public GameObject[] boxes;
-    public GameObject[] glass; 
-    public GameObject[] door;
-    public GameObject[] barricade; 
-
+    [Multiline]
+    public List<string> screenText = new List<string>();
+    private char Quote = '\"';
     private Transform mapHolder; //parent the map to this...eventually?
     private Transform SpawnHolder; // this will parent spawns in the editor
     
@@ -124,6 +131,7 @@ public class MainGameInit : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        /*
         // This Seems to creat dynamic, ie,whatever is in Resources/<path> load and become part of
         // the component
         print("Attaching Resources/Prefabs/zombies/ to this :" + this.name);
@@ -133,6 +141,7 @@ public class MainGameInit : MonoBehaviour
             string t = z.ToString();
             zombies.Add(z);    
              }
+         */
     }
 
     void listPrefabs(string tFolder)
@@ -163,7 +172,9 @@ public class MainGameInit : MonoBehaviour
    
     }
 
-    void OldUDGLuaFilesList()
+
+  /* no need to run this really 08 17 2015
+   * void OldUDGLuaFilesList()
     { //old igame3d udeadgame lua initialisation scripts LIST, just a list for now.
         // probably need to    load script component on runtime
         foreach (string tFile in RTSFUNCTIONS) { initFileList.Add(gameroot + "Data/Scripts/RTS_Functions/RTS_" + tFile + ".lua"); }
@@ -172,6 +183,7 @@ public class MainGameInit : MonoBehaviour
         // concatenate the list to an array string with delimiter
         print("OLD _Initalization Files List:\n\t" + String.Join("\n\t", initFileList.ToArray()));
     }
+   */
 
     // loads a game object prefab as a whole level
   public  void LoadLevel(GameObject gameObject)
@@ -200,7 +212,7 @@ public class MainGameInit : MonoBehaviour
     {// Add some text to the file.
         using (StreamWriter currentLevelFile = new StreamWriter(gameroot + "/Data/Levels/UDG/" + currentLevel + ".txt"))
         {
-            string thislevelout = "currentLevel =" + Q + currentLevel + Q + "\n";
+            string thislevelout = "currentLevel =" + Quote + currentLevel + Quote + "\n";
             currentLevelFile.Write(thislevelout);
             if (System.IO.File.Exists(gameroot + "/Data/Levels/UDG/" + currentLevel + ".txt"))
             {

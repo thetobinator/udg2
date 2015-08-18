@@ -2,7 +2,7 @@
 using System.Collections;
 using System.IO;
 
-public class MainGameManager : MonoBehaviour
+public class MainGameManager : MainGameInit
 {
 
     // global score 
@@ -15,11 +15,16 @@ public class MainGameManager : MonoBehaviour
     // -- UDGInit with copies from RTS Init 01 03 09; 
     // 
     // 
+    /* turning things off to  debug 08 27 2015
+     * 
+     /*this should inherit from MainGameInit
     private string gameroot;//= Application.dataPath;
     private string levelPath;// = Application.dataPath  + "/Data/Levels/"; 
     private string gameRoot;// = gameroot; //break and fix this all at once ...later;
     private string currentLevel;// = Application.loadedLevelName;
+    */
 
+    /*this is old udeadgame Lua to C# should ineherit from the MainGameInit or Maybe Sub Manager scripts? Tracking.cs etc perhaps?
     private bool doShadows = true;
     private string masterAnimSource = "mcTrueBones.wtf";
     private string selectionRectModel = "selectionRect.wtf";
@@ -64,11 +69,12 @@ public class MainGameManager : MonoBehaviour
     private int currentText = 1;
     private bool hideHUD = false;
     private bool wonThisLevel = false;
-    private char Q = '\"';
+  
 
     //public string CurrentLevel = Application.loadedLevelName; //local tCurrentLevel=ig3dGetLevels()
     //--write currentlevel.lua to UDG folder
-
+    */
+    private char Quote = '\"';
     //this is from a tutorial, it's a working example while I breakthings
     public static MainGameManager instance; //local tCurrentLevel=ig3dGetLevelNames()
 
@@ -187,7 +193,7 @@ public class MainGameManager : MonoBehaviour
     {// Add some text to the file.
         using (StreamWriter currentLevelFile = new StreamWriter(gameroot + "/Data/Levels/UDG/" + currentLevel + ".txt"))
         {
-            string thislevelout = "currentLevel =" + Q + currentLevel + Q + "\n";
+            string thislevelout = "currentLevel =" + Quote + currentLevel + Quote + "\n";
             currentLevelFile.Write(thislevelout);
             if (System.IO.File.Exists(gameroot + "/Data/Levels/UDG/" + currentLevel + ".txt"))
             {
