@@ -74,7 +74,7 @@ public class MainGameManager : MainGameInit
     //public string CurrentLevel = Application.loadedLevelName; //local tCurrentLevel=ig3dGetLevels()
     //--write currentlevel.lua to UDG folder
     */
-    private char Quote = '\"';
+    //private char Quote = '\"';
     //this is from a tutorial, it's a working example while I breakthings
     public static MainGameManager instance; //local tCurrentLevel=ig3dGetLevelNames()
 
@@ -193,7 +193,7 @@ public class MainGameManager : MainGameInit
     {// Add some text to the file.
         using (StreamWriter currentLevelFile = new StreamWriter(gameroot + "/Data/Levels/UDG/" + currentLevel + ".txt"))
         {
-            string thislevelout = "currentLevel =" + Quote + currentLevel + Quote + "\n";
+            string thislevelout = "currentLevel =" + '\"' + currentLevel + '\"' + "\n";
             currentLevelFile.Write(thislevelout);
             if (System.IO.File.Exists(gameroot + "/Data/Levels/UDG/" + currentLevel + ".txt"))
             {
