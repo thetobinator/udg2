@@ -24,6 +24,8 @@ public class ZombieBehavior : MonoBehaviour {
 	GameObject m_targetObject = null;
 	Vector3 m_targetPosition;
 	State m_state;
+	float m_earQueryFrequency;
+	//List<
 	
 	void updateSenses()
 	{
@@ -35,12 +37,22 @@ public class ZombieBehavior : MonoBehaviour {
 		GameObject[] humans = GameObject.FindGameObjectsWithTag ("Human");
 		GameObject closestHuman = null;
 		float closestHumanSqrDistance = float.MaxValue;
+
+
 		
 		foreach (GameObject human in humans) {
 			DebugTint debugTint = human.GetComponent<DebugTint>();
+
 			if( debugTint != null )
 			{
-				debugTint.tintColor = Color.white;
+				if( MainGameManager.instance.getObjectSpeed ( human ) > 1.0f )
+				{
+					debugTint.tintColor = Color.blue;
+				}
+				else
+				{
+					debugTint.tintColor = Color.white;
+				}
 				float sqrDistanceToHuman = ( human.GetComponent<Transform>().position - GetComponent<Transform>().position ).sqrMagnitude;
 				if( sqrDistanceToHuman < closestHumanSqrDistance )
 				{

@@ -78,6 +78,63 @@ public class MainGameManager : MainGameInit
     //this is from a tutorial, it's a working example while I breakthings
     public static MainGameManager instance; //local tCurrentLevel=ig3dGetLevelNames()
 
+
+	class MovementObserver
+	{
+		Hashtable m_oldObjectPositions = new Hashtable ();
+		Hashtable m_newObjectPositions = new Hashtable ();
+		float m_time = 0.0f;
+		float m_queryInterval = 0.5f;
+
+		public void update()
+		{
+			if( m_time == 0.0f || (int)(m_time / m_queryInterval) != (int)((m_time + Time.deltaTime) / m_queryInterval)) {
+				string[] tags = { "Human", "Zombie" };
+				m_oldObjectPositions.Clear ();
+				foreach( DictionaryEntry d in m_newObjectPositions ) {
+					m_oldObjectPositions.Add ( d.Key, d.Value );
+				}
+				m_newObjectPositions.Clear();
+				for( uint tagIndex = 0; tagIndex < tags.Length; ++tagIndex ) {
+					GameObject[] objects = GameObject.FindGameObjectsWithTag( tags[ tagIndex ] );
+					foreach( GameObject o in objects ) {
+						m_newObjectPositions.Add( o.GetInstanceID(), o.GetComponent<Transform>().position );
+					}
+				}
+
+				if( m_time == 0.0f )
+				{
+					m_oldObjectPositions.Clear ();
+					foreach( DictionaryEntry d in m_newObjectPositions ) {
+						m_oldObjectPositions.Add ( d.Key, d.Value );
+					}
+				}
+			}
+			m_time += Time.deltaTime;
+		}
+
+		public float getObjectSpeed( GameObject obj )
+		{
+			int key = obj.GetInstanceID ();
+			if (m_oldObjectPositions.ContainsKey (key)
+				&& m_newObjectPositions.ContainsKey (key)) {
+				Vector3 oldPos = (Vector3)m_oldObjectPositions[ key ];
+				Vector3 newPos = (Vector3)m_newObjectPositions[ key ];
+				newPos = newPos - oldPos;
+				return newPos.magnitude / m_queryInterval;
+			}
+
+			return 0.0f;
+		}
+	}
+
+	private MovementObserver m_movementObserver = new MovementObserver();
+
+	public float getObjectSpeed( GameObject obj )
+	{
+		return m_movementObserver.getObjectSpeed (obj);
+	}
+
     public GameObject[] zombies;
     public GameObject[] humans;
     struct PopulationData
@@ -179,13 +236,13 @@ public class MainGameManager : MainGameInit
 
         m_humans.setup(2u, 2u, 4.0f, "Human", humans, "SpawnPoint_Human");
         m_zombies.setup(2u, 2u, 4.0f, "Zombie", zombies, "SpawnPoint_Zombie");
-
     }
 
     public void Update()
     {
         m_humans.update(Time.deltaTime);
         m_zombies.update(Time.deltaTime);
+		m_movementObserver.update ();
     }
 
     // this saves the current level , in theory, back when it was a text file.
