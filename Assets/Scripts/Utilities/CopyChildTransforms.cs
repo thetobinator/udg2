@@ -11,10 +11,8 @@ namespace Utilties
 [ExecuteInEditMode]
     public class CopyChildTransforms : EditorWindow
 {
-    [Header("Copy:\t              X      Y      Z")]
-   // public bool[] relocate;
-    //public bool[] rotate;
-    //public bool[] resize;
+   
+    private bool aboutState = true;
     public bool relocatex = true;
     public bool relocatey = true;
     public bool relocatez = true;
@@ -27,7 +25,7 @@ namespace Utilties
 
     public bool viewCopyMatrix = true;
 
-    public bool maintainTransformation = false;
+   // public bool maintainTransformation = false;
     public string sourceObjectName;
     public GameObject sourceObject;
     public GameObject destinationObject;
@@ -35,7 +33,7 @@ namespace Utilties
     public Vector3 offset = new Vector3(1, 0, 0);
     private Vector3 lastPos = new Vector3(0, 0, 0);
     public bool doCopy = false;
-    public bool hasCopied = false;
+ //   public bool hasCopied = false;
 
     public List<GameObject> sourceChildren;
     private List<BoxCollider> sourceBoxes;
@@ -48,7 +46,7 @@ namespace Utilties
 
     //because serializable is not working for editor script
 
-    bool aboutState = true;
+  
   
 
 
@@ -170,7 +168,7 @@ namespace Utilties
             destBox.size = new Vector3(sourceBSize.x, sourceBSize.y, sourceBSize.z);
             i++;
         }
-        hasCopied = true;
+        //hasCopied = true;
         doCopy = false;
     }
 
@@ -184,14 +182,14 @@ namespace Utilties
         int cLine = 20;
         int cHeight = 20;
        
-       GUILayout.Label("Transform Copy Children", EditorStyles.boldLabel);
+       GUILayout.Label("Copy Child Transforms", EditorStyles.boldLabel);
 
        aboutState = GUI.Toggle(new Rect(cCol + 150, 4, 100, cHeight), aboutState, "About", EditorStyles.foldout);
         // cLine = cLine +45;
         if (aboutState)
         {
             GUILayout.BeginArea(new Rect(1, cLine, 280, 250));
-            EditorGUILayout.HelpBox("Copy  Transform Properties of source object children to children of destination object. For Converting generic Unity Cube built objects to Destructible Master Cube Objects.", MessageType.None);
+            EditorGUILayout.HelpBox("Copy transforms of source object children to children of destination object. For Converting generic Unity Cube built objects to Destructible Master Cube Objects.", MessageType.None);
             GUILayout.EndArea();
             cLine = cLine +65;
 
@@ -236,7 +234,7 @@ namespace Utilties
         sourceObject = (GameObject)EditorGUILayout.ObjectField(sourceObject, typeof(GameObject), true);
         GUILayout.Label("Destination Parent Object:", EditorStyles.miniBoldLabel);
         destinationObject = (GameObject)EditorGUILayout.ObjectField(destinationObject, typeof(GameObject), true);
-        GUILayout.Box("", GUILayout.ExpandWidth(true), GUILayout.Height(1));
+       //GUILayout.Box("", GUILayout.ExpandWidth(true), GUILayout.Height(1));
         GUILayout.Space(10.0f);
         string srcname = "";
         if (sourceObject != null)
