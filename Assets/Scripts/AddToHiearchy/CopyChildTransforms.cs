@@ -2,6 +2,8 @@
 using UnityEditor;
 using System.Collections;
 using System.Collections.Generic;
+namespace AddToHiearchy
+{
 #region InspectorDrawers
 public enum TransformsToPass { Position, Rotation, Size }
 //Custom Serializable Class
@@ -373,3 +375,4 @@ public class CopyChildTransforms : MonoBehaviour
 }
 
 
+}// end namespace AddToHiearchy

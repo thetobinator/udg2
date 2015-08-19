@@ -58,7 +58,7 @@ public class GetTagList : EditorWindow
 
          myString = EditorGUILayout.TextArea(string.Join("\n", tagList.ToArray()), GUILayout.Height(position.height - 30));
          EditorGUILayout.EndScrollView();
-
+         GUILayout.Box("", GUILayout.ExpandWidth(true), GUILayout.Height(1));
        
         /*groupEnabled = EditorGUILayout.BeginToggleGroup("Optional Settings", groupEnabled);
         myBool = EditorGUILayout.Toggle("Toggle", myBool);

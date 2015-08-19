@@ -19,6 +19,7 @@ public class RandomizeInSelection : EditorWindow
     }
     void OnGUI()
     {
+        EditorGUILayout.HelpBox("Randomize the rotation of the selected objects.", MessageType.Info);
         foreach (var t in Selection.transforms)
         {
             selected += t.name + " ";

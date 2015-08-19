@@ -31,9 +31,7 @@ public class ShowTextMeshInEditor : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
-
-        TextMeshUpdate();
-       
+        TextMeshUpdate(); 
     }
 
 
