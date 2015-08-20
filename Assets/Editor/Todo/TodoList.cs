@@ -28,7 +28,7 @@ public class TodoList : EditorWindow
     {
         // Get existing open window or if none, make a new one:
         _window = ( TodoList )EditorWindow.GetWindow (typeof ( TodoList ));
-		_window.title = "Todo List";
+		_window.titleContent.text = "Todo List";
 		_window.autoRepaintOnSceneChange = false;
     }
     

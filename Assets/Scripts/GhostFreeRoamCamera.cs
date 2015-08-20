@@ -26,7 +26,7 @@ public class GhostFreeRoamCamera : MonoBehaviour
     {
         if (cursorToggleAllowed)
         {
-            Screen.lockCursor = true;
+            Cursor.lockState = CursorLockMode.Confined;
             Cursor.visible = false;
         }
     }
@@ -38,7 +38,7 @@ public class GhostFreeRoamCamera : MonoBehaviour
     private void Update()
     {
 		if (Input.GetMouseButtonUp (1)) {
-			Screen.lockCursor = false;
+            Cursor.lockState = CursorLockMode.None; 
 			Cursor.visible = true;;
 		}
 

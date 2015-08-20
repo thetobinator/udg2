@@ -9,7 +9,7 @@ public class MainGameManager : MainGameInit
     private int currentScore;
 
     // global text box update
-    private string guiText;
+    private string theguiText;
 
     // UDGInit.lua to C# 07 25 2015
     // -- UDGInit with copies from RTS Init 01 03 09; 
@@ -212,7 +212,7 @@ public class MainGameManager : MainGameInit
 
     public void OnGUI()
     {
-        GUI.Label(new Rect(10, 10, 700, 200), guiText);
+        GUI.Label(new Rect(10, 10, 700, 200), theguiText);
 
     }
 
@@ -228,7 +228,7 @@ public class MainGameManager : MainGameInit
     private void Start()
     {
 
-        guiText = "Data Path: " + gameRoot + "\n" + "Scene " + currentLevel + "\n";
+        theguiText = "Data Path: " + gameRoot + "\n" + "Scene " + currentLevel + "\n";
         if (currentLevel != "UDGInstructions")
         {
             writeCurrentLevel(currentLevel);
@@ -244,23 +244,6 @@ public class MainGameManager : MainGameInit
         m_zombies.update(Time.deltaTime);
 		m_movementObserver.update ();
     }
-
-    // this saves the current level , in theory, back when it was a text file.
-    public void writeCurrentLevel(string currentLevel)
-    {// Add some text to the file.
-        using (StreamWriter currentLevelFile = new StreamWriter(gameroot + "/Data/Levels/UDG/" + currentLevel + ".txt"))
-        {
-            string thislevelout = "currentLevel =" + '\"' + currentLevel + '\"' + "\n";
-            currentLevelFile.Write(thislevelout);
-            if (System.IO.File.Exists(gameroot + "/Data/Levels/UDG/" + currentLevel + ".txt"))
-            {
-                print(thislevelout); //do stuff
-            }
-        }
-
-
-    }
-
 
     //end MainGameManager
 }

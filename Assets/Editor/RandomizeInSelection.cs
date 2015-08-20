@@ -38,10 +38,12 @@ public class RandomizeInSelection : EditorWindow
     {
         Repaint();
     }
-    [MenuItem("Example/Randomize Children In Selection")]
+    [MenuItem("Utilities/Randomize Children In Selection")]
     static void RandomizeWindow()
     {
-        RandomizeInSelection window = new RandomizeInSelection();
-        window.ShowUtility();
+        
+        EditorWindow.GetWindow(typeof(RandomizeInSelection));
+        //RandomizeInSelection window = new RandomizeInSelection();
+        //window.ShowUtility(); // this doesn't work outside of scripts folder, ie in Editor Folder?
     }
 }

@@ -5,7 +5,7 @@ using System.Collections;
 public class GuiManager : MainGameInit {
     // the idea here is all the Gui is under control, eventually
     // we'll have some parts of the window mapped out for messages
-    public MainGameInit mainGameInit;
+    //public MainGameInit mainGameInit;
    
     void Awake()
     {

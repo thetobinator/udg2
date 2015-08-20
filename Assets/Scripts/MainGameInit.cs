@@ -216,10 +216,13 @@ public class MainGameInit : MonoBehaviour
             currentLevelFile.Write(thislevelout);
             if (System.IO.File.Exists(gameroot + "/Data/Levels/UDG/" + currentLevel + ".txt"))
             {
-                print(thislevelout); //do stuff
+                print("writeCurrentLevel  =" +  thislevelout); //do stuff
             }
         }
     }// end writecurrentlevel
+
+
+
 
     //  -- init_all_objects from RTS.Attributes.lua came before the udg_init
 

@@ -4,12 +4,12 @@ using System.Collections.Generic;
 
 
 
-
+// who is the parent init of this?
+  
 // this script spawns entities from spawnpoints....are tags?
 
 public class EntitySpawning : MainGameInit{
-    // who is the parent init of this?
-    public MainGameManager mainGameManager;
+    // public MainGameManager mainGameManager this should inherit from teh MainGameInit
 
     void Awake()
     {
@@ -21,8 +21,8 @@ public class EntitySpawning : MainGameInit{
     /// 
     // we should have a way to make this universal, tag A tag B tag C etc.
  
-    public GameObject[] zombies;
-    public GameObject[] humans;
+   public GameObject[] zombies; //should these should inherit from? what? Maybe it shouldn't care if a thing is human or zombie.
+   public GameObject[] humans;
     struct PopulationData
     {
         uint m_poolSize;
