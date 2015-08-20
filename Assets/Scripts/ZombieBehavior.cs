@@ -24,46 +24,63 @@ public class ZombieBehavior : MonoBehaviour {
 	GameObject m_targetObject = null;
 	Vector3 m_targetPosition;
 	State m_state;
-	float m_earQueryFrequency;
-	//List<
+	float m_earQueryInterval = 0.5f;
+	float m_eyeQueryInterval = 0.5f;
+	float m_noseQueryInterval = 1.0f;
+	float m_time = 0.0f;
+	float m_runnerAlertSqrDistanceThreshold = 256.0f;
+	float m_runnerDetectSqrDistanceThreshold = 64.0f;
 	
 	void updateSenses()
 	{
-		// :TODO: :TO: implement this first, add some debug visualization of sensed humans (maybe by turning them red in the shader)
-		// basic approach: query surrounding humans (use some sort of grid) with a certain frequency and check if they can be seen, heard or smelled, TBD
-		// fill m_nonLocalizedTargetCandidate and m_localizedTargetCandidate accordingly
+		float oldTime = m_time - Time.deltaTime;
+		bool updateEars = (int)( oldTime / m_earQueryInterval ) != (int)( m_time / m_earQueryInterval );
+		bool updateEyes = (int)( oldTime / m_eyeQueryInterval ) != (int)( m_time / m_eyeQueryInterval );
+		bool updateNose = (int)( oldTime / m_noseQueryInterval ) != (int)( m_time / m_noseQueryInterval );
 
-		// DUMMY, tint closest human red, everyone else white
-		GameObject[] humans = GameObject.FindGameObjectsWithTag ("Human");
-		GameObject closestHuman = null;
-		float closestHumanSqrDistance = float.MaxValue;
+		if( updateEars || updateEyes || updateNose )
+		{
+			GameObject[] humans = GameObject.FindGameObjectsWithTag( "Human" );
+			GameObject closestHeardHuman = null;
+			GameObject closestSeenHuman = null;
+			GameObject closestSmelledHuman = null;
+			float closestHeardHumanSqrDistance = float.MaxValue;
 
+			setLocalizedTargetCandidate( null );
+			setNonLocalizedTargetCandidate( null );
 
-		
-		foreach (GameObject human in humans) {
-			DebugTint debugTint = human.GetComponent<DebugTint>();
-
-			if( debugTint != null )
+			foreach( GameObject human in humans )
 			{
-				if( MainGameManager.instance.getObjectSpeed ( human ) > 1.0f )
-				{
-					debugTint.tintColor = Color.blue;
-				}
-				else
-				{
-					debugTint.tintColor = Color.white;
-				}
 				float sqrDistanceToHuman = ( human.GetComponent<Transform>().position - GetComponent<Transform>().position ).sqrMagnitude;
-				if( sqrDistanceToHuman < closestHumanSqrDistance )
+				if( updateEars && MainGameManager.instance.getObjectSpeed( human ) > 1.0f )
 				{
-					closestHumanSqrDistance = sqrDistanceToHuman;
-					closestHuman = human;
+					// human is running
+					if( sqrDistanceToHuman < closestHeardHumanSqrDistance )
+					{
+						closestHeardHuman = human;
+						closestHeardHumanSqrDistance = sqrDistanceToHuman;
+					}
+				}
+				//if( updateEyes && human can be seen )
+				//{
+				//}
+
+				//if( updateNose && human sweats in close range ) <- add fear factor
+				//{
+				//}
+			}
+
+			if( closestHeardHuman != null )
+			{
+				if( closestHeardHumanSqrDistance < m_runnerDetectSqrDistanceThreshold )
+				{
+					setLocalizedTargetCandidate( closestHeardHuman );
+				}
+				else if( closestHeardHumanSqrDistance < m_runnerAlertSqrDistanceThreshold )
+				{
+					setNonLocalizedTargetCandidate( closestHeardHuman );
 				}
 			}
-		}
-
-		if (closestHuman != null) {
-			closestHuman.GetComponent<DebugTint>().tintColor = Color.red;
 		}
 	}
 
@@ -109,9 +126,36 @@ public class ZombieBehavior : MonoBehaviour {
 			return;
 		}
 	}
+
+	void colorizeObject( GameObject obj, Color color )
+	{
+		if( obj == null )
+		{
+			return;
+		}
+
+		DebugTint debugTint = obj.GetComponent<DebugTint> ();
+		if( debugTint != null )
+		{
+			debugTint.tintColor = color;
+		}
+	}
+
+	void setNonLocalizedTargetCandidate( GameObject obj )
+	{
+		colorizeObject( m_nonLocalizedTargetCandidate, Color.white );
+		m_nonLocalizedTargetCandidate = obj;
+	}
+
+	void setLocalizedTargetCandidate( GameObject obj )
+	{
+		colorizeObject( m_localizedTargetCandidate, Color.white );
+		m_localizedTargetCandidate = obj;
+	}
 		
 	void updateState()
 	{
+		m_time += Time.deltaTime;
 		switch( m_state )
 		{
 			case State.Spawning:
@@ -124,6 +168,8 @@ public class ZombieBehavior : MonoBehaviour {
 
 			case State.Alerted:
 			case State.ApproachTarget:
+				updateSenses();
+				break;
 			case State.TargetInRange:
 			case State.Attack:
 			case State.EatFlesh:
@@ -135,6 +181,9 @@ public class ZombieBehavior : MonoBehaviour {
 			case State.Remove:
 				break;
 		}
+
+		colorizeObject( m_nonLocalizedTargetCandidate, Color.blue );
+		colorizeObject( m_localizedTargetCandidate, Color.red );
 	}
 
 	public Camera m_camera;
