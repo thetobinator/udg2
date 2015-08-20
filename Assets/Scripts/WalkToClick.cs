@@ -15,7 +15,7 @@ public class WalkToClick : MonoBehaviour {
 	public GameObject[] barricade; // = GameObject.FindGameObjectsWithTag ("Barricade");
 	string[] Taglist = new string[] {"Barricade","Box","Door","Furniture","Human","Zombie"};
 	string TargetTag;
-	GameObject previousObject;
+	// GameObject previousObject; // was used to keep humans busy.
 	bool m_hasDestination = false;
 	Vector3 m_oldPosition;
 	
@@ -32,7 +32,7 @@ public class WalkToClick : MonoBehaviour {
 		{
 			if (this.tag == "Human"){
 				m_hasDestination = false;
-				previousObject = taskObject;
+				//previousObject = taskObject;
 				taskObject = null;
 			}
 		}
@@ -43,13 +43,13 @@ public class WalkToClick : MonoBehaviour {
 			
 			if (this.tag == "Human")
 			{
-				previousObject = taskObject;
+				//previousObject = taskObject;
 				taskObject = null;
 				m_hasDestination = false;
 			}
 			else
 			{
-				previousObject = taskObject;
+				//previousObject = taskObject;
 				taskObject = collision.gameObject;
 				m_hasDestination = true;
 			}
@@ -73,12 +73,13 @@ public class WalkToClick : MonoBehaviour {
 	void Update () {
 		
 		if (Input.GetMouseButtonUp (0)) {
-			previousObject = null;
+			//previousObject = null;
 			Ray ray = m_camera.GetComponent<Camera> ().ScreenPointToRay (Input.mousePosition);
 			RaycastHit hit = new RaycastHit ();
 			if (Physics.Raycast (ray, out hit)) {
-				
-				if (this.tag == "Zombie"){
+                GetComponent<NavMeshAgent>().SetDestination(hit.point);
+
+				/*if (this.tag == "Zombie"){
 					if( hit.collider.tag != "Terrain" || hit.collider.tag != "Zombie")
 					{
 						previousObject = taskObject;
@@ -90,13 +91,13 @@ public class WalkToClick : MonoBehaviour {
 						previousObject = taskObject;
 						taskObject = null;
 					}
-				}
+				}*/
 				
 				m_hasDestination = true;
 				m_oldPosition = GetComponent<Transform> ().position;
 			}
 		}
-		
+		/*
 		if (Input.GetKeyDown ("f")){
 			if (this.tag == "Zombie"){
 				taskObject =  GameObject.FindWithTag("Player");
@@ -138,7 +139,7 @@ public class WalkToClick : MonoBehaviour {
 		}
 		
 		
-		
+		*/
 		if (m_hasDestination) {
 			Vector3 movement = GetComponent<Transform> ().position - m_oldPosition;
 			m_oldPosition = GetComponent<Transform> ().position;
@@ -150,7 +151,7 @@ public class WalkToClick : MonoBehaviour {
 					GetComponent<Animator> ().SetFloat ("speed", 0.0f);
 					//print ( "REACHED" );
 					m_hasDestination = false;
-					previousObject = taskObject;
+				//	previousObject = taskObject;
 					taskObject = null;
 				}
 			} else {

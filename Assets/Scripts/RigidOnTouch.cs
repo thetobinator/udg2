@@ -24,7 +24,7 @@ public class RigidOnTouch : MonoBehaviour {
             this.gameObject.tag = "Wood";
             gameObjectsRigidBody.isKinematic = false ;
             //gameObjectsRigidBody.constraints = RigidbodyConstraints.None;
-          BoxCollider myBoxCollider =  this.gameObject.GetComponent<BoxCollider>();
+          //BoxCollider myBoxCollider =  this.gameObject.GetComponent<BoxCollider>();
          // myBoxCollider.enabled = false;
             // iterate over child objects and give them rigidbody
             foreach (Transform child in transform)
@@ -35,7 +35,7 @@ public class RigidOnTouch : MonoBehaviour {
                 if (hasRigidBody == null)
                 {
                    // print(child.gameObject.name);
-                    Rigidbody childBody = child.gameObject.AddComponent<Rigidbody>() as Rigidbody;
+                   // Rigidbody childBody = child.gameObject.AddComponent<Rigidbody>() as Rigidbody;
                      hasRigidBody = child.gameObject.GetComponent<Rigidbody>();
                 }
                     Vector3 childscale = child.gameObject.transform.localScale;
