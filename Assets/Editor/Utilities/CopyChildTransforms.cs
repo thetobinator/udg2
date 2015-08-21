@@ -49,7 +49,7 @@ namespace Utilties
     [ExecuteInEditMode]
     void CopySourceObject()
     {
-        sourceChildren.Clear();
+      //  sourceChildren.Clear();
         sourceChildren = new List<GameObject>(new GameObject[sourceObject.transform.childCount]);
         sourceBoxes = new List<BoxCollider>(new BoxCollider[sourceObject.transform.childCount]);//room for 1 boxes?
         int i = 0;
@@ -57,6 +57,7 @@ namespace Utilties
         foreach (Transform child in sourceObject.GetComponent<Transform>())
         {
             sourceChildren[i] = (GameObject)child.gameObject;
+            if ((BoxCollider)sourceChildren[i].GetComponent<BoxCollider>() as BoxCollider)
             sourceBoxes[i] = (BoxCollider)sourceChildren[i].GetComponent<BoxCollider>() as BoxCollider;
             i++;
         }
@@ -156,12 +157,20 @@ namespace Utilties
             #endregion //resize
 
             //copy collision box transforms
-            BoxCollider sourceBox = sourceChild.GetComponent<BoxCollider>() as BoxCollider;
+            if (sourceChild.GetComponent<BoxCollider>() != null)
+            {
+                BoxCollider sourceBox = sourceChild.GetComponent<BoxCollider>() as BoxCollider;
+           
+
             Vector3 sourceTrans = sourceBox.center;
             Vector3 sourceBSize = sourceBox.size;
+            
+            if (destChildren[i].GetComponent<BoxCollider>() != null){
             BoxCollider destBox = destChildren[i].GetComponent<BoxCollider>() as BoxCollider;
             destBox.center = new Vector3(sourceTrans.x, sourceTrans.y, sourceTrans.z);
             destBox.size = new Vector3(sourceBSize.x, sourceBSize.y, sourceBSize.z);
+            }
+            }
             i++;
         }
         //hasCopied = true;
