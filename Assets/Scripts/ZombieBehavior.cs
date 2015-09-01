@@ -26,7 +26,6 @@ public class ZombieBehavior : MonoBehaviour {
 	State m_state;
 	float m_earQueryInterval = 0.5f;
 	float m_eyeQueryInterval = 0.5f;
-	float m_noseQueryInterval = 1.0f;
 	float m_time = 0.0f;
 	float m_runnerAlertSqrDistanceThreshold = 256.0f;
 	float m_runnerDetectSqrDistanceThreshold = 64.0f;
@@ -36,22 +35,29 @@ public class ZombieBehavior : MonoBehaviour {
 		float oldTime = m_time - Time.deltaTime;
 		bool updateEars = (int)( oldTime / m_earQueryInterval ) != (int)( m_time / m_earQueryInterval );
 		bool updateEyes = (int)( oldTime / m_eyeQueryInterval ) != (int)( m_time / m_eyeQueryInterval );
-		bool updateNose = (int)( oldTime / m_noseQueryInterval ) != (int)( m_time / m_noseQueryInterval );
 
-		if( updateEars || updateEyes || updateNose )
+		if( updateEars || updateEyes )
 		{
 			GameObject[] humans = GameObject.FindGameObjectsWithTag( "Human" );
 			GameObject closestHeardHuman = null;
 			GameObject closestSeenHuman = null;
 			GameObject closestSmelledHuman = null;
 			float closestHeardHumanSqrDistance = float.MaxValue;
+			float closestSeenHumanSqrDistance = float.MaxValue;
 
 			setLocalizedTargetCandidate( null );
 			setNonLocalizedTargetCandidate( null );
 
 			foreach( GameObject human in humans )
 			{
-				float sqrDistanceToHuman = ( human.GetComponent<Transform>().position - GetComponent<Transform>().position ).sqrMagnitude;
+				Vector3 zombieHeadPosition = GetComponent<Transform>().position;
+				Vector3 zombieViewDirection = GetComponent<Transform>().forward;
+				zombieHeadPosition.y += 1.5f;
+				Vector3 humanCenter = human.GetComponent<Transform>().position;
+				humanCenter.y += 0.8f;
+				Vector3 direction = humanCenter - zombieHeadPosition;
+				float sqrDistanceToHuman = direction.sqrMagnitude;
+
 				if( updateEars && MainGameManager.instance.getObjectSpeed( human ) > 1.0f )
 				{
 					// human is running
@@ -61,16 +67,40 @@ public class ZombieBehavior : MonoBehaviour {
 						closestHeardHumanSqrDistance = sqrDistanceToHuman;
 					}
 				}
-				//if( updateEyes && human can be seen )
-				//{
-				//}
 
-				//if( updateNose && human sweats in close range ) <- add fear factor
-				//{
-				//}
+				if( updateEyes )
+				{
+					direction.Normalize();
+					Vector3 direction2D = direction;
+					direction2D.y = 0.0f;
+					direction2D.Normalize();
+					if( Vector3.Dot( direction2D, zombieViewDirection ) > 0.707f )
+					{
+						// in azimuth
+						Vector3 rayStart = zombieHeadPosition + 0.5f * direction;
+						Ray ray = new Ray( rayStart, direction );
+						RaycastHit hit = new RaycastHit();
+						if( Physics.Raycast( ray, out hit ) )
+						{
+							if( ( hit.point - humanCenter ).sqrMagnitude < 0.5f )
+							{
+								// ray hit is near human -> no obstacle in between
+								if( sqrDistanceToHuman < closestSeenHumanSqrDistance )
+								{
+									closestSeenHuman = human;
+									closestSeenHumanSqrDistance = sqrDistanceToHuman;
+								}
+							}
+						}
+					}
+				}
 			}
 
-			if( closestHeardHuman != null )
+			if( closestSeenHuman != null )
+			{
+				setLocalizedTargetCandidate( closestSeenHuman );
+			}
+			else if( closestHeardHuman != null )
 			{
 				if( closestHeardHumanSqrDistance < m_runnerDetectSqrDistanceThreshold )
 				{
