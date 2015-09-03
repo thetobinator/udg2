@@ -41,7 +41,7 @@ public class ZombieBehavior : MonoBehaviour {
 			GameObject[] humans = GameObject.FindGameObjectsWithTag( "Human" );
 			GameObject closestHeardHuman = null;
 			GameObject closestSeenHuman = null;
-			GameObject closestSmelledHuman = null;
+			bool targetIsHeardOrSeen = false;
 			float closestHeardHumanSqrDistance = float.MaxValue;
 			float closestSeenHumanSqrDistance = float.MaxValue;
 
@@ -50,6 +50,10 @@ public class ZombieBehavior : MonoBehaviour {
 
 			foreach( GameObject human in humans )
 			{
+				if( !human.activeSelf )
+				{
+					continue;
+				}
 				Vector3 zombieHeadPosition = GetComponent<Transform>().position;
 				Vector3 zombieViewDirection = GetComponent<Transform>().forward;
 				zombieHeadPosition.y += 1.5f;
@@ -61,6 +65,11 @@ public class ZombieBehavior : MonoBehaviour {
 				if( updateEars && MainGameManager.instance.getObjectSpeed( human ) > 1.0f )
 				{
 					// human is running
+					if( human == m_targetObject )
+					{
+						targetIsHeardOrSeen = true;
+					}
+
 					if( sqrDistanceToHuman < closestHeardHumanSqrDistance )
 					{
 						closestHeardHuman = human;
@@ -85,6 +94,10 @@ public class ZombieBehavior : MonoBehaviour {
 							if( ( hit.point - humanCenter ).sqrMagnitude < 0.5f )
 							{
 								// ray hit is near human -> no obstacle in between
+								if( human == m_targetObject )
+								{
+									targetIsHeardOrSeen = true;
+								}
 								if( sqrDistanceToHuman < closestSeenHumanSqrDistance )
 								{
 									closestSeenHuman = human;
@@ -96,7 +109,12 @@ public class ZombieBehavior : MonoBehaviour {
 				}
 			}
 
-			if( closestSeenHuman != null )
+			/*
+			if( targetIsHeardOrSeen )
+			{
+				setLocalizedTargetCandidate( m_targetObject );
+			}
+			else*/ if( closestSeenHuman != null )
 			{
 				setLocalizedTargetCandidate( closestSeenHuman );
 			}
@@ -116,12 +134,12 @@ public class ZombieBehavior : MonoBehaviour {
 
 	void approachPosition( Vector3 targetPosition )
 	{
-		
+		GetComponent< NavMeshAgent > ().SetDestination (targetPosition);
 	}
 
-	bool reachedPosition( Vector3 targetPosition )
+	bool reachedPosition()
 	{
-		return false;
+		return GetComponent< NavMeshAgent >().remainingDistance < 1.0f;
 	}
 
 	void updateSpawnBehaviour()
@@ -129,13 +147,14 @@ public class ZombieBehavior : MonoBehaviour {
 		updateSenses();
 		if( m_localizedTargetCandidate != null )
 		{
-			m_targetObject = m_localizedTargetCandidate;
+			setTargetObject( m_localizedTargetCandidate );
+			m_targetPosition = m_targetObject.GetComponent< Transform >().position;
 			m_state = State.ApproachTarget;
 			return;
 		}
 
 		approachPosition( m_targetPosition );
-		if( reachedPosition( m_targetPosition ) )
+		if( reachedPosition() )
 		{
 			m_state = State.Idle;
 		}
@@ -146,7 +165,8 @@ public class ZombieBehavior : MonoBehaviour {
 		updateSenses ();
 		if( m_localizedTargetCandidate != null )
 		{
-			m_targetObject = m_localizedTargetCandidate;
+			setTargetObject( m_localizedTargetCandidate );
+			m_targetPosition = m_targetObject.GetComponent< Transform >().position;
 			m_state = State.ApproachTarget;
 			return;
 		}
@@ -154,6 +174,46 @@ public class ZombieBehavior : MonoBehaviour {
 		{
 			m_state = State.Alerted;
 			return;
+		}
+	}
+
+	void updateAlertBehaviour()
+	{
+		updateSenses();
+		if( m_localizedTargetCandidate != null )
+		{
+			setTargetObject( m_localizedTargetCandidate );
+			m_targetPosition = m_targetObject.GetComponent< Transform >().position;
+			m_state = State.ApproachTarget;
+			return;
+		}
+
+		m_targetPosition = GetComponent< Transform > ().position - GetComponent< Transform > ().right * 3.0f;
+		approachPosition( m_targetPosition );
+		if( reachedPosition() )
+		{
+			m_state = State.Idle;
+		}
+	}
+
+	void updateApproachBehaviour()
+	{
+		updateSenses();
+		if( m_localizedTargetCandidate != null )
+		{
+			setTargetObject( m_localizedTargetCandidate );
+			m_targetPosition = m_targetObject.GetComponent< Transform >().position;
+		}
+
+		approachPosition( m_targetPosition );
+		if( reachedPosition() )
+		{
+			m_state = State.Idle;
+			if( m_targetObject != null )
+			{
+				m_targetObject.SetActive( false );
+				setTargetObject( null );
+			}
 		}
 	}
 
@@ -182,6 +242,12 @@ public class ZombieBehavior : MonoBehaviour {
 		colorizeObject( m_localizedTargetCandidate, Color.white );
 		m_localizedTargetCandidate = obj;
 	}
+
+	void setTargetObject( GameObject obj )
+	{
+		colorizeObject( m_targetObject, Color.white );
+		m_targetObject = obj;
+	}
 		
 	void updateState()
 	{
@@ -197,9 +263,13 @@ public class ZombieBehavior : MonoBehaviour {
 				break;
 
 			case State.Alerted:
-			case State.ApproachTarget:
-				updateSenses();
+				updateAlertBehaviour();
 				break;
+
+			case State.ApproachTarget:
+				updateApproachBehaviour();
+				break;
+
 			case State.TargetInRange:
 			case State.Attack:
 			case State.EatFlesh:
@@ -213,7 +283,8 @@ public class ZombieBehavior : MonoBehaviour {
 		}
 
 		colorizeObject( m_nonLocalizedTargetCandidate, Color.blue );
-		colorizeObject( m_localizedTargetCandidate, Color.red );
+		colorizeObject( m_localizedTargetCandidate, Color.green );
+		colorizeObject( m_targetObject, Color.red );
 	}
 
 	public Camera m_camera;
@@ -284,6 +355,8 @@ public class ZombieBehavior : MonoBehaviour {
 	void Update ()
 	{
 		updateState();
+
+		return;//remove me
 
 		//
 		//
