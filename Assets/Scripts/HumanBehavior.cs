@@ -3,6 +3,7 @@ using System.Collections;
 
 public class HumanBehavior : MonoBehaviour {
 	//public Camera m_camera;
+	public GameObject ragdoll;
 	public GameObject taskObject;
     public string TargetTag;
     public GameObject previousObject;

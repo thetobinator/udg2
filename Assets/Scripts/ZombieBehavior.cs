@@ -27,6 +27,7 @@ public class ZombieBehavior : MonoBehaviour {
 	float m_earQueryInterval = 0.5f;
 	float m_eyeQueryInterval = 0.5f;
 	float m_time = 0.0f;
+	float m_alarmStateTime = 0.0f;
 	float m_runnerAlertSqrDistanceThreshold = 256.0f;
 	float m_runnerDetectSqrDistanceThreshold = 64.0f;
 	
@@ -50,8 +51,9 @@ public class ZombieBehavior : MonoBehaviour {
 
 			foreach( GameObject human in humans )
 			{
-				if( !human.activeSelf )
+				if( human.GetComponent<Animator>() == null )
 				{
+					// ignore dead humans for now
 					continue;
 				}
 				Vector3 zombieHeadPosition = GetComponent<Transform>().position;
@@ -139,7 +141,7 @@ public class ZombieBehavior : MonoBehaviour {
 
 	bool reachedPosition()
 	{
-		return GetComponent< NavMeshAgent >().remainingDistance < 1.0f;
+		return (GetComponent< NavMeshAgent > ().destination - transform.position).sqrMagnitude < 1.0f;
 	}
 
 	void updateSpawnBehaviour()
@@ -173,12 +175,14 @@ public class ZombieBehavior : MonoBehaviour {
 		else if( m_nonLocalizedTargetCandidate != null )
 		{
 			m_state = State.Alerted;
+			m_alarmStateTime = 0.0f;
 			return;
 		}
 	}
 
 	void updateAlertBehaviour()
 	{
+		m_alarmStateTime += Time.deltaTime;
 		updateSenses();
 		if( m_localizedTargetCandidate != null )
 		{
@@ -190,9 +194,30 @@ public class ZombieBehavior : MonoBehaviour {
 
 		m_targetPosition = GetComponent< Transform > ().position - GetComponent< Transform > ().right * 3.0f;
 		approachPosition( m_targetPosition );
-		if( reachedPosition() )
+		if( reachedPosition() || m_alarmStateTime >= 5.0f )
 		{
 			m_state = State.Idle;
+		}
+	}
+
+	void killHuman( GameObject human )
+	{
+		NavMeshAgent n = human.GetComponent<NavMeshAgent>();
+		Animator a = human.GetComponent<Animator>();
+		HumanBehavior h = human.GetComponent<HumanBehavior>();
+		CapsuleCollider c = human.GetComponent<CapsuleCollider> ();
+
+		if (n != null && h != null && a != null && c != null) {
+			Component[] bones = human.GetComponentsInChildren<Rigidbody> ();
+			foreach (Rigidbody ragdoll in bones)
+			{
+				ragdoll.isKinematic = false;
+			}
+
+			Destroy (h);
+			Destroy (n);
+			Destroy (a);
+			Destroy (c);
 		}
 	}
 
@@ -206,12 +231,13 @@ public class ZombieBehavior : MonoBehaviour {
 		}
 
 		approachPosition( m_targetPosition );
-		if( reachedPosition() )
+		if( reachedPosition() && m_targetPosition == m_targetObject.GetComponent< Transform >().position )
 		{
-			m_state = State.Idle;
+			m_state = State.Alerted;
+			m_alarmStateTime = 0.0f;
 			if( m_targetObject != null )
 			{
-				m_targetObject.SetActive( false );
+				killHuman( m_targetObject );
 				setTargetObject( null );
 			}
 		}
@@ -315,6 +341,7 @@ public class ZombieBehavior : MonoBehaviour {
         GoToTag("Player");
 
 		m_state = State.Spawning;
+		m_targetPosition = transform.position;
     }
 	
 	// stop the character at a barricade
@@ -356,7 +383,7 @@ public class ZombieBehavior : MonoBehaviour {
 	{
 		updateState();
 
-		return;//remove me
+		/*
 
 		//
 		//
@@ -415,8 +442,9 @@ public class ZombieBehavior : MonoBehaviour {
             m_hasDestination = true;
 		}
 
+
 		if (m_hasDestination) {
-            
+            */
 			Vector3 movement = GetComponent<Transform> ().position - m_oldPosition;
 			m_oldPosition = GetComponent<Transform> ().position;
 			Vector3 diff = GetComponent<Transform> ().position - GetComponent<NavMeshAgent> ().destination;
@@ -426,15 +454,15 @@ public class ZombieBehavior : MonoBehaviour {
 				} else {
 					GetComponent<Animator> ().SetFloat ("speed", 0.0f);
 					//print ( "REACHED" );
-					m_hasDestination = false;
-					previousObject = taskObject;
-					taskObject = null;
+					//m_hasDestination = false;
+					//previousObject = taskObject;
+					//taskObject = null;
 				}
 			} else {
 				this.transform.Translate (Vector3.forward * Time.deltaTime);
 			}
 			
-		}
+		//}
 	}// end update
 	
 
