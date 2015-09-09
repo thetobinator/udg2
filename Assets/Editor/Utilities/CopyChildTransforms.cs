@@ -65,7 +65,7 @@ namespace Utilties
 
     void DestinationMatchTransform()
     {
-        destChildren.Clear();
+        //destChildren.Clear();
         destChildren = new List<GameObject>(new GameObject[destinationObject.transform.childCount]);
         destinationOrigin = destinationObject.GetComponent<Transform>() as Transform;
         int i = 0;
