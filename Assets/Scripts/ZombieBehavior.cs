@@ -381,15 +381,14 @@ public class ZombieBehavior : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
 	{
+		/* @Bill: to test the input again,
+		 * comment out the call to updateState and instead
+		 * uncomment everything that is commented below
+		*/
+
 		updateState();
 
 		/*
-
-		//
-		//
-		// :TODO: :TO: control animation controller parameters and nav mesh agent parameters based on the state
-		//
-		//
 
 		m_camera =   Camera.main;
        
