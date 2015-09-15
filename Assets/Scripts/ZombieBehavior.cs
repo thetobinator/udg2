@@ -141,7 +141,7 @@ public class ZombieBehavior : MonoBehaviour {
 
 	bool reachedPosition()
 	{
-		return (GetComponent< NavMeshAgent > ().destination - transform.position).sqrMagnitude < 1.0f;
+		return (GetComponent< NavMeshAgent > ().destination - transform.position).sqrMagnitude < 1.5f;
 	}
 
 	void updateSpawnBehaviour()
@@ -200,25 +200,39 @@ public class ZombieBehavior : MonoBehaviour {
 		}
 	}
 
-	void killHuman( GameObject human )
+	bool dealDamage( GameObject human, float damage )
 	{
-		NavMeshAgent n = human.GetComponent<NavMeshAgent>();
-		Animator a = human.GetComponent<Animator>();
-		HumanBehavior h = human.GetComponent<HumanBehavior>();
-		CapsuleCollider c = human.GetComponent<CapsuleCollider> ();
+		HealthComponent health = human.GetComponent<HealthComponent> ();
 
-		if (n != null && h != null && a != null && c != null) {
-			Component[] bones = human.GetComponentsInChildren<Rigidbody> ();
-			foreach (Rigidbody ragdoll in bones)
-			{
-				ragdoll.isKinematic = false;
-			}
-
-			Destroy (h);
-			Destroy (n);
-			Destroy (a);
-			Destroy (c);
+		if( health == null )
+		{
+			return true;
 		}
+
+		health.dealDamage( damage );
+
+		if( health.isDead() )
+		{
+			NavMeshAgent n = human.GetComponent<NavMeshAgent>();
+			Animator a = human.GetComponent<Animator>();
+			HumanBehavior h = human.GetComponent<HumanBehavior>();
+			CapsuleCollider c = human.GetComponent<CapsuleCollider> ();
+
+			if (n != null && h != null && a != null && c != null) {
+				Component[] bones = human.GetComponentsInChildren<Rigidbody> ();
+				foreach (Rigidbody ragdoll in bones)
+				{
+					ragdoll.isKinematic = false;
+				}
+
+				Destroy (h);
+				Destroy (n);
+				Destroy (a);
+				Destroy (c);
+			}
+		}
+
+		return health.isDead ();
 	}
 
 	void updateApproachBehaviour()
@@ -237,8 +251,10 @@ public class ZombieBehavior : MonoBehaviour {
 			m_alarmStateTime = 0.0f;
 			if( m_targetObject != null )
 			{
-				killHuman( m_targetObject );
-				setTargetObject( null );
+				if( dealDamage( m_targetObject, Time.deltaTime * 100.0f ) )
+				{
+					setTargetObject( null );
+				}
 			}
 		}
 	}
