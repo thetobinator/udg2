@@ -27,7 +27,7 @@ public class ZombieBehavior : MonoBehaviour {
 	float m_earQueryInterval = 0.5f;
 	float m_eyeQueryInterval = 0.5f;
 	float m_time = 0.0f;
-	float m_alarmStateTime = 0.0f;
+	float m_stateTime = 0.0f;
 	float m_runnerAlertSqrDistanceThreshold = 256.0f;
 	float m_runnerDetectSqrDistanceThreshold = 64.0f;
 	
@@ -51,7 +51,7 @@ public class ZombieBehavior : MonoBehaviour {
 
 			foreach( GameObject human in humans )
 			{
-				if( human.GetComponent<Animator>() == null )
+				if( human.GetComponent<HealthComponent>() == null || human.GetComponent<HealthComponent>().isDead() )
 				{
 					// ignore dead humans for now
 					continue;
@@ -170,19 +170,15 @@ public class ZombieBehavior : MonoBehaviour {
 			setTargetObject( m_localizedTargetCandidate );
 			m_targetPosition = m_targetObject.GetComponent< Transform >().position;
 			m_state = State.ApproachTarget;
-			return;
 		}
 		else if( m_nonLocalizedTargetCandidate != null )
 		{
 			m_state = State.Alerted;
-			m_alarmStateTime = 0.0f;
-			return;
 		}
 	}
 
 	void updateAlertBehaviour()
 	{
-		m_alarmStateTime += Time.deltaTime;
 		updateSenses();
 		if( m_localizedTargetCandidate != null )
 		{
@@ -194,7 +190,7 @@ public class ZombieBehavior : MonoBehaviour {
 
 		m_targetPosition = GetComponent< Transform > ().position - GetComponent< Transform > ().right * 3.0f;
 		approachPosition( m_targetPosition );
-		if( reachedPosition() || m_alarmStateTime >= 5.0f )
+		if( reachedPosition() || m_stateTime >= 5.0f )
 		{
 			m_state = State.Idle;
 		}
@@ -247,15 +243,28 @@ public class ZombieBehavior : MonoBehaviour {
 		approachPosition( m_targetPosition );
 		if( reachedPosition() && m_targetPosition == m_targetObject.GetComponent< Transform >().position )
 		{
-			m_state = State.Alerted;
-			m_alarmStateTime = 0.0f;
-			if( m_targetObject != null )
-			{
-				if( dealDamage( m_targetObject, Time.deltaTime * 100.0f ) )
-				{
-					setTargetObject( null );
+			m_state = State.TargetInRange;
+		}
+	}
+
+	void updateTargetInRangeBehaviour()
+	{
+		GetComponent<Animator> ().SetBool ("attack", true);
+		m_state = State.Attack;
+	}
+
+	void updateAttackBehaviour()
+	{
+		GetComponent<Animator> ().SetBool ("attack", false);
+		if (m_stateTime > 0.5f) {
+			if (m_targetObject != null) {
+				if (dealDamage (m_targetObject, 50.0f)) {
+					setTargetObject (null);
+					setLocalizedTargetCandidate( null );
+					setNonLocalizedTargetCandidate( null );
 				}
 			}
+			m_state = State.Alerted;
 		}
 	}
 
@@ -294,6 +303,8 @@ public class ZombieBehavior : MonoBehaviour {
 	void updateState()
 	{
 		m_time += Time.deltaTime;
+		m_stateTime += Time.deltaTime;
+		State oldState = m_state;
 		switch( m_state )
 		{
 			case State.Spawning:
@@ -313,7 +324,13 @@ public class ZombieBehavior : MonoBehaviour {
 				break;
 
 			case State.TargetInRange:
+				updateTargetInRangeBehaviour();
+				break;
+
 			case State.Attack:
+				updateAttackBehaviour();
+				break;
+
 			case State.EatFlesh:
 			case State.Stunned:
 			case State.Undead:
@@ -324,9 +341,14 @@ public class ZombieBehavior : MonoBehaviour {
 				break;
 		}
 
-		colorizeObject( m_nonLocalizedTargetCandidate, Color.blue );
-		colorizeObject( m_localizedTargetCandidate, Color.green );
+		//colorizeObject( m_nonLocalizedTargetCandidate, Color.blue );
+		//colorizeObject( m_localizedTargetCandidate, Color.green );
 		colorizeObject( m_targetObject, Color.red );
+
+		if( m_state != oldState )
+		{
+			m_stateTime = 0.0f;
+		}
 	}
 
 	public Camera m_camera;
