@@ -48,6 +48,12 @@ public class ZombieBehavior : MonoBehaviour {
 
 			setLocalizedTargetCandidate( null );
 			setNonLocalizedTargetCandidate( null );
+			if( m_targetObject != null && ( m_targetObject.GetComponent<HealthComponent>() == null || m_targetObject.GetComponent<HealthComponent>().isDead() ) )
+			{
+				// target was killed by something else
+				setTargetObject( null );
+				m_targetPosition = GetComponent< Transform > ().position;
+			}
 
 			foreach( GameObject human in humans )
 			{
@@ -241,7 +247,7 @@ public class ZombieBehavior : MonoBehaviour {
 		}
 
 		approachPosition( m_targetPosition );
-		if( reachedPosition() && m_targetPosition == m_targetObject.GetComponent< Transform >().position )
+		if( reachedPosition() && ( m_targetObject == null || m_targetPosition == m_targetObject.GetComponent< Transform >().position ) )
 		{
 			m_state = State.TargetInRange;
 		}
@@ -262,8 +268,22 @@ public class ZombieBehavior : MonoBehaviour {
 					setTargetObject (null);
 					setLocalizedTargetCandidate( null );
 					setNonLocalizedTargetCandidate( null );
+					GetComponent<Animator>().SetBool ("eat", true );
+					m_state = State.EatFlesh;
+					return;
 				}
 			}
+			m_state = State.Alerted;
+		}
+	}
+
+	void updateEatFleshBehaviour()
+	{
+		updateSenses ();
+		if (m_nonLocalizedTargetCandidate != null
+		    || m_localizedTargetCandidate != null
+		    || m_stateTime > 5.0f ) {
+			GetComponent<Animator>().SetBool ("eat", false );
 			m_state = State.Alerted;
 		}
 	}
@@ -332,6 +352,9 @@ public class ZombieBehavior : MonoBehaviour {
 				break;
 
 			case State.EatFlesh:
+				updateEatFleshBehaviour();
+				break;
+
 			case State.Stunned:
 			case State.Undead:
 			case State.Resurrecting:
@@ -349,6 +372,9 @@ public class ZombieBehavior : MonoBehaviour {
 		{
 			m_stateTime = 0.0f;
 		}
+
+		GetComponent<Animator> ().SetFloat ("stateTime", m_stateTime);
+		GetComponent<Animator> ().SetBool ("walk", !reachedPosition());
 	}
 
 	public Camera m_camera;
