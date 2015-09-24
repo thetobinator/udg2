@@ -7,7 +7,7 @@ public class HumanBehavior : MonoBehaviour {
 	public GameObject taskObject;
     public string TargetTag;
     public GameObject previousObject;
-    
+	public float moveSpeed = 0.0f;
 
 
 
@@ -36,7 +36,8 @@ public class HumanBehavior : MonoBehaviour {
 		// if hit a door, barricade or human go somewhere else. or if zombie target the object
         if (collision.gameObject.tag == "Barricade" || collision.gameObject.tag == "Door" || collision.gameObject.tag == "Window" || collision.gameObject.tag == "Human")
 		{
-			GetComponent<Animator> ().SetFloat ("speed", 0.0f );
+			moveSpeed = 0.0f;
+			GetComponent<Animator> ().SetFloat ("speed", moveSpeed );
 			
 			if (this.tag == "Human")
 			{
@@ -44,13 +45,12 @@ public class HumanBehavior : MonoBehaviour {
 				taskObject = null;
 				m_hasDestination = false;
 			}
-			else
+			/*else
 			{
 				previousObject = taskObject;
                 taskObject = null;//collision.gameObject;
 				m_hasDestination = false;
-			}
-			
+			}*/	
 		}
 	}
 
@@ -68,17 +68,29 @@ public class HumanBehavior : MonoBehaviour {
 	void Update () {
 		if (!m_hasDestination) {
 			if (this.tag == "Human"){
+
 				if (!taskObject) {
 					//do some tag decisions.
 					//string[] Taglist = new string[] {"Barricade","Box","Door","Furniture","Human","Zombie"};
                     TargetTag = humansSeekTaglist[Random.Range(0, humansSeekTaglist.Length)];
-				}
+
+                    //randomly idle instead of targeting something
+                    int randomlyIdle = Random.Range(0, 100);
+
+                    //else
+                    if (randomlyIdle != 1)
+                    {
+                        TargetTag = null;
+                        taskObject = null;
+                        m_hasDestination = false;
+                        moveSpeed = 0.0f;
+                        GetComponent<Animator>().SetFloat("speed", moveSpeed);
+                        m_oldPosition = GetComponent<Transform>().position;
+                    }
+                }
 			}
-			else
-			{
-				TargetTag = "Human";
-			}		
-			if (TargetTag != null)
+            	
+            if (TargetTag != null)
 			{
 				GoToTag (TargetTag);
 			}
@@ -86,28 +98,35 @@ public class HumanBehavior : MonoBehaviour {
 		}
 		
 		if (taskObject) {
-            //print("HumanBehavior:"  + " Parent: " + this.transform.parent.gameObject + " This Object = " + this.gameObject + " taskObject = " + taskObject +"\n");
-          
+            //print("HumanBehavior:"  + " Parent: " + this.transform.parent.gameObject + " This Object = " + this.gameObject + " taskObject = " + taskObject +"\n"); 
 			GetComponent<NavMeshAgent> ().SetDestination (taskObject.transform.position);
 			m_hasDestination = true;
 		}
-
+        // move
 		if (m_hasDestination) {
 			Vector3 movement = GetComponent<Transform> ().position - m_oldPosition;
 			m_oldPosition = GetComponent<Transform> ().position;
 			Vector3 diff = GetComponent<Transform> ().position - GetComponent<NavMeshAgent> ().destination;
 			if (GetComponent<Animator> ()) {
 				if (diff.magnitude > 0.7f) {
-					GetComponent<Animator> ().SetFloat ("speed", movement.magnitude / Time.deltaTime);
+					moveSpeed = movement.magnitude / Time.deltaTime;
+					GetComponent<Animator> ().SetFloat ("speed", moveSpeed);
 				} else {
-					GetComponent<Animator> ().SetFloat ("speed", 0.0f);
+					moveSpeed = 0.0f;
+					GetComponent<Animator> ().SetFloat ("speed", moveSpeed);
 					//print ( "REACHED" );
 					m_hasDestination = false;
 					previousObject = taskObject;
 					taskObject = null;
+                    m_hasDestination = false;
 				}
-			} else {
-				this.transform.Translate (Vector3.forward * Time.deltaTime);
+
+                
+			}
+            // is this moving causing a move without animation?
+            else
+            {
+				//this.transform.Translate (Vector3.forward * Time.deltaTime);
 			}
 			
 		}
