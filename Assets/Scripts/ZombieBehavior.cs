@@ -4,6 +4,7 @@ using System.Collections;
 public class ZombieBehavior : MonoBehaviour {
 	enum State
 	{
+		Init,				// initialize (do nothing for initDelay seconds)
 		Spawning,			// go from spawn point to idle point
 		Idle,				// no humans sensed, just stand there
 		Alerted,			// sensed humans without exact localization, look around, moaning sounds
@@ -19,6 +20,7 @@ public class ZombieBehavior : MonoBehaviour {
 		Remove				// fully dissolved/under the floor, game object will be removed
 	};
 
+	public float initDelay = 0.0f;
 	GameObject m_nonLocalizedTargetCandidate = null;
 	GameObject m_localizedTargetCandidate = null;
 	GameObject m_targetObject = null;
@@ -228,13 +230,33 @@ public class ZombieBehavior : MonoBehaviour {
 				}
 
 				Destroy (h);
-				Destroy (n);
-				Destroy (a);
-				Destroy (c);
+				n.enabled = false;
+				a.enabled = false;
+				c.enabled = false;
+
+				ZombieBehavior z = human.AddComponent<ZombieBehavior>() as ZombieBehavior;
+				z.initDelay = 5.0f;
 			}
 		}
 
 		return health.isDead ();
+	}
+
+	void reanimate()
+	{
+		HealthComponent health = GetComponent<HealthComponent> ();
+		health.reanimate ();
+		tag = "Zombie";
+		
+		NavMeshAgent n = GetComponent<NavMeshAgent>();
+		Animator a = GetComponent<Animator>();
+		CapsuleCollider c = GetComponent<CapsuleCollider> ();
+			
+		if (n != null && a != null && c != null) {			
+			n.enabled = true;
+			a.enabled = true;
+			c.enabled = true;
+		}
 	}
 
 	void updateApproachBehaviour()
@@ -327,6 +349,17 @@ public class ZombieBehavior : MonoBehaviour {
 		State oldState = m_state;
 		switch( m_state )
 		{
+			case State.Init:
+				if( m_stateTime >= initDelay )
+				{
+					if( initDelay > 0.0f )
+					{
+						reanimate ();
+					}
+					m_state = State.Spawning;
+				}
+				break;
+
 			case State.Spawning:
 				updateSpawnBehaviour();
 				break;
@@ -404,7 +437,7 @@ public class ZombieBehavior : MonoBehaviour {
     {
         GoToTag("Player");
 
-		m_state = State.Spawning;
+		m_state = State.Init;
 		m_targetPosition = transform.position;
     }
 	

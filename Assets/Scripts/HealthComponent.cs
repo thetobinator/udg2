@@ -7,7 +7,7 @@ public class HealthComponent : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		m_health = initialHealth;
+		reanimate ();
 	}
 	
 	// Update is called once per frame
@@ -21,5 +21,9 @@ public class HealthComponent : MonoBehaviour {
 
 	public bool isDead() {
 		return m_health <= 0.0f;
+	}
+
+	public void reanimate() {
+		m_health = initialHealth;
 	}
 }
