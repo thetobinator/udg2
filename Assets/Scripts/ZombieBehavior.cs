@@ -256,6 +256,7 @@ public class ZombieBehavior : MonoBehaviour {
 			n.enabled = true;
 			a.enabled = true;
 			c.enabled = true;
+			a.SetBool ("zombie", true);
 		}
 	}
 
@@ -277,20 +278,20 @@ public class ZombieBehavior : MonoBehaviour {
 
 	void updateTargetInRangeBehaviour()
 	{
-		GetComponent<Animator> ().SetBool ("attack", true);
+		GetComponent<Animator> ().SetBool ("zombie_attack", true);
 		m_state = State.Attack;
 	}
 
 	void updateAttackBehaviour()
 	{
-		GetComponent<Animator> ().SetBool ("attack", false);
+		GetComponent<Animator> ().SetBool ("zombie_attack", false);
 		if (m_stateTime > 0.5f) {
 			if (m_targetObject != null) {
 				if (dealDamage (m_targetObject, 50.0f)) {
 					setTargetObject (null);
 					setLocalizedTargetCandidate( null );
 					setNonLocalizedTargetCandidate( null );
-					GetComponent<Animator>().SetBool ("eat", true );
+					GetComponent<Animator>().SetBool ("zombie_eat", true );
 					m_state = State.EatFlesh;
 					return;
 				}
@@ -305,7 +306,7 @@ public class ZombieBehavior : MonoBehaviour {
 		if (m_nonLocalizedTargetCandidate != null
 		    || m_localizedTargetCandidate != null
 		    || m_stateTime > 5.0f ) {
-			GetComponent<Animator>().SetBool ("eat", false );
+			GetComponent<Animator>().SetBool ("zombie_eat", false );
 			m_state = State.Alerted;
 		}
 	}
@@ -406,8 +407,8 @@ public class ZombieBehavior : MonoBehaviour {
 			m_stateTime = 0.0f;
 		}
 
-		GetComponent<Animator> ().SetFloat ("stateTime", m_stateTime);
-		GetComponent<Animator> ().SetBool ("walk", !reachedPosition());
+		GetComponent<Animator> ().SetFloat ("zombie_stateTime", m_stateTime);
+		GetComponent<Animator> ().SetBool ("zombie_walk", !reachedPosition());
 	}
 
 	public Camera m_camera;
