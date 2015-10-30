@@ -342,6 +342,14 @@ public class ZombieBehavior : MonoBehaviour {
 		colorizeObject( m_targetObject, Color.white );
 		m_targetObject = obj;
 	}
+
+	bool isInViewFrustum()
+	{
+		Bounds bounds = GetComponent<Collider> ().bounds;
+		bounds.Expand (new Vector3 (2.0f, 2.0f, 2.0f));
+		Plane[] planes = GeometryUtility.CalculateFrustumPlanes( Camera.main );
+		return GeometryUtility.TestPlanesAABB( planes, bounds );
+	}
 		
 	void updateState()
 	{
@@ -355,9 +363,17 @@ public class ZombieBehavior : MonoBehaviour {
 				{
 					if( initDelay > 0.0f )
 					{
-						reanimate ();
+						if( !isInViewFrustum() )
+						{
+							// only resurrect when offscreen
+							reanimate();
+							m_state = State.Spawning;
+						}
 					}
-					m_state = State.Spawning;
+					else
+					{
+						m_state = State.Spawning;
+					}
 				}
 				break;
 
