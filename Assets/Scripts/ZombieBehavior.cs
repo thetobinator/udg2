@@ -13,11 +13,7 @@ public class ZombieBehavior : MonoBehaviour {
 		Attack,				// attacking the target
 		EatFlesh,			// eat dead target
 		Stunned,			// stunned, target has some time to escape
-		Undead,				// down, appears to be dead but will resurrect
-		Resurrecting,		// getting up from the dead again
 		Dead,				// dead, this time really
-		Dissolve,			// dead for some time, dissolve or disappear in some other way (maybe move slowly under the floor)
-		Remove				// fully dissolved/under the floor, game object will be removed
 	};
 
 	public float initDelay = 0.0f;
@@ -204,6 +200,36 @@ public class ZombieBehavior : MonoBehaviour {
 		}
 	}
 
+	bool turnIntoRagdoll( GameObject obj )
+	{
+		NavMeshAgent n = obj.GetComponent<NavMeshAgent>();
+		Animator a = obj.GetComponent<Animator>();
+		CapsuleCollider c = obj.GetComponent<CapsuleCollider> ();
+		HumanBehavior h = obj.GetComponent<HumanBehavior>();
+		ZombieBehavior z = obj.GetComponent<ZombieBehavior>();
+
+		bool result = false;
+		if (n != null && a != null && c != null) {
+			Component[] bones = obj.GetComponentsInChildren<Rigidbody> ();
+			foreach (Rigidbody ragdoll in bones) {
+				ragdoll.isKinematic = false;
+			}
+			
+			if (h != null) {
+				Destroy (h);
+				result = true;
+			} else if (z != null) {
+				Destroy (z);
+				result = true;
+			}
+			n.enabled = false;
+			a.enabled = false;
+			c.enabled = false;
+		}
+
+		return result;
+	}
+
 	bool dealDamage( GameObject human, float damage )
 	{
 		HealthComponent health = human.GetComponent<HealthComponent> ();
@@ -217,26 +243,12 @@ public class ZombieBehavior : MonoBehaviour {
 
 		if( health.isDead() )
 		{
-			NavMeshAgent n = human.GetComponent<NavMeshAgent>();
-			Animator a = human.GetComponent<Animator>();
-			HumanBehavior h = human.GetComponent<HumanBehavior>();
-			CapsuleCollider c = human.GetComponent<CapsuleCollider> ();
-
-			if (n != null && h != null && a != null && c != null) {
-				Component[] bones = human.GetComponentsInChildren<Rigidbody> ();
-				foreach (Rigidbody ragdoll in bones)
-				{
-					ragdoll.isKinematic = false;
-				}
-
-				Destroy (h);
-				n.enabled = false;
-				a.enabled = false;
-				c.enabled = false;
-
+			if( turnIntoRagdoll( human ) )
+			{
 				ZombieBehavior z = human.AddComponent<ZombieBehavior>() as ZombieBehavior;
 				z.initDelay = 5.0f;
 			}
+
 		}
 
 		return health.isDead ();
@@ -356,6 +368,14 @@ public class ZombieBehavior : MonoBehaviour {
 		m_time += Time.deltaTime;
 		m_stateTime += Time.deltaTime;
 		State oldState = m_state;
+
+		// hack code to test death of zombies
+		if (Input.GetKeyDown ("f") && m_state != State.Dead ) {
+			turnIntoRagdoll( gameObject );
+			m_state = State.Dead;
+		}
+
+
 		switch( m_state )
 		{
 			case State.Init:
@@ -406,11 +426,9 @@ public class ZombieBehavior : MonoBehaviour {
 				break;
 
 			case State.Stunned:
-			case State.Undead:
-			case State.Resurrecting:
+				break;
+
 			case State.Dead:
-			case State.Dissolve:
-			case State.Remove:
 				break;
 		}
 
