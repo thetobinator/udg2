@@ -274,17 +274,38 @@ public class ZombieBehavior : MonoBehaviour {
 
 	void updateApproachBehaviour()
 	{
-		updateSenses();
-		if( m_localizedTargetCandidate != null )
+		if( m_hasPlayerTask )
+		{
+			setLocalizedTargetCandidate (null);
+			setNonLocalizedTargetCandidate (null);
+		}
+		else
+		{
+			updateSenses ();
+		}
+
+		if( m_localizedTargetCandidate != null && !m_hasPlayerTask )
 		{
 			setTargetObject( m_localizedTargetCandidate );
-			m_targetPosition = m_targetObject.GetComponent< Transform >().position;
+		}
+
+		if( m_targetObject != null )
+		{
+			m_targetPosition = m_targetObject.GetComponent< Transform > ().position;
 		}
 
 		approachPosition( m_targetPosition );
-		if( reachedPosition() && ( m_targetObject == null || m_targetPosition == m_targetObject.GetComponent< Transform >().position ) )
+		if( reachedPosition() )
 		{
-			m_state = State.TargetInRange;
+			m_hasPlayerTask = false;
+			if( m_targetObject != null && m_targetPosition == m_targetObject.GetComponent< Transform >().position )
+			{			
+				m_state = State.TargetInRange;
+			}
+			else
+			{
+				m_state = State.Alerted;
+			}
 		}
 	}
 
@@ -444,11 +465,10 @@ public class ZombieBehavior : MonoBehaviour {
 		GetComponent<Animator> ().SetFloat ("zombie_stateTime", m_stateTime);
 		GetComponent<Animator> ().SetBool ("zombie_walk", !reachedPosition());
 	}
-
-	public Camera m_camera;
+	
 	public GameObject taskObject;
 	GameObject previousObject;
-	bool m_hasDestination = false;
+	bool m_hasPlayerTask = false;
 	Vector3 m_oldPosition;
 
 	//Transform[] hinges = GameObject.FindObjectsOfType (typeof(Transform)) as Transform[];
@@ -464,7 +484,7 @@ public class ZombieBehavior : MonoBehaviour {
             taskObject = taggedObjects[RandNum];
             GetComponent<NavMeshAgent>().SetDestination(taskObject.transform.position);
             m_oldPosition = GetComponent<Transform>().position;
-            m_hasDestination = true;
+			m_hasPlayerTask = true;
         }
     }
 
@@ -475,7 +495,7 @@ public class ZombieBehavior : MonoBehaviour {
 		m_state = State.Init;
 		m_targetPosition = transform.position;
     }
-	
+	/*
 	// stop the character at a barricade
 	void OnCollisionEnter(Collision collision) {
     
@@ -483,7 +503,7 @@ public class ZombieBehavior : MonoBehaviour {
 		if (collision.gameObject.tag == "Human")
 		{
 			if (this.tag == "Human"){
-				m_hasDestination = false;
+				m_hasPlayerTask = false;
 				
 				taskObject = null;
 			}
@@ -497,17 +517,17 @@ public class ZombieBehavior : MonoBehaviour {
 			{
                 //attack the human
                 taskObject = collision.gameObject;
-				m_hasDestination = true;
+				m_hasPlayerTask = true;
 			}
 			else
 			{
 				taskObject = collision.gameObject;
-				m_hasDestination = true;
+				m_hasPlayerTask = true;
 			}
 			
 		}
 	}
-
+*/
 
 	
 	// Update is called once per frame
@@ -519,31 +539,35 @@ public class ZombieBehavior : MonoBehaviour {
 		*/
 
 		updateState();
+	
+		if (tag == "Zombie" && !GetComponent<HealthComponent> ().isDead ()) {
+			if (Input.GetMouseButtonUp (0)) {
+				Ray ray = Camera.main.GetComponent<Camera> ().ScreenPointToRay (Input.mousePosition);
+				RaycastHit hit = new RaycastHit ();
+				if (Physics.Raycast (ray, out hit)) {
+					if (hit.collider.gameObject.tag == "Human") {
+						setTargetObject (hit.collider.gameObject);
+						m_targetPosition = m_targetObject.GetComponent< Transform > ().position;
+					} else {
+						setTargetObject (null);
+						m_targetPosition = hit.point;
+					}
 
-		/*
-
-		m_camera =   Camera.main;
-       
-		if (Input.GetMouseButtonUp (0)) {
-			
-			Ray ray = m_camera.GetComponent<Camera> ().ScreenPointToRay (Input.mousePosition);
-			RaycastHit hit = new RaycastHit ();
-			if (Physics.Raycast (ray, out hit)) {
-
-						GetComponent<NavMeshAgent> ().SetDestination (hit.point);
-						
-                        //if (hit.collider.tag == "Terrain" ) { taskObject = null; }
-				m_hasDestination = true;
-                m_oldPosition = GetComponent<Transform>().position;
+					m_state = State.ApproachTarget;
+					m_hasPlayerTask = true;
+					GetComponent<Animator> ().SetBool ("zombie_attack", false);
+					GetComponent<Animator> ().SetBool ("zombie_eat", false);
+				}
 			}
 		}
 
-		if (Input.GetKeyDown ("f")){
+		/*
+	*if (Input.GetKeyDown ("f")){
            // print("f key");
 				taskObject =  GameObject.FindWithTag("Player");
                 GetComponent<NavMeshAgent>().SetDestination(taskObject.transform.position);
                 m_oldPosition = GetComponent<Transform>().position;
-                m_hasDestination = true;					
+                m_hasPlayerTask = true;					
 		}
 
 		if (Input.GetKeyDown ("r")){
@@ -570,11 +594,11 @@ public class ZombieBehavior : MonoBehaviour {
            // print("ZombieBehavior:" + " Parent: " + this.transform.parent.gameObject + " This Object = " + this.gameObject + " taskObject = " + taskObject + "\n");
             GetComponent<NavMeshAgent>().SetDestination(taskObject.transform.position);
            
-            m_hasDestination = true;
+            m_hasPlayerTask = true;
 		}
 
 
-		if (m_hasDestination) {
+		if (m_hasPlayerTask) {
             */
 			Vector3 movement = GetComponent<Transform> ().position - m_oldPosition;
 			m_oldPosition = GetComponent<Transform> ().position;
@@ -585,7 +609,7 @@ public class ZombieBehavior : MonoBehaviour {
 				} else {
 					GetComponent<Animator> ().SetFloat ("speed", 0.0f);
 					//print ( "REACHED" );
-					//m_hasDestination = false;
+					//m_hasPlayerTask = false;
 					//previousObject = taskObject;
 					//taskObject = null;
 				}
