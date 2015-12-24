@@ -1,139 +1,368 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+using UnityEngine;
+using System.Collections;
+
 public class HumanBehavior : MonoBehaviour {
-	//public Camera m_camera;
-	public GameObject ragdoll;
-	public GameObject taskObject;
-    public string TargetTag;
-    public GameObject previousObject;
-	public float moveSpeed = 0.0f;
-
-
-
-    string[] humansSeekTaglist = new string[] { "Barricade", "Box", "Door", "Furniture", "Human", "Window", "Zombie" };
+	enum State
+	{
+		Init,				// initialize (do nothing for initDelay seconds)
+		Spawning,			// go from spawn point to idle point
+		Idle,				// no zombies sensed, just stand there
+		Alerted,			// sensed zombies without exact localization, look around, moaning sounds
+		RunOff,				// run away from one of the localized zombies
+		Dead,				// dead, this time really
+	};
 	
-	bool m_hasDestination = false;
+	public float initDelay = 0.0f;
+	GameObject m_nonLocalizedTargetCandidate = null;
+	GameObject m_localizedTargetCandidate = null;
+	GameObject m_dangerObject = null;
+	Vector3 m_targetPosition;
+	Vector3 m_dangerPosition;
+	State m_state;
+	float m_earQueryInterval = 0.5f;
+	float m_eyeQueryInterval = 0.5f;
+	float m_time = 0.0f;
+	float m_stateTime = 0.0f;
+	float m_runnerAlertSqrDistanceThreshold = 256.0f;
+	float m_runnerDetectSqrDistanceThreshold = 64.0f;
 	Vector3 m_oldPosition;
 	
-	//Transform[] hinges = GameObject.FindObjectsOfType (typeof(Transform)) as Transform[];
-	
-	void Start() {
-        //m_camera = Camera.main;
+	string opposingFactionTag()
+	{
+		return gameObject.tag == "Zombie" ? "Human" : "Zombie";
 	}
 	
-	// stop the character at a barricade
-	void OnCollisionEnter(Collision collision) {
-		//Debug.Log (collision.gameObject.tag);
-		if (collision.gameObject.tag == "Human")
+	void updateSenses()
+	{
+		float oldTime = m_time - Time.deltaTime;
+		bool updateEars = (int)( oldTime / m_earQueryInterval ) != (int)( m_time / m_earQueryInterval );
+		bool updateEyes = (int)( oldTime / m_eyeQueryInterval ) != (int)( m_time / m_eyeQueryInterval );
+		
+		if( updateEars || updateEyes )
 		{
-			if (this.tag == "Human"){
-				m_hasDestination = false;
-				previousObject = taskObject;
-				taskObject = null;
+			GameObject[] zombies = GameObject.FindGameObjectsWithTag( opposingFactionTag() );
+			GameObject closestHeardZombie = null;
+			GameObject closestSeenZombie = null;
+			bool targetIsHeardOrSeen = false;
+			float closestHeardZombieSqrDistance = float.MaxValue;
+			float closestSeenZombieSqrDistance = float.MaxValue;
+			
+			setLocalizedTargetCandidate( null );
+			setNonLocalizedTargetCandidate( null );
+			if( m_dangerObject != null && ( m_dangerObject.GetComponent<HealthComponent>() == null || m_dangerObject.GetComponent<HealthComponent>().isDead() ) )
+			{
+				// target was killed by something else
+				setTargetObject( null );
+				m_dangerPosition = GetComponent< Transform > ().position;
+			}
+			
+			foreach( GameObject zombie in zombies )
+			{
+				if( zombie.GetComponent<HealthComponent>() == null || zombie.GetComponent<HealthComponent>().isDead() )
+				{
+					// ignore dead zombies for now
+					continue;
+				}
+				Vector3 zombieHeadPosition = GetComponent<Transform>().position;
+				Vector3 zombieViewDirection = GetComponent<Transform>().forward;
+				zombieHeadPosition.y += 1.5f;
+				Vector3 zombieCenter = zombie.GetComponent<Transform>().position;
+				zombieCenter.y += 0.8f;
+				Vector3 direction = zombieCenter - zombieHeadPosition;
+				float sqrDistanceToZombie = direction.sqrMagnitude;
+				
+				if( updateEars && MainGameManager.instance.getObjectSpeed( zombie ) > 1.0f )
+				{
+					// human is running
+					if( zombie == m_dangerObject )
+					{
+						targetIsHeardOrSeen = true;
+					}
+					
+					if( sqrDistanceToZombie < closestHeardZombieSqrDistance )
+					{
+						closestHeardZombie = zombie;
+						closestHeardZombieSqrDistance = sqrDistanceToZombie;
+					}
+				}
+				
+				if( updateEyes )
+				{
+					direction.Normalize();
+					Vector3 direction2D = direction;
+					direction2D.y = 0.0f;
+					direction2D.Normalize();
+					if( Vector3.Dot( direction2D, zombieViewDirection ) > 0.707f )
+					{
+						// in azimuth
+						Vector3 rayStart = zombieHeadPosition + 0.5f * direction;
+						Ray ray = new Ray( rayStart, direction );
+						RaycastHit hit = new RaycastHit();
+						if( Physics.Raycast( ray, out hit ) )
+						{
+							if( ( hit.point - zombieCenter ).sqrMagnitude < 0.5f )
+							{
+								// ray hit is near zombie -> no obstacle in between
+								if( zombie == m_dangerObject )
+								{
+									targetIsHeardOrSeen = true;
+								}
+								if( sqrDistanceToZombie < closestSeenZombieSqrDistance )
+								{
+									closestSeenZombie = zombie;
+									closestSeenZombieSqrDistance = sqrDistanceToZombie;
+								}
+							}
+						}
+					}
+				}
+			}
+			
+			/*
+			if( targetIsHeardOrSeen )
+			{
+				setLocalizedTargetCandidate( m_dangerObject );
+			}
+			else*/ if( closestSeenZombie != null )
+			{
+				setLocalizedTargetCandidate( closestSeenZombie );
+			}
+			else if( closestHeardZombie != null )
+			{
+				if( closestHeardZombieSqrDistance < m_runnerDetectSqrDistanceThreshold )
+				{
+					setLocalizedTargetCandidate( closestHeardZombie );
+				}
+				else if( closestHeardZombieSqrDistance < m_runnerAlertSqrDistanceThreshold )
+				{
+					setNonLocalizedTargetCandidate( closestHeardZombie );
+				}
 			}
 		}
-		// if hit a door, barricade or human go somewhere else. or if zombie target the object
-        if (collision.gameObject.tag == "Barricade" || collision.gameObject.tag == "Door" || collision.gameObject.tag == "Window" || collision.gameObject.tag == "Human")
+	}
+	
+	void approachPosition( Vector3 targetPosition )
+	{
+		GetComponent< NavMeshAgent > ().SetDestination (targetPosition);
+	}
+	
+	bool reachedPosition()
+	{
+		return (GetComponent< NavMeshAgent > ().destination - transform.position).sqrMagnitude < 1.5f;
+	}
+	
+	void updateSpawnBehaviour()
+	{
+		updateSenses();
+		if( m_localizedTargetCandidate != null )
 		{
-			moveSpeed = 0.0f;
-			GetComponent<Animator> ().SetFloat ("speed", moveSpeed );
-			
-			if (this.tag == "Human")
-			{
-				previousObject = taskObject;
-				taskObject = null;
-				m_hasDestination = false;
-			}
-			/*else
-			{
-				previousObject = taskObject;
-                taskObject = null;//collision.gameObject;
-				m_hasDestination = false;
-			}*/	
+			setTargetObject( m_localizedTargetCandidate );
+			m_dangerPosition = m_dangerObject.GetComponent< Transform >().position;
+			m_state = State.RunOff;
+			return;
+		}
+
+		m_targetPosition = getTargetPositionForDangerPosition (m_dangerPosition);
+		approachPosition( m_targetPosition );
+		if( reachedPosition() )
+		{
+			m_state = State.Idle;
+		}
+	}
+	
+	void updateIdleBehaviour()
+	{
+		updateSenses ();
+		if( m_localizedTargetCandidate != null )
+		{
+			setTargetObject( m_localizedTargetCandidate );
+			m_dangerPosition = m_dangerObject.GetComponent< Transform >().position;
+			m_state = State.RunOff;
+		}
+		else if( m_nonLocalizedTargetCandidate != null )
+		{
+			m_state = State.Alerted;
+		}
+	}
+	
+	void updateAlertBehaviour()
+	{
+		updateSenses();
+		if( m_localizedTargetCandidate != null )
+		{
+			setTargetObject( m_localizedTargetCandidate );
+			m_dangerPosition = m_dangerObject.GetComponent< Transform >().position;
+			m_state = State.RunOff;
+			return;
+		}
+		
+		m_targetPosition = GetComponent< Transform > ().position - GetComponent< Transform > ().right * 3.0f;
+		approachPosition( m_targetPosition );
+		if( reachedPosition() || m_stateTime >= 5.0f )
+		{
+			m_state = State.Idle;
 		}
 	}
 
-	void GoToTag(string Tag){
-		GameObject[] taggedObjects = GameObject.FindGameObjectsWithTag (Tag);
-		if (taggedObjects.Length >= 1)
+	void updateRunOffBehaviour()
+	{
+		updateSenses ();
+		
+		if( m_localizedTargetCandidate != null )
 		{
-			int RandNum =  Random.Range (0, taggedObjects.Length);
-			
-			taskObject = taggedObjects [RandNum].gameObject;
+			setTargetObject( m_localizedTargetCandidate );
+		}
+		
+		if( m_dangerObject != null )
+		{
+			m_dangerPosition = m_dangerObject.GetComponent< Transform > ().position;
+		}
+
+		m_targetPosition = getTargetPositionForDangerPosition (m_dangerPosition);
+		approachPosition( m_targetPosition );
+		if( reachedPosition() )
+		{
+			/*
+			if( m_dangerObject != null && m_dangerPosition == m_dangerObject.GetComponent< Transform >().position )
+			{			
+				m_state = State.TargetInRange;
+			}
+			else
+				*/
+			{
+				m_state = State.Alerted;
+			}
 		}
 	}
+	
+
+	
+	void colorizeObject( GameObject obj, Color color )
+	{
+		if( obj == null )
+		{
+			return;
+		}
+		
+		DebugTint debugTint = obj.GetComponent<DebugTint> ();
+		if( debugTint != null )
+		{
+			debugTint.tintColor = color;
+		}
+	}
+	
+	void setNonLocalizedTargetCandidate( GameObject obj )
+	{
+		colorizeObject( m_nonLocalizedTargetCandidate, Color.white );
+		m_nonLocalizedTargetCandidate = obj;
+	}
+	
+	void setLocalizedTargetCandidate( GameObject obj )
+	{
+		colorizeObject( m_localizedTargetCandidate, Color.white );
+		m_localizedTargetCandidate = obj;
+	}
+	
+	void setTargetObject( GameObject obj )
+	{
+		colorizeObject( m_dangerObject, Color.white );
+		m_dangerObject = obj;
+	}
+
+	Vector3 getTargetPositionForDangerPosition( Vector3 dangerPosition )
+	{
+		Vector3 oppositeDirection = GetComponent<Transform> ().position - dangerPosition;
+		oppositeDirection.Normalize ();
+		oppositeDirection.Scale (new Vector3 (5.0f, 0.0f, 5.0f));
+
+		return oppositeDirection + dangerPosition;
+	}
+	
+	void updateState()
+	{
+		m_time += Time.deltaTime;
+		m_stateTime += Time.deltaTime;
+		State oldState = m_state;
+
+		switch( m_state )
+		{
+		case State.Init:
+			m_state = State.Spawning;
+			break;
+			
+		case State.Spawning:
+			updateSpawnBehaviour();
+			break;
+			
+		case State.Idle:
+			updateIdleBehaviour();
+			break;
+			
+		case State.Alerted:
+			updateAlertBehaviour();
+			break;
+			
+		case State.RunOff:
+			updateRunOffBehaviour();
+			break;
+			
+		case State.Dead:
+			break;
+		}
+		
+		//colorizeObject( m_nonLocalizedTargetCandidate, Color.blue );
+		//colorizeObject( m_localizedTargetCandidate, Color.green );
+		colorizeObject( m_dangerObject, Color.red );
+		
+		if( m_state != oldState )
+		{
+			m_stateTime = 0.0f;
+		}
+		
+		GetComponent<Animator> ().SetFloat ("zombie_stateTime", m_stateTime);
+		GetComponent<Animator> ().SetBool ("zombie_walk", !reachedPosition());
+	}
+	
+
+
+
+
 	
 	// Update is called once per frame
-	void Update () {
-		if (!m_hasDestination) {
-			if (this.tag == "Human"){
+	void Update ()
+	{
+		/* @Bill: to test the input again,
+		 * comment out the call to updateState and instead
+		 * uncomment everything that is commented below
+		*/
+		
+		updateState();
 
-				if (!taskObject) {
-					//do some tag decisions.
-					//string[] Taglist = new string[] {"Barricade","Box","Door","Furniture","Human","Zombie"};
-                    TargetTag = humansSeekTaglist[Random.Range(0, humansSeekTaglist.Length)];
-
-                    //randomly idle instead of targeting something
-                    int randomlyIdle = Random.Range(0, 100);
-
-                    //else
-                    if (randomlyIdle != 1)
-                    {
-                        TargetTag = null;
-                        taskObject = null;
-                        m_hasDestination = false;
-                        moveSpeed = 0.0f;
-                        GetComponent<Animator>().SetFloat("speed", moveSpeed);
-                        m_oldPosition = GetComponent<Transform>().position;
-                    }
-                }
+		/*
+		if (m_hasPlayerTask) {
+            */
+		Vector3 movement = GetComponent<Transform> ().position - m_oldPosition;
+		m_oldPosition = GetComponent<Transform> ().position;
+		Vector3 diff = GetComponent<Transform> ().position - GetComponent<NavMeshAgent> ().destination;
+		if (GetComponent<Animator> ()) {
+			if (diff.magnitude > 0.7f) {
+				GetComponent<Animator> ().SetFloat ("speed", movement.magnitude / Time.deltaTime);
+			} else {
+				GetComponent<Animator> ().SetFloat ("speed", 0.0f);
+				//print ( "REACHED" );
+				//m_hasPlayerTask = false;
+				//previousObject = taskObject;
+				//taskObject = null;
 			}
-            	
-            if (TargetTag != null)
-			{
-				GoToTag (TargetTag);
-			}
-
+		} else {
+			this.transform.Translate (Vector3.forward * Time.deltaTime);
 		}
 		
-		if (taskObject) {
-            //print("HumanBehavior:"  + " Parent: " + this.transform.parent.gameObject + " This Object = " + this.gameObject + " taskObject = " + taskObject +"\n"); 
-			GetComponent<NavMeshAgent> ().SetDestination (taskObject.transform.position);
-			m_hasDestination = true;
-		}
-        // move
-		if (m_hasDestination) {
-			Vector3 movement = GetComponent<Transform> ().position - m_oldPosition;
-			m_oldPosition = GetComponent<Transform> ().position;
-			Vector3 diff = GetComponent<Transform> ().position - GetComponent<NavMeshAgent> ().destination;
-			if (GetComponent<Animator> ()) {
-				if (diff.magnitude > 0.7f) {
-					moveSpeed = movement.magnitude / Time.deltaTime;
-					GetComponent<Animator> ().SetFloat ("speed", moveSpeed);
-				} else {
-					moveSpeed = 0.0f;
-					GetComponent<Animator> ().SetFloat ("speed", moveSpeed);
-					//print ( "REACHED" );
-					m_hasDestination = false;
-					previousObject = taskObject;
-					taskObject = null;
-                    m_hasDestination = false;
-				}
-
-                
-			}
-            // is this moving causing a move without animation?
-            else
-            {
-				//this.transform.Translate (Vector3.forward * Time.deltaTime);
-			}
-			
-		}
-		
+		//}
 	}// end update
 	
-
 	
-	//end HumanBehavior.cs
 }

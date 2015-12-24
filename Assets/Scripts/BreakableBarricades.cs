@@ -32,7 +32,12 @@ public class BreakableBarricades : MonoBehaviour {
 			rb.detectCollisions = false;
 		}
 
-
+	void OnCollisionEnter(Collision collision) {
+		string colliderTag = collision.gameObject.tag;
+		if (colliderTag == "Human" || colliderTag == "Zombie" || colliderTag == "Player") {
+			explodeInstantly();
+		}
+	}
 		
 
 	void OnTriggerEnter(Collider other) {
@@ -54,40 +59,41 @@ public class BreakableBarricades : MonoBehaviour {
 	void OnTriggerStay(Collider other) {
 		if (other.tag == "Zombie")
 		{
-			hitpoints+= -1; // remove hit points
-			if (hitpoints <= 0){
-				hasRigidBody = this.GetComponent<Rigidbody>();
-				if (hasRigidBody != null) {
-					DisableRagdoll();
-				}
-				// iterate over child objects and give them rigidbody
-				foreach (Transform child in transform) {
-					hasRigidBody = child.gameObject.GetComponent<Rigidbody>();
-					// break the object apart
-					if(hasRigidBody == null)
-					{
-						Vector3 childscale = child.gameObject.transform.localScale;
+			explodeInstantly();
+		}		
+	}
+
+	void explodeInstantly(){
+		hitpoints += -100; // remove hit points
+		if (hitpoints <= 0) {
+			hasRigidBody = this.GetComponent<Rigidbody> ();
+			if (hasRigidBody != null) {
+				DisableRagdoll ();
+			}
+			// iterate over child objects and give them rigidbody
+			foreach (Transform child in transform) {
+				hasRigidBody = child.gameObject.GetComponent<Rigidbody> ();
+				// break the object apart
+				if (hasRigidBody == null) {
+					Vector3 childscale = child.gameObject.transform.localScale;
+					
+					childscale.x = childscale.x * 0.45F;
+					childscale.y = childscale.y * 0.45F;
+					childscale.z = childscale.z * 0.75F;
+					child.gameObject.transform.localScale = new Vector3 (childscale.x, childscale.y, childscale.z);
+					Rigidbody gameObjectsRigidBody = child.gameObject.AddComponent<Rigidbody> (); // Add the rigidbody.
+					gameObjectsRigidBody.mass = 1; // Set the GO's mass to 5 via the Rigidbody.
+					// Rigidbody rb = hit.GetComponent<Rigidbody>();
+					
+					if (gameObjectsRigidBody != null) {
+						gameObjectsRigidBody.AddExplosionForce (power, child.gameObject.transform.position, radius, 3.0F);
 						
-						childscale.x = childscale.x * 0.45F;
-						childscale.y = childscale.y * 0.45F;
-						childscale.z = childscale.z * 0.75F;
-						child.gameObject.transform.localScale = new Vector3(childscale.x, childscale.y, childscale.z);
-						Rigidbody gameObjectsRigidBody = child.gameObject.AddComponent<Rigidbody> (); // Add the rigidbody.
-						gameObjectsRigidBody.mass = 1; // Set the GO's mass to 5 via the Rigidbody.
-                        // Rigidbody rb = hit.GetComponent<Rigidbody>();
-            
-            if (gameObjectsRigidBody != null){
-                gameObjectsRigidBody.AddExplosionForce(power, child.gameObject.transform.position, radius, 3.0F);
-            
-        }
 					}
 				}
 			}
 		}
-
-
-		
 	}
+
 	/*void OnMouseDown() {
 		for (int i = 1; i <= 5; i++) {
 			hasRigidBody = theseObjects [i].GetComponent<Rigidbody>();
