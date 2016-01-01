@@ -28,7 +28,21 @@ public class ZombieBehavior : MonoBehaviour {
 	float m_stateTime = 0.0f;
 	float m_runnerAlertSqrDistanceThreshold = 256.0f;
 	float m_runnerDetectSqrDistanceThreshold = 64.0f;
-	
+	public GameObject taskObject;
+	GameObject previousObject;
+	bool m_hasPlayerTask = false;
+	Vector3 m_oldPosition;
+
+	public bool hasPlayerTask()
+	{
+		return m_hasPlayerTask;
+	}
+
+	string opposingFactionTag()
+	{
+		return gameObject.tag == "Zombie" ? "Human" : "Zombie";
+	}
+
 	void updateSenses()
 	{
 		float oldTime = m_time - Time.deltaTime;
@@ -37,7 +51,7 @@ public class ZombieBehavior : MonoBehaviour {
 
 		if( updateEars || updateEyes )
 		{
-			GameObject[] humans = GameObject.FindGameObjectsWithTag( "Human" );
+			GameObject[] humans = GameObject.FindGameObjectsWithTag( opposingFactionTag() );
 			GameObject closestHeardHuman = null;
 			GameObject closestSeenHuman = null;
 			bool targetIsHeardOrSeen = false;
@@ -140,7 +154,7 @@ public class ZombieBehavior : MonoBehaviour {
 
 	void approachPosition( Vector3 targetPosition )
 	{
-		GetComponent< NavMeshAgent > ().SetDestination (targetPosition);
+		GetComponent<NavMeshAgent>().SetDestination (targetPosition);
 	}
 
 	bool reachedPosition()
@@ -196,11 +210,13 @@ public class ZombieBehavior : MonoBehaviour {
 		approachPosition( m_targetPosition );
 		if( reachedPosition() || m_stateTime >= 5.0f )
 		{
+			m_targetPosition = GetComponent< Transform >().position;
+			approachPosition( m_targetPosition );
 			m_state = State.Idle;
 		}
 	}
 
-	bool turnIntoRagdoll( GameObject obj )
+	static public bool turnIntoRagdoll( GameObject obj )
 	{
 		NavMeshAgent n = obj.GetComponent<NavMeshAgent>();
 		Animator a = obj.GetComponent<Animator>();
@@ -390,13 +406,6 @@ public class ZombieBehavior : MonoBehaviour {
 		m_stateTime += Time.deltaTime;
 		State oldState = m_state;
 
-		// hack code to test death of zombies
-		if (Input.GetKeyDown ("f") && m_state != State.Dead ) {
-			turnIntoRagdoll( gameObject );
-			m_state = State.Dead;
-		}
-
-
 		switch( m_state )
 		{
 			case State.Init:
@@ -464,12 +473,9 @@ public class ZombieBehavior : MonoBehaviour {
 
 		GetComponent<Animator> ().SetFloat ("zombie_stateTime", m_stateTime);
 		GetComponent<Animator> ().SetBool ("zombie_walk", !reachedPosition());
+
+		GetComponent<NavMeshAgent>().speed = m_hasPlayerTask ? 1.7f : 1.5f;
 	}
-	
-	public GameObject taskObject;
-	GameObject previousObject;
-	bool m_hasPlayerTask = false;
-	Vector3 m_oldPosition;
 
 	//Transform[] hinges = GameObject.FindObjectsOfType (typeof(Transform)) as Transform[];
 
@@ -490,11 +496,26 @@ public class ZombieBehavior : MonoBehaviour {
 
     void Start()
     {
-        GoToTag("Player");
-
 		m_state = State.Init;
 		m_targetPosition = transform.position;
     }
+
+
+	void OnCollisionEnter(Collision collision) {
+		string colliderTag = collision.gameObject.tag;
+		if (colliderTag == "Projectile" ) {
+			Destroy ( collision.gameObject );
+			HealthComponent h = GetComponent<HealthComponent>();
+			if( h != null && h.enabled ){
+				h.dealDamage( 25.0f );
+				if( h.isDead() ){
+					ZombieBehavior.turnIntoRagdoll( gameObject );
+				}
+			}
+		}
+	}
+
+
 	/*
 	// stop the character at a barricade
 	void OnCollisionEnter(Collision collision) {
@@ -529,7 +550,22 @@ public class ZombieBehavior : MonoBehaviour {
 	}
 */
 
+	public void setTargetFromRaycastHit( RaycastHit hit )
+	{
+		if (hit.collider.gameObject.tag == opposingFactionTag ()) {
+			setTargetObject (hit.collider.gameObject);
+			m_targetPosition = m_targetObject.GetComponent< Transform > ().position;
+		} else {
+			setTargetObject (null);
+			m_targetPosition = hit.point;
+		}
 	
+		m_state = State.ApproachTarget;
+		m_hasPlayerTask = true;
+		GetComponent<Animator> ().SetBool ("zombie_attack", false);
+		GetComponent<Animator> ().SetBool ("zombie_eat", false);
+	}
+
 	// Update is called once per frame
 	void Update ()
 	{
@@ -539,27 +575,6 @@ public class ZombieBehavior : MonoBehaviour {
 		*/
 
 		updateState();
-	
-		if (tag == "Zombie" && !GetComponent<HealthComponent> ().isDead ()) {
-			if (Input.GetMouseButtonUp (0)) {
-				Ray ray = Camera.main.GetComponent<Camera> ().ScreenPointToRay (Input.mousePosition);
-				RaycastHit hit = new RaycastHit ();
-				if (Physics.Raycast (ray, out hit)) {
-					if (hit.collider.gameObject.tag == "Human") {
-						setTargetObject (hit.collider.gameObject);
-						m_targetPosition = m_targetObject.GetComponent< Transform > ().position;
-					} else {
-						setTargetObject (null);
-						m_targetPosition = hit.point;
-					}
-
-					m_state = State.ApproachTarget;
-					m_hasPlayerTask = true;
-					GetComponent<Animator> ().SetBool ("zombie_attack", false);
-					GetComponent<Animator> ().SetBool ("zombie_eat", false);
-				}
-			}
-		}
 
 		/*
 	*if (Input.GetKeyDown ("f")){

@@ -78,6 +78,49 @@ public class MainGameManager : MainGameInit
     //this is from a tutorial, it's a working example while I breakthings
     public static MainGameManager instance; //local tCurrentLevel=ig3dGetLevelNames()
 
+	class ZombieCommander
+	{
+		public void update()
+		{
+			if (Input.GetMouseButtonUp (0)) {
+				Ray ray = Camera.main.GetComponent<Camera> ().ScreenPointToRay (Input.mousePosition);
+				RaycastHit hit = new RaycastHit ();
+				if (Physics.Raycast (ray, out hit)) {
+					GameObject[] zombies = GameObject.FindGameObjectsWithTag( "Zombie" );
+					GameObject commandCandidate = null;
+					bool acceptedTaskFlag = false;
+					for( uint i = 0; i < 2; ++i )
+					{
+						float minSqrDistance = -1.0f;
+						foreach( GameObject zombie in zombies )
+						{
+							ZombieBehavior zb = zombie.GetComponent<ZombieBehavior>();
+							HealthComponent hc = zombie.GetComponent<HealthComponent>();
+							if( zb != null && zb.enabled && zb.hasPlayerTask() == acceptedTaskFlag
+						   		&& hc != null && hc.enabled && !hc.isDead() )
+							{
+								float sqrDistance = ( hit.point - zb.transform.position ).sqrMagnitude;
+								if( minSqrDistance == -1.0f || sqrDistance < minSqrDistance )
+								{
+									commandCandidate = zombie;
+									minSqrDistance = sqrDistance;
+								}
+							}
+						}
+						if( commandCandidate != null )
+						{
+							commandCandidate.GetComponent<ZombieBehavior>().setTargetFromRaycastHit( hit );
+							break;
+						}
+						else
+						{
+							acceptedTaskFlag = !acceptedTaskFlag;
+						}
+					}
+				}
+			}
+		}
+	}
 
 	class MovementObserver
 	{
@@ -129,6 +172,7 @@ public class MainGameManager : MainGameInit
 	}
 
 	private MovementObserver m_movementObserver = new MovementObserver();
+	private ZombieCommander m_zombieCommander = new ZombieCommander();
 
 	public float getObjectSpeed( GameObject obj )
 	{
@@ -137,6 +181,7 @@ public class MainGameManager : MainGameInit
 
     public GameObject[] zombies;
     public GameObject[] humans;
+	public GameObject bullet;
     struct PopulationData
     {
         uint m_poolSize;
@@ -234,8 +279,8 @@ public class MainGameManager : MainGameInit
             writeCurrentLevel(currentLevel);
         }
 
-        m_humans.setup(4u, 4u, 4.0f, "Human", humans, "SpawnPoint_Human");
-        m_zombies.setup(2u, 2u, 4.0f, "Zombie", zombies, "SpawnPoint_Zombie");
+        m_humans.setup(10u, 10u, 3.0f, "Human", humans, "SpawnPoint_Human");
+        m_zombies.setup(7u, 7u, 3.0f, "Zombie", zombies, "SpawnPoint_Zombie");
     }
 
     public void Update()
@@ -243,6 +288,7 @@ public class MainGameManager : MainGameInit
         m_humans.update(Time.deltaTime);
         m_zombies.update(Time.deltaTime);
 		m_movementObserver.update ();
+		m_zombieCommander.update ();
     }
 
     //end MainGameManager

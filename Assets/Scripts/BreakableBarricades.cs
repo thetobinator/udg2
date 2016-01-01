@@ -34,7 +34,7 @@ public class BreakableBarricades : MonoBehaviour {
 
 	void OnCollisionEnter(Collision collision) {
 		string colliderTag = collision.gameObject.tag;
-		if (colliderTag == "Human" || colliderTag == "Zombie" || colliderTag == "Player") {
+		if (colliderTag == "Human" || colliderTag == "Zombie" || colliderTag == "Player" || colliderTag == "Projectile") {
 			explodeInstantly();
 		}
 	}

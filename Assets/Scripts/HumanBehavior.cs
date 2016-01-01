@@ -11,6 +11,7 @@ public class HumanBehavior : MonoBehaviour {
 		Spawning,			// go from spawn point to idle point
 		Idle,				// no zombies sensed, just stand there
 		Alerted,			// sensed zombies without exact localization, look around, moaning sounds
+		StandAndShoot,		// shoot at localized zombie
 		RunOff,				// run away from one of the localized zombies
 		Dead,				// dead, this time really
 	};
@@ -195,7 +196,18 @@ public class HumanBehavior : MonoBehaviour {
 		{
 			setTargetObject( m_localizedTargetCandidate );
 			m_dangerPosition = m_dangerObject.GetComponent< Transform >().position;
-			m_state = State.RunOff;
+
+			const float runOffThresholdSmall = 25.0f;
+			const float runOffThresholdLarge = 49.0f;
+			float sqrDistance = ( transform.position - m_dangerPosition ).sqrMagnitude;
+			if( sqrDistance < runOffThresholdSmall || sqrDistance > runOffThresholdLarge )
+			{
+				m_state = State.RunOff;
+			}
+			else
+			{
+				m_state = State.StandAndShoot;
+			}
 			return;
 		}
 		
@@ -225,23 +237,51 @@ public class HumanBehavior : MonoBehaviour {
 		approachPosition( m_targetPosition );
 		if( reachedPosition() )
 		{
-			/*
-			if( m_dangerObject != null && m_dangerPosition == m_dangerObject.GetComponent< Transform >().position )
-			{			
-				m_state = State.TargetInRange;
-			}
-			else
-				*/
-			{
-				m_state = State.Alerted;
-			}
+			m_state = State.Alerted;
 		}
 	}
-	
 
+	void updateStandAndShootBehaviour()
+	{
+		updateSenses ();
+		if( m_localizedTargetCandidate != null )
+		{
+			setTargetObject( m_localizedTargetCandidate );
+			m_dangerPosition = m_dangerObject.GetComponent< Transform >().position;
+			
+			const float runOffThresholdSmall = 25.0f;
+			const float runOffThresholdLarge = 81.0f;
+			float sqrDistance = ( transform.position - m_dangerPosition ).sqrMagnitude;
+			if( sqrDistance < runOffThresholdSmall || sqrDistance > runOffThresholdLarge )
+			{
+				m_state = State.RunOff;
+			}
+			else if( (int)( m_stateTime / 0.5f ) != (int)( ( m_stateTime - Time.deltaTime ) / 0.5f ) )
+			{
+				Quaternion bulletRotation = new Quaternion();
+				Vector3 forward = transform.forward + transform.right * Random.Range( -0.15f, 0.15f );
+				forward.Normalize();
+				bulletRotation.SetLookRotation( -transform.up, forward );
+				Instantiate( MainGameManager.instance.bullet, transform.position + transform.forward + transform.up * 1.1f, bulletRotation);
+			}
+
+			Vector3 look = m_dangerPosition - transform.position;
+			look.Normalize();
+			Quaternion newRotation = new Quaternion();
+			newRotation.SetLookRotation( look, transform.up );
+			transform.rotation = newRotation;
+			return;
+		}
+
+		if (m_stateTime > 2.0f) {
+			m_state = State.Alerted;
+		}		
+	}
 	
 	void colorizeObject( GameObject obj, Color color )
 	{
+		// commented out for now to test zombie target colorization
+		/*
 		if( obj == null )
 		{
 			return;
@@ -252,6 +292,7 @@ public class HumanBehavior : MonoBehaviour {
 		{
 			debugTint.tintColor = color;
 		}
+		*/
 	}
 	
 	void setNonLocalizedTargetCandidate( GameObject obj )
@@ -274,11 +315,18 @@ public class HumanBehavior : MonoBehaviour {
 
 	Vector3 getTargetPositionForDangerPosition( Vector3 dangerPosition )
 	{
-		Vector3 oppositeDirection = GetComponent<Transform> ().position - dangerPosition;
-		oppositeDirection.Normalize ();
-		oppositeDirection.Scale (new Vector3 (5.0f, 0.0f, 5.0f));
+		Vector3 currentPosition = GetComponent<Transform> ().position;
+		Vector3 oppositeDirection = currentPosition - dangerPosition;
 
-		return oppositeDirection + dangerPosition;
+		float sqrDistance = oppositeDirection.sqrMagnitude;
+		oppositeDirection.Normalize ();
+		if ( sqrDistance < 25.0f || sqrDistance > 49.0f ) {
+
+			oppositeDirection.Scale (new Vector3 (5.0f, 0.0f, 5.0f));
+			return oppositeDirection + dangerPosition;
+		}
+
+		return GetComponent<NavMeshAgent>().destination;
 	}
 	
 	void updateState()
@@ -304,6 +352,10 @@ public class HumanBehavior : MonoBehaviour {
 		case State.Alerted:
 			updateAlertBehaviour();
 			break;
+
+		case State.StandAndShoot:
+			updateStandAndShootBehaviour();
+			break;
 			
 		case State.RunOff:
 			updateRunOffBehaviour();
@@ -322,15 +374,25 @@ public class HumanBehavior : MonoBehaviour {
 			m_stateTime = 0.0f;
 		}
 		
-		GetComponent<Animator> ().SetFloat ("zombie_stateTime", m_stateTime);
-		GetComponent<Animator> ().SetBool ("zombie_walk", !reachedPosition());
+		GetComponent<Animator> ().SetFloat ("human_stateTime", m_stateTime);
+		GetComponent<Animator> ().SetBool ("human_walk", !reachedPosition() );
 	}
 	
 
+	void OnCollisionEnter(Collision collision) {
+		string colliderTag = collision.gameObject.tag;
+		if (colliderTag == "Projectile" ) {
+			Destroy ( collision.gameObject );
+			HealthComponent h = GetComponent<HealthComponent>();
+			if( h != null && h.enabled ){
+				h.dealDamage( 25.0f );
+				if( h.isDead() ){
+					ZombieBehavior.turnIntoRagdoll( gameObject );
+				}
+			}
+		}
+	}
 
-
-
-	
 	// Update is called once per frame
 	void Update ()
 	{
