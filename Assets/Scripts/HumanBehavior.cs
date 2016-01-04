@@ -30,6 +30,7 @@ public class HumanBehavior : MonoBehaviour {
 	float m_runnerAlertSqrDistanceThreshold = 256.0f;
 	float m_runnerDetectSqrDistanceThreshold = 64.0f;
 	Vector3 m_oldPosition;
+	bool m_hasGun;
 	
 	string opposingFactionTag()
 	{
@@ -200,7 +201,7 @@ public class HumanBehavior : MonoBehaviour {
 			const float runOffThresholdSmall = 25.0f;
 			const float runOffThresholdLarge = 49.0f;
 			float sqrDistance = ( transform.position - m_dangerPosition ).sqrMagnitude;
-			if( sqrDistance < runOffThresholdSmall || sqrDistance > runOffThresholdLarge )
+			if( sqrDistance < runOffThresholdSmall || sqrDistance > runOffThresholdLarge || !m_hasGun )
 			{
 				m_state = State.RunOff;
 			}
@@ -391,6 +392,13 @@ public class HumanBehavior : MonoBehaviour {
 				}
 			}
 		}
+	}
+
+	void Start()
+	{
+		m_hasGun = Random.Range (0, 2) == 0;
+		m_state = State.Init;
+		m_targetPosition = transform.position;
 	}
 
 	// Update is called once per frame

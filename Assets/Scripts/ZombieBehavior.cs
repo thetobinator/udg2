@@ -298,6 +298,7 @@ public class ZombieBehavior : MonoBehaviour {
 		else
 		{
 			updateSenses ();
+			return;// do not approach anybody if not given a command
 		}
 
 		if( m_localizedTargetCandidate != null && !m_hasPlayerTask )
@@ -313,13 +314,13 @@ public class ZombieBehavior : MonoBehaviour {
 		approachPosition( m_targetPosition );
 		if( reachedPosition() )
 		{
-			m_hasPlayerTask = false;
 			if( m_targetObject != null && m_targetPosition == m_targetObject.GetComponent< Transform >().position )
 			{			
 				m_state = State.TargetInRange;
 			}
 			else
 			{
+				m_hasPlayerTask = false;
 				m_state = State.Alerted;
 			}
 		}
@@ -341,11 +342,12 @@ public class ZombieBehavior : MonoBehaviour {
 					setLocalizedTargetCandidate( null );
 					setNonLocalizedTargetCandidate( null );
 					GetComponent<Animator>().SetBool ("zombie_eat", true );
+					m_hasPlayerTask = false;
 					m_state = State.EatFlesh;
 					return;
 				}
 			}
-			m_state = State.Alerted;
+			m_state = State.ApproachTarget;
 		}
 	}
 
@@ -376,19 +378,19 @@ public class ZombieBehavior : MonoBehaviour {
 
 	void setNonLocalizedTargetCandidate( GameObject obj )
 	{
-		colorizeObject( m_nonLocalizedTargetCandidate, Color.white );
+		//colorizeObject( m_nonLocalizedTargetCandidate, Color.white );
 		m_nonLocalizedTargetCandidate = obj;
 	}
 
 	void setLocalizedTargetCandidate( GameObject obj )
 	{
-		colorizeObject( m_localizedTargetCandidate, Color.white );
+		//colorizeObject( m_localizedTargetCandidate, Color.white );
 		m_localizedTargetCandidate = obj;
 	}
 
 	void setTargetObject( GameObject obj )
 	{
-		colorizeObject( m_targetObject, Color.white );
+		//colorizeObject( m_targetObject, Color.white );
 		m_targetObject = obj;
 	}
 
@@ -464,7 +466,7 @@ public class ZombieBehavior : MonoBehaviour {
 
 		//colorizeObject( m_nonLocalizedTargetCandidate, Color.blue );
 		//colorizeObject( m_localizedTargetCandidate, Color.green );
-		colorizeObject( m_targetObject, Color.red );
+		//colorizeObject( m_targetObject, Color.red );
 
 		if( m_state != oldState )
 		{
@@ -474,7 +476,7 @@ public class ZombieBehavior : MonoBehaviour {
 		GetComponent<Animator> ().SetFloat ("zombie_stateTime", m_stateTime);
 		GetComponent<Animator> ().SetBool ("zombie_walk", !reachedPosition());
 
-		GetComponent<NavMeshAgent>().speed = m_hasPlayerTask ? 1.7f : 1.5f;
+		GetComponent<NavMeshAgent>().speed = m_hasPlayerTask ? 2.5f : 1.5f;
 	}
 
 	//Transform[] hinges = GameObject.FindObjectsOfType (typeof(Transform)) as Transform[];
@@ -554,6 +556,7 @@ public class ZombieBehavior : MonoBehaviour {
 	{
 		if (hit.collider.gameObject.tag == opposingFactionTag ()) {
 			setTargetObject (hit.collider.gameObject);
+			colorizeObject( hit.collider.gameObject, Color.red );
 			m_targetPosition = m_targetObject.GetComponent< Transform > ().position;
 		} else {
 			setTargetObject (null);
