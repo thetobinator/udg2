@@ -253,7 +253,7 @@ public class HumanBehavior : MonoBehaviour {
 			const float runOffThresholdSmall = 25.0f;
 			const float runOffThresholdLarge = 81.0f;
 			float sqrDistance = ( transform.position - m_dangerPosition ).sqrMagnitude;
-			if( sqrDistance < runOffThresholdSmall || sqrDistance > runOffThresholdLarge )
+			if( ( sqrDistance < runOffThresholdSmall || sqrDistance > runOffThresholdLarge ) && m_stateTime > 1.0f )
 			{
 				m_state = State.RunOff;
 			}
@@ -365,6 +365,8 @@ public class HumanBehavior : MonoBehaviour {
 		case State.Dead:
 			break;
 		}
+
+
 		
 		//colorizeObject( m_nonLocalizedTargetCandidate, Color.blue );
 		//colorizeObject( m_localizedTargetCandidate, Color.green );
@@ -377,6 +379,7 @@ public class HumanBehavior : MonoBehaviour {
 		
 		GetComponent<Animator> ().SetFloat ("human_stateTime", m_stateTime);
 		GetComponent<Animator> ().SetBool ("human_walk", !reachedPosition() );
+		GetComponent<Animator> ().SetBool ("human_shoot", m_state == State.StandAndShoot );
 	}
 	
 
