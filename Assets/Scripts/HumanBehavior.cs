@@ -31,6 +31,7 @@ public class HumanBehavior : MonoBehaviour {
 	float m_runnerDetectSqrDistanceThreshold = 64.0f;
 	Vector3 m_oldPosition;
 	bool m_hasGun;
+	public Transform handBone = null;
 	
 	string opposingFactionTag()
 	{
@@ -399,19 +400,23 @@ public class HumanBehavior : MonoBehaviour {
 
 	void Start()
 	{
-		m_hasGun = Random.Range (0, 2) == 0;
+		m_hasGun = Random.Range (0, 2) == 0 && handBone != null;
 		m_state = State.Init;
 		m_targetPosition = transform.position;
+
+		if( m_hasGun )
+		{
+			GameObject gun = (GameObject)Instantiate( MainGameManager.instance.gun );
+			gun.transform.parent = handBone.transform;
+			gun.GetComponent<CannonBehavior>().enabled = false; // maybe use this script later on
+			gun.transform.localPosition = new Vector3(0.0f, 0.0f, 0.0f );
+			gun.transform.localEulerAngles = new Vector3(270.0f, 180.0f, 0.0f );
+		}
 	}
 
 	// Update is called once per frame
 	void Update ()
 	{
-		/* @Bill: to test the input again,
-		 * comment out the call to updateState and instead
-		 * uncomment everything that is commented below
-		*/
-		
 		updateState();
 
 		/*

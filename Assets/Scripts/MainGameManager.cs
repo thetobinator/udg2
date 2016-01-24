@@ -182,6 +182,7 @@ public class MainGameManager : MainGameInit
     public GameObject[] zombies;
     public GameObject[] humans;
 	public GameObject bullet;
+	public GameObject gun;
     struct PopulationData
     {
         uint m_poolSize;
