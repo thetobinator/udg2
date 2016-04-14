@@ -403,6 +403,20 @@ public class HumanBehavior : MonoBehaviour {
 		m_hasGun = Random.Range (0, 2) == 0 && handBone != null;
 		m_state = State.Init;
 		m_targetPosition = transform.position;
+		m_dangerPosition = transform.position;
+
+		// for now, let each human walk to a differnt spawn point after spawning
+		GameObject[] spawnPoints = GameObject.FindGameObjectsWithTag("SpawnPoint_Human");
+		float maxDiffSqr = 0.0f;
+		for( uint i = 0u; i < spawnPoints.Length; ++i )
+		{
+			Vector3 diff = spawnPoints[ i ].transform.position - transform.position;
+			if( diff.sqrMagnitude > maxDiffSqr )
+			{
+				m_dangerPosition = spawnPoints[ i ].transform.position;
+				maxDiffSqr = diff.sqrMagnitude;
+			}
+		}		
 
 		if( m_hasGun )
 		{
