@@ -556,7 +556,7 @@ public class ZombieBehavior : MonoBehaviour {
 	{
 		if (hit.collider.gameObject.tag == opposingFactionTag ()) {
 			setTargetObject (hit.collider.gameObject);
-			colorizeObject( hit.collider.gameObject, Color.red );
+			//colorizeObject( hit.collider.gameObject, Color.red );
 			m_targetPosition = m_targetObject.GetComponent< Transform > ().position;
 		} else {
 			setTargetObject (null);

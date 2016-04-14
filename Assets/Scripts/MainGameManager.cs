@@ -212,8 +212,30 @@ public class MainGameManager : MainGameInit
             }
         }
 
+		private void spawnOneAtEachSpawnpoint()
+		{
+			GameObject[] spawnPoints = GameObject.FindGameObjectsWithTag(m_spawnPointTag);
+			if (spawnPoints.Length == 0)
+			{
+				print("No spawn points with tag '" + m_spawnPointTag + "' found in scene! Cannot spawn any '" + m_factionTag + "s'!");
+			}
+
+			for( uint i = 0u; i < spawnPoints.Length; ++i )
+			{
+				GameObject spawnPoint = spawnPoints[ i ];
+				Instantiate(m_prefabs[Random.Range(0, m_prefabs.Length)], spawnPoint.transform.position, spawnPoint.transform.rotation);
+			}
+		}
+
         public void update(float timeStep)
         {
+			if( m_time == 0.0f  && m_prefabs.Length > 0u )
+			{
+				m_time = 1.0f;// *sigh*
+				spawnOneAtEachSpawnpoint();
+			}
+			// :TO: enable below code for testing the old delayed spawning code            
+            /*
             m_time += timeStep;
             m_entities = GameObject.FindGameObjectsWithTag(m_factionTag);
 
@@ -236,6 +258,7 @@ public class MainGameManager : MainGameInit
 
                 }
             }
+            */
         }
     }
 
