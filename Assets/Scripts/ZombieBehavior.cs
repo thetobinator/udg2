@@ -504,7 +504,7 @@ public class ZombieBehavior : MonoBehaviour {
 
 		// experimental: zombies go to player
 		GameObject player = GameObject.FindGameObjectWithTag ("Player");
-		if (player != null) {
+		if (player != null && initDelay == 0.0f ) {
 			setTargetObject (null);
 			m_targetPosition = player.transform.position;		
 			m_state = State.ApproachTarget;
