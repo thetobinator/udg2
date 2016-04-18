@@ -1,0 +1,228 @@
+Never tell your password to anyone.
+Tuesday, April 12, 2016
+TheTobinator: I need to make dinner now
+TheTobinator: but now that I finished that Zelda I'll be around a bit more often and do some scripting ;)
+Lolzifer: ok enjoy your meal
+TheTobinator: thanks, you too
+TheTobinator: see ya on Thursday!
+Lolzifer: ok good, zelda magic game dev!
+Lolzifer: seeyathen
+TheTobinator: hey
+Lolzifer: yo
+TheTobinator: I wrote you a small mail
+Lolzifer: k i'll go see
+Lolzifer: k i'll update and put more spawn points on the map
+TheTobinator: ok, cool
+TheTobinator: next thing for me will be to fix that erratic circling when reaching destination points
+TheTobinator: I guess both zombies and humans do that
+Lolzifer: Watching the Unity Multipurpose Avatar tutorials, slow going
+Lolzifer: ah yeah they maybe they need small list of points to go to? or someanimation to do
+TheTobinator: they kind of walk around a few steps to "look around"
+TheTobinator: but it doesn't work well as you can see ;)
+Lolzifer: ah, I thought i had them going to barriers and boxes tags?
+Lolzifer: I though they could search boxs and furniture for weapons
+TheTobinator: yeah, we can bring such behaviour back
+Lolzifer: and I think there's a "wood" tag that they could collect the wood, maybe I had another name for that ta
+TheTobinator: do the zombies really spawn only upon clicking for you?
+Lolzifer: seems like it
+TheTobinator: they seemed to work here
+Lolzifer: did the zombie spawn and seek a target?
+Lolzifer: shoul seek the player first
+TheTobinator: no, but they spawned with delays
+TheTobinator: okay, that's a good idea
+TheTobinator: just make them walk toward the player
+Lolzifer: hm i'll let you know if that's changed when I grab the git
+TheTobinator: ok
+TheTobinator: well, there is only that one zombie at the moment in the udg level
+TheTobinator: but you can add more spawn points
+Lolzifer: yeah
+Lolzifer: i added my small changes to the repository, removed two scripts tryign to stop key capture while editing, didnt' seem to make a difference, also 'fixed' some of the old models in the Quick City map, but that breaks them, doors stop being passable.
+TheTobinator: alright, I'm updating
+TheTobinator: oh, you added antack stuff ;)
+Lolzifer: oh Norton freaked out about the last build of igame3d and threw it away the other day. I think it's the murgalua being able to spawn new processes that it didn't like, just FYI
+Lolzifer: oh the old arcade games are on the repository, but they have some collision box issues in Unity 5
+TheTobinator: ah, interesting
+TheTobinator: I don' have norton or stuff like that installed
+Lolzifer: yikes
+TheTobinator: living the risky life ;)
+Lolzifer: very
+Lolzifer: it's saved my ass a few times, Amy's webroot anti-virus has found at least 17 things on her machine
+TheTobinator: I can't tell if there are any viruses on this machine
+TheTobinator: but nothing misbehaves so far
+Lolzifer: if you don't surf much you'll probably be ok
+TheTobinator: I don't use for web etc.
+Lolzifer: ah ok, yeah nice and isolated
+Lolzifer: ok looks like zombie auto spawns
+TheTobinator: nice
+TheTobinator: I'll make them walk towards the player next time
+Lolzifer: groovy, think they do it now with a click, but F key is disabled?
+Lolzifer: hmm only one is walkign
+TheTobinator: click more often to activate more
+TheTobinator: isn't it exactly like in the old version?
+TheTobinator: you click somewhere -> one zombies has the task to walk there
+TheTobinator: you click again -> another zombie also has the task to walk there
+TheTobinator: and so on
+Lolzifer: right, I clicked myself a few timse after they spawned only one guy moved, but clicking a human sent them both to them
+TheTobinator: ah, okay
+TheTobinator: probably a bug then
+Lolzifer: ok its working
+Lolzifer: maybe I missed the click
+TheTobinator: we need some kind of indicator on the floor
+Lolzifer: maaaaybe, probably
+TheTobinator: as long as it doesn't look as bad as in the original ;)
+Lolzifer: wasn't too bad, heh
+TheTobinator: oh, by the way I reused some of the iGame3D OpenAL code for music playback in Royal Revolt
+Lolzifer: nice
+TheTobinator: for prototyping the musicplayer in the upcoming steam version
+Lolzifer: iGame3D lives!
+TheTobinator: hehe, it does!
+TheTobinator: I think we release the Steam version this summer
+Lolzifer: cool!
+TheTobinator: will be free-to-play
+Lolzifer: get those micro-transactions
+Lolzifer: other gamers live a whole different world then old men like me
+TheTobinator: yeah, this in-app-purchase thing is also not my thing
+TheTobinator: but it brings in the money ;)
+Lolzifer: good!
+TheTobinator: we outsourced the development of the steam version to cliffhanger from Austria
+TheTobinator: but well... I need to clean up their shit all the time
+Lolzifer: shit
+TheTobinator: and support them
+TheTobinator: it's just a waste of time and money
+Lolzifer: damn
+TheTobinator: should have done all that in-house
+Lolzifer: something to learn from when you are calling the shots
+TheTobinator: hehehe, yes
+Lolzifer: you bring them all in house, keep them in some rented apartment, no light, food under the door
+Lolzifer: Like Unity started
+TheTobinator: buckets with fish heads and coke
+Lolzifer: hah
+TheTobinator: oh, did you see "Portal Knights" by the way?
+TheTobinator: it's done by my former Sacred 3 coworkers
+TheTobinator: also available on Steam
+Lolzifer: haha
+TheTobinator: is working out quite nicely
+Lolzifer: looking at it now
+TheTobinator: has a nice trailer
+TheTobinator: might be something for you, has minecraft elements
+TheTobinator: just loooks better
+Lolzifer: yeah looks real nice
+Lolzifer: I kind of burned out on the minecrafting thing, Still blows my mind that I was saying we should do that kind of thing at the very start of T3D
+Lolzifer: I evem saw a castle map somewhere that looked an awful lot like our old castle level, only they were showing off real time lighting
+TheTobinator: yeah, I guess you played a lot of minecraft back then ;)
+Lolzifer: none
+Lolzifer: Blockstorm
+Lolzifer: shootin each other and digging holes
+TheTobinator: oh, okay
+Lolzifer: but then the player base dwindled to almost nothing
+Lolzifer: and they nerfed my explosives, assholes
+TheTobinator: hahahaha
+Lolzifer: Laying claymores was so much fun
+TheTobinator: oh, and next month "Olympus Rising" is launching
+Lolzifer: maybe we can make a claymore style trap for zombies, where they play dead and pounce on someone walking by
+TheTobinator: which started basically as a reskin of Royal Revolt II
+TheTobinator: but has evolved
+Lolzifer: heh, same company?
+TheTobinator: yes!
+TheTobinator: but only mobile versions for now
+TheTobinator: they make it in the room next door
+Lolzifer: well if you can reuse code to get a different audience, why not?
+TheTobinator: absolutely
+TheTobinator: it might sell
+Lolzifer: Fallout 3/Skyrim for example
+Lolzifer: or was it Skyrim/Fallout 4
+TheTobinator: I didn't do much for it, just add some ad sdk
+Lolzifer: padding your CV
+Lolzifer: never say you did't do much :D
+TheTobinator: hahaha, well, for that project it's ture
+TheTobinator: true
+TheTobinator: but I'm doing still a lot for RR2
+TheTobinator: updates are planned for until 2017
+TheTobinator: last month there was a big Apple and Google feature
+Lolzifer: It's a succesful game, that's super fortunate in this market
+TheTobinator: 1 million dollars revenue
+Lolzifer: omg
+TheTobinator: 100k just from people watching video ads in 30 days
+Lolzifer: wtf!
+TheTobinator: yes, we are lucky
+TheTobinator: it's quite big in the mobile market
+TheTobinator: but that was of course an outstanding month because of the featuring
+TheTobinator: normally it's about the half which is still good
+Lolzifer: makes up for Sacred 3 I guess
+TheTobinator: yeah, basically it allowed the others to make Portal Knights
+TheTobinator: the companies are still somewhat connected
+Lolzifer: Oh the did it in house? thought they went independent
+TheTobinator: well, they are still keen
+TheTobinator: I went to keenflare
+TheTobinator: which does mobile only as a joint venture with flaregames
+Lolzifer: ah
+TheTobinator: complicated ;)
+Lolzifer: yah, need a map
+TheTobinator: there are like 4 different companies which were once one
+Lolzifer: org chart
+TheTobinator: hahaha
+Lolzifer: that's good, at least if lay offs hit they don't just dump the whole lot
+Lolzifer: you guys are doing good though, maybe we should reskin RR for UDG?
+TheTobinator: hehehe, actually such a thing was in progress for a short time
+Lolzifer: oh yeah?
+TheTobinator: internal name was just "Zombies"
+TheTobinator: it was also Tower Defense-ish
+Lolzifer: and what happened? too many similar games?
+TheTobinator: I think they just experimented around in between Royal Revolt I and II
+TheTobinator: I wasn't in the company back then
+TheTobinator: but it probably is still on svn ;)
+Lolzifer: hmm
+Lolzifer: maybe when we have a more accurate version of UDG you can pitch it
+TheTobinator: we should figure out decent mobile input for it
+TheTobinator: which well, could work
+Lolzifer: yeah have to work out how the game should 'really' play
+TheTobinator: tapping of course works like clicking, and for the few keyboard controlled things we add some big enough on-screen buttons
+Lolzifer: FPS seems natural but leaves out some of the immersion or sense that you have control, RTS pulls you way out of the immersion, third person is neat but doesn't make sense unless we use some grim reaper type model maybe
+Lolzifer: there is some game on Steam where ou are running around in first person, killing multiplayer people, by throwing zombie pheremones at them that attract the zombies
+Lolzifer: basically plucked right out Dying Light zombie mode, and actually our origina uDeadGame design doc
+TheTobinator: absolutely!
+Lolzifer: I was thinking, what if you udeadgame is multiplayer
+Lolzifer: like hungry hungry hippoes, eat the most humans
+TheTobinator: hm, does Unity make Multiplayer easy?
+Lolzifer: apparently so, not sure how 'easy' is, but for now keep it in mind
+Lolzifer: you played Agar.io?
+TheTobinator: no, let me google that
+Lolzifer: dots eat dots, get bigger, expend mass for speed, multiplayer online thing
+TheTobinator: ah, I know it
+TheTobinator: just not by that name
+Lolzifer: We could do a similar thing with zombies
+Lolzifer: make a zombie get fatter...eventually explode
+Lolzifer: exploding zombies is like a staple of the genre now
+TheTobinator: the enlargement of the zombies would be very limited in that level there though ;)
+TheTobinator: small hallways
+Lolzifer: yeah only their guts would get big
+Lolzifer: might be able to do that with UMA
+TheTobinator: hehehe, could try that, yeah
+TheTobinator: does that also come with some animations?
+Lolzifer: I don't think so
+TheTobinator: ok
+Lolzifer: I hope they are rigged, didn't test that ye
+TheTobinator: because that eating anim we are using is... you know
+Lolzifer: We have crazy amounts of animations
+Lolzifer: yeah...well could buy the zombie animations for like $10
+Lolzifer: just don't want our open soure repository to be cluttered with cash objects yet
+TheTobinator: that's right
+TheTobinator: we shouldn't do that yet
+Lolzifer: there was some motion capture software for sale a few months back, for som reason I had a feeling UNity was going to add MoCap to the engine...maybe I dreamed that
+TheTobinator: ha
+TheTobinator: well, getting mocap data into unity isn't so hard when you it
+TheTobinator: when you have it I mean
+Lolzifer: after dealing with 100s of animations I was not too excited to do my own motion capture data tweaking
+TheTobinator: I bet
+Lolzifer: we'll just scrounge along for now, and then 'polish' it later
+TheTobinator: let's just rotate that current eating anim by 90 degrees
+TheTobinator: ;)
+Lolzifer: ha!
+TheTobinator: alright, I think I'll be around on Monday and do some minor scripting then
+Lolzifer: ok see you then, have a good weekend
+TheTobinator: will spend the weekende at my parents
+TheTobinator: thanks, you too!
+TheTobinator: enjoy
+Lolzifer: have fun!
+TheTobinator: cu
+TheTobinator is now Offline.
