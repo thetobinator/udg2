@@ -500,6 +500,18 @@ public class ZombieBehavior : MonoBehaviour {
     {
 		m_state = State.Init;
 		m_targetPosition = transform.position;
+
+
+		// experimental: zombies go to player
+		GameObject player = GameObject.FindGameObjectWithTag ("Player");
+		if (player != null) {
+			setTargetObject (null);
+			m_targetPosition = player.transform.position;		
+			m_state = State.ApproachTarget;
+			m_hasPlayerTask = true;
+			GetComponent<Animator> ().SetBool ("zombie_attack", false);
+			GetComponent<Animator> ().SetBool ("zombie_eat", false);
+		}
     }
 
 
