@@ -211,12 +211,10 @@ public class HumanBehavior : MonoBehaviour {
 				m_state = State.StandAndShoot;
 			}
 			return;
-		}
-		
-		m_targetPosition = GetComponent< Transform > ().position - GetComponent< Transform > ().right * 3.0f;
-		approachPosition( m_targetPosition );
-		if( reachedPosition() || m_stateTime >= 5.0f )
-		{
+		} else if (m_nonLocalizedTargetCandidate != null || m_stateTime < 4.0f ) {
+		// glance left and right (need anim later)
+			transform.Rotate( 0.0f, 90.0f * Time.deltaTime * (m_stateTime > 1.0f && m_stateTime <= 3.0f ? 1.0f : -1.0f), 0.0f );
+		} else {
 			m_state = State.Idle;
 		}
 	}
