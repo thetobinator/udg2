@@ -227,6 +227,7 @@ public class ZombieBehavior : MonoBehaviour {
 			}
 			
 			if (h != null) {
+				h.dropWeapon();
 				Destroy (h);
 				result = true;
 			} else if (z != null) {

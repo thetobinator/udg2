@@ -31,6 +31,7 @@ public class HumanBehavior : MonoBehaviour {
 	float m_runnerDetectSqrDistanceThreshold = 64.0f;
 	Vector3 m_oldPosition;
 	bool m_hasGun;
+	GameObject m_gun;
 	public Transform handBone = null;
 	
 	string opposingFactionTag()
@@ -380,7 +381,16 @@ public class HumanBehavior : MonoBehaviour {
 		GetComponent<Animator> ().SetBool ("human_walk", !reachedPosition() );
 		GetComponent<Animator> ().SetBool ("human_shoot", m_state == State.StandAndShoot );
 	}
-	
+
+	public void dropWeapon()
+	{
+		if( m_gun != null )
+		{
+			m_gun.transform.parent = null;
+			m_gun.GetComponent<CapsuleCollider>().enabled = true;
+			m_gun.GetComponent<Rigidbody>().useGravity = true;
+		}
+	}
 
 	void OnCollisionEnter(Collision collision) {
 		string colliderTag = collision.gameObject.tag;
@@ -418,11 +428,15 @@ public class HumanBehavior : MonoBehaviour {
 
 		if( m_hasGun )
 		{
-			GameObject gun = (GameObject)Instantiate( MainGameManager.instance.gun );
-			gun.transform.parent = handBone.transform;
-			gun.GetComponent<CannonBehavior>().enabled = false; // maybe use this script later on
-			gun.transform.localPosition = new Vector3(0.0f, 0.0f, 0.0f );
-			gun.transform.localEulerAngles = new Vector3(270.0f, 180.0f, 0.0f );
+			m_gun = (GameObject)Instantiate (MainGameManager.instance.gun);
+			m_gun.transform.parent = handBone.transform;
+			m_gun.GetComponent<CannonBehavior> ().enabled = false; // maybe use this script later on
+			m_gun.transform.localPosition = new Vector3 (0.0f, 0.0f, 0.0f);
+			m_gun.transform.localEulerAngles = new Vector3 (270.0f, 180.0f, 0.0f);
+		}	
+		else
+		{
+			m_gun = null;
 		}
 	}
 
