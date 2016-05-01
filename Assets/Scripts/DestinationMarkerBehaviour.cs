@@ -10,8 +10,9 @@ public class DestinationMarkerBehaviour : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		m_lifeTime -= Time.deltaTime;
-		transform.localScale = new Vector3( m_lifeTime, m_lifeTime, m_lifeTime );
+		m_lifeTime -= Time.deltaTime * 2.0f;
+		float size = Mathf.Sin (Mathf.PI * m_lifeTime);
+		transform.localScale = new Vector3 (size, size, size);
 		if (m_lifeTime <= 0.0f) {
 			Destroy ( gameObject );
 		}
