@@ -109,7 +109,16 @@ public class MainGameManager : MainGameInit
 						}
 						if( commandCandidate != null )
 						{
-							commandCandidate.GetComponent<ZombieBehavior>().setTargetFromRaycastHit( hit );
+							// add dummy destination marker:
+							NavMeshPath path = new NavMeshPath();
+							NavMesh.CalculatePath(commandCandidate.transform.position, hit.point, NavMesh.AllAreas, path);
+							if( path.corners.Length > 0 ){
+								Vector3 destinationPosition = path.corners[ path.corners.Length - 1 ];
+								GameObject destinationMarker = (GameObject)Instantiate (MainGameManager.instance.destinationMarker);
+								destinationMarker.transform.position = new Vector3( destinationPosition.x, destinationPosition.y + 0.01f, destinationPosition.z );
+								destinationMarker.transform.eulerAngles = new Vector3( 90.0f, 0.0f, 0.0f );
+								commandCandidate.GetComponent<ZombieBehavior>().setTargetFromRaycastHit( hit );
+							}
 							break;
 						}
 						else
@@ -183,6 +192,7 @@ public class MainGameManager : MainGameInit
     public GameObject[] humans;
 	public GameObject bullet;
 	public GameObject gun;
+	public GameObject destinationMarker;
     struct PopulationData
     {
         uint m_poolSize;
