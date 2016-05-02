@@ -1,0 +1,36 @@
+
+Monday, April 18, 2016
+Lolzifer: soon as it kills
+TheTobinator: it probably happens to zombies that have been humans before
+Lolzifer: happening on your end?
+TheTobinator: trying to repro
+Lolzifer: just wait for people to show up, kill one
+TheTobinator: true
+TheTobinator: ok let me fix that before I leave ;)
+TheTobinator: alright, should be fixed
+TheTobinator: I hope I'll be online for an hour tomorrow
+TheTobinator: does the fix work for you
+Lolzifer: ok good to go
+TheTobinator: alright! see ya
+Lolzifer: ok thanks have a good night
+TheTobinator: you too
+
+Monday, April 19, 2016
+Lolzifer: no changes on my end, still going through UMA videos
+Lolzifer: might need to spend $50 on this building maker
+Lolzifer: https://youtu.be/od4s-lsMCac
+TheTobinator is now Online.
+TheTobinator: yo
+TheTobinator: that's some really cool building making
+TheTobinator is now Online.
+TheTobinator: alright, I pushed something
+TheTobinator: when reaching a destination in alerted state both zombies and humans will "look" around
+TheTobinator: which is rotating on the spot for now
+TheTobinator: need an anim later
+TheTobinator: bascially turn 90 degrees to the right, then 180 to the left, then 90 to the right again
+TheTobinator: to check for new targets
+TheTobinator: it's pushed
+TheTobinator: not sure when I'll be online next time
+TheTobinator: definately on Monday though
+TheTobinator: see ya
+TheTobinator is now Offline.
