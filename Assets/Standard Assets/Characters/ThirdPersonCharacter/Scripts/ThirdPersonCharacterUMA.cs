@@ -51,9 +51,9 @@ namespace UnityStandardAssets.Characters.ThirdPerson
             if (UMAAnimator == null)
             {
                 
-                if (transform.Find("myUMA").GetComponent<Animator>())
+                if (transform.Find("MyUMA").GetComponent<Animator>())
                 {
-                    UMAAnimator = transform.Find("myUMA").GetComponent<Animator>();
+                    UMAAnimator = transform.Find("MyUMA").GetComponent<Animator>();
                     Debug.Log("UMA Found");
                     m_Animator = UMAAnimator;
                     m_Animator.applyRootMotion = false;
