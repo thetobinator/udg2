@@ -12,7 +12,13 @@ using UnityEditor;
 
 
 
-public class UMAMaker1_Trenchcoat: MonoBehaviour {
+public class UMAMaker1_Zombies: MonoBehaviour {
+    //udeadgame UMA Maker for Zombies
+
+    // scripts that we will attach to the dynamically generated UMA 
+    //public ZombieBehavior zombieBehavior;
+    //public HealthComponent healthComponent;
+
 
     /* All UMA content that provides a mesh is a slot. Slots are basically containers
        holding all necessary data to be combined with the rest of an UMA avatar */
@@ -52,7 +58,13 @@ public class UMAMaker1_Trenchcoat: MonoBehaviour {
     // practical guide to uma part 17 expression player https://youtu.be/nJI-kUYYuWE?t=11m36s
     //slider 
     [Range(-1.0f, 1.0f)]
-    public float happy = 0f; 
+    public float happy = 0f;
+
+    //Practical Guide to UMA part 1 Runtime Slot Changes. https://youtu.be/vB-tGGcFxDI?t=5m30s
+    public bool hairState = false;
+    private bool lastHairState = false;
+    public Color hairColor;
+    private Color lastHairColor;
 
     public bool chestEmblemState = false;
     private bool lastChestEmblemState = false;
@@ -63,12 +75,11 @@ public class UMAMaker1_Trenchcoat: MonoBehaviour {
     public Color vestColor = Color.white;
     private Color lastVestColor = Color.white;
 
-    //Practical Guide to UMA part 1 Runtime Slot Changes. https://youtu.be/vB-tGGcFxDI?t=5m30s
-    public bool hairState = false;
-    private bool lastHairState = false;
-
-    public Color hairColor;
-    private Color lastHairColor;
+    //TrenchCoat UMA and Blender Content creation https://youtu.be/_c8lrr-BOnM
+    public bool trenchcoatState = false;
+    public Color trenchcoatColor;
+    private Color lastTrenchcoatColor;
+    private bool lastTrenchcoatState = false;
 
     private int footSlot = 6;
     public bool shoeState = false;
@@ -83,20 +94,24 @@ public class UMAMaker1_Trenchcoat: MonoBehaviour {
 
     //practical guide to uma part 17 Expression player https://youtu.be/nJI-kUYYuWE?t=2m27s
 
-    public UMAExpressionPlayer expressionPlayer;
+    //public UMAExpressionPlayer expressionPlayer;
 
-    //TrenchCoat UMA and Blender Content creation https://youtu.be/_c8lrr-BOnM
-    public bool trenchcoatState = false;
-    public Color trenchcoatColor;
-    private Color lastTrenchcoatColor;
-    private bool lastTrenchcoatState = false;
-    
+    void Awake()
+    {
+        slotLibrary = GameObject.Find("SlotLibrary").GetComponent<SlotLibrary>();
+        overlayLibrary = GameObject.Find("OverlayLibrary").GetComponent<OverlayLibrary>();
+        raceLibrary = GameObject.Find("RaceLibrary").GetComponent<RaceLibrary>();
+        generator = GameObject.Find("UMAGenerator").GetComponent<UMAGenerator>();
+        //zombieSettings = GameObject.Find("Zombie_Settings");
 
+    }
 
     // Part 4 of practical guide to UMA https://youtu.be/KZpvgiAdD9c
     void Start()
     {
+      
         GenerateUMA();
+     
     }
 
     void Update()
@@ -364,6 +379,9 @@ public class UMAMaker1_Trenchcoat: MonoBehaviour {
         // dynamic animation controller 
         umaDynamicAvatar.animationController = animController;
 
+
+
+
         // Generate Our UMA
         umaDynamicAvatar.UpdateNewRace();
 
@@ -371,6 +389,10 @@ public class UMAMaker1_Trenchcoat: MonoBehaviour {
         GO.transform.parent = this.gameObject.transform;
         GO.transform.localPosition = Vector3.zero;
         GO.transform.localRotation = Quaternion.identity;
+      
+        GO.AddComponent(typeof(NavMeshAgent));
+        GO.AddComponent(typeof(CapsuleCollider));
+       
     }
 
     // Practical Guide to UMA part 5 https://youtu.be/N-NlNJv1ESE
@@ -427,8 +449,7 @@ public class UMAMaker1_Trenchcoat: MonoBehaviour {
         // umaDna.headSize = 1f;
 
         // UMA 2.0 & Blender 2.76b Custom Content Creation Part 5: Getting our Model/Slot in Unity https://youtu.be/NAw7z_x8Mos?t=11m
-        umaData.umaRecipe.slotDataList[8] = slotLibrary.InstantiateSlot("UMA_Human_Male_Trenchcoat"); // mesh         
-        //umaData.umaRecipe.slotDataList[8].AddOverlay(overlayLibrary.InstantiateOverlay("UMA_Human_Male_Trenchcoat"));
+        umaData.umaRecipe.slotDataList[8] = slotLibrary.InstantiateSlot("UMA_Human_Male_Trenchcoat"); // mesh 
 
     }
 
@@ -501,7 +522,7 @@ public class UMAMaker1_Trenchcoat: MonoBehaviour {
         Destroy(recipe);
 
         //Save string to text file
-        string fileName = "Assets/Test.txt";
+        string fileName = "Assets/UMASavedTextFile.txt";
             StreamWriter stream = File.CreateText(fileName);
         stream.WriteLine(SaveString);
         stream.Close();
@@ -510,7 +531,7 @@ public class UMAMaker1_Trenchcoat: MonoBehaviour {
     void LoadText()
     {
         //Save string to text file
-        string fileName = "Assets/Test.txt";
+        string fileName = "Assets/UMASavedTextFile.txt";
             StreamReader stream = File.OpenText(fileName);
         SaveString = stream.ReadLine();
         stream.Close();
@@ -533,8 +554,9 @@ public class UMAMaker1_Trenchcoat: MonoBehaviour {
     {
         #if UNITY_EDITOR
         var asset = ScriptableObject.CreateInstance<UMATextRecipe>();
+        
         asset.Save(umaDynamicAvatar.umaData.umaRecipe, umaDynamicAvatar.context);
-        AssetDatabase.CreateAsset(asset, "Assets/Boom.asset");
+        AssetDatabase.CreateAsset(asset, "Assets/UMASavedAsAsset.asset");
         AssetDatabase.SaveAssets();
         #endif
     }
@@ -542,9 +564,16 @@ public class UMAMaker1_Trenchcoat: MonoBehaviour {
     //practical guide to UMA part 15 intercepting uma events https://youtu.be/_k-SZRCvgIk?t=4m17s
     void CharacterCreatedCallback(UMAData umaData)
     {
+        //GameObject myUMA = GameObject.Find("myUMA");
         //Debug.Log("UMA_Created");
-        GrabStaff();
+        // GrabStaff();
 
+        //attach scripts after creation
+        umaData.gameObject.tag = "Zombie";
+        umaData.gameObject.AddComponent<HealthComponent>();
+        umaData.gameObject.AddComponent<ZombieBehavior>();
+        
+        /*
         // A Practical Guide To UMA - Part 17 - Using the Expression Player  https://youtu.be/nJI-kUYYuWE
         UMAExpressionSet expressionSet = umaData.umaRecipe.raceData.expressionSet;
         expressionPlayer = umaData.gameObject.AddComponent<UMAExpressionPlayer>();
@@ -553,7 +582,7 @@ public class UMAMaker1_Trenchcoat: MonoBehaviour {
         expressionPlayer.Initialize();
         // automated expressions to look life like
         expressionPlayer.enableBlinking = true;
-        expressionPlayer.enableSaccades = true;
+        expressionPlayer.enableSaccades = true;*/
     }
 
 
@@ -562,7 +591,10 @@ public class UMAMaker1_Trenchcoat: MonoBehaviour {
     {
         GameObject staff = GameObject.Find("staff");
         //Transform hand = umaDynamicAvatar.gameObject.transform.FindChild("Root/Global/Position/Hips..etc hiearchy style");
+
+        // right handed staff/sword/stick wielders will stab themselvse while running.
         Transform hand = umaData.skeleton.GetBoneGameObject(UMASkeleton.StringToHash("LeftHand")).transform﻿; //eli curtz style.
+
         staff.transform.SetParent(hand);
         staff.transform.localPosition = Vector3.zero;
         staff.transform.localPosition = new Vector3(-0.117f, -0.543f, -0.017f);

@@ -282,7 +282,7 @@ public class MainGameManager : MainGameInit
         gameroot = Application.dataPath;
         gameRoot = gameroot; // fix them all at once later.
         levelPath = Application.dataPath + "/Data/Levels/";
-        currentLevel = Application.loadedLevelName;
+        currentLevel = "! Application.loadedLevelName is obsolete use SceneManager to determine what scenes are loaded.";
 
 
     }

@@ -1,8 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-using UnityEngine;
-using System.Collections;
 
 public class HumanBehavior : MonoBehaviour {
 	enum State
@@ -426,7 +424,7 @@ public class HumanBehavior : MonoBehaviour {
 			}
 		}		
 
-		if( m_hasGun )
+		if( m_hasGun && GameObject.Find("gun" ))
 		{
 			m_gun = (GameObject)Instantiate (MainGameManager.instance.gun);
 			m_gun.transform.parent = handBone.transform;

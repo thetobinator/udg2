@@ -15,7 +15,7 @@ public class ZombieBehavior : MonoBehaviour {
 		Stunned,			// stunned, target has some time to escape
 		Dead,				// dead, this time really
 	};
-
+    
 	public float initDelay = 0.0f;
 	GameObject m_nonLocalizedTargetCandidate = null;
 	GameObject m_localizedTargetCandidate = null;
@@ -43,6 +43,7 @@ public class ZombieBehavior : MonoBehaviour {
 		return gameObject.tag == "Zombie" ? "Human" : "Zombie";
 	}
 
+    
 	void updateSenses()
 	{
 		float oldTime = m_time - Time.deltaTime;
@@ -154,8 +155,11 @@ public class ZombieBehavior : MonoBehaviour {
 
 	void approachPosition( Vector3 targetPosition )
 	{
-		GetComponent<NavMeshAgent>().SetDestination (targetPosition);
-	}
+        if (this.GetComponent<NavMeshAgent>()) { 
+            GetComponent<NavMeshAgent>().SetDestination(targetPosition);
+        }
+
+    }
 
 	bool reachedPosition()
 	{
@@ -468,12 +472,13 @@ public class ZombieBehavior : MonoBehaviour {
 		{
 			m_stateTime = 0.0f;
 		}
-
+      
 		GetComponent<Animator> ().SetFloat ("zombie_stateTime", m_stateTime);
 		GetComponent<Animator> ().SetBool ("zombie_walk", !reachedPosition());
 
 		GetComponent<NavMeshAgent>().speed = m_hasPlayerTask ? 2.5f : 1.5f;
-	}
+        
+    }
 
 	//Transform[] hinges = GameObject.FindObjectsOfType (typeof(Transform)) as Transform[];
 
@@ -505,9 +510,11 @@ public class ZombieBehavior : MonoBehaviour {
 			m_targetPosition = player.transform.position;		
 			m_state = State.ApproachTarget;
 			m_hasPlayerTask = true;
+           
 			GetComponent<Animator> ().SetBool ("zombie_attack", false);
 			GetComponent<Animator> ().SetBool ("zombie_eat", false);
-		}
+          
+        }
     }
 
 
