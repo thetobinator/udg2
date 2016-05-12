@@ -569,9 +569,13 @@ public class UMAMaker1_Zombies: MonoBehaviour {
         // GrabStaff();
 
         //attach scripts after creation
+        
+        umaData.gameObject.transform.position =  new Vector3(this.transform.position.x, this.transform.position.y, this.transform.position.z);
+        Debug.Log("positioned zombie!");
         umaData.gameObject.tag = "Zombie";
         umaData.gameObject.AddComponent<HealthComponent>();
         umaData.gameObject.AddComponent<ZombieBehavior>();
+
         
         /*
         // A Practical Guide To UMA - Part 17 - Using the Expression Player  https://youtu.be/nJI-kUYYuWE

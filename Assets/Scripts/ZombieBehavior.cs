@@ -160,7 +160,7 @@ public class ZombieBehavior : MonoBehaviour {
         }
 
     }
-
+    
 	bool reachedPosition()
 	{
 		return (GetComponent< NavMeshAgent > ().destination - transform.position).sqrMagnitude < 1.5f;

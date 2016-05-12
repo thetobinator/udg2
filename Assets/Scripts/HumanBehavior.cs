@@ -148,8 +148,11 @@ public class HumanBehavior : MonoBehaviour {
 	
 	void approachPosition( Vector3 targetPosition )
 	{
-		GetComponent< NavMeshAgent > ().SetDestination (targetPosition);
-	}
+        NavMeshHit hit;
+        if (NavMesh.SamplePosition(this.transform.position, out hit, 3, NavMesh.AllAreas)){
+            GetComponent<NavMeshAgent>().SetDestination(targetPosition);
+        }
+        }
 	
 	bool reachedPosition()
 	{
