@@ -102,8 +102,6 @@ public class UMAMaker1_Police: MonoBehaviour {
         overlayLibrary = GameObject.Find("OverlayLibrary").GetComponent<OverlayLibrary>();
         raceLibrary = GameObject.Find("RaceLibrary").GetComponent<RaceLibrary>();
         generator = GameObject.Find("UMAGenerator").GetComponent<UMAGenerator>();
-        //zombieSettings = GameObject.Find("Zombie_Settings");
-
     }
 
     // Part 4 of practical guide to UMA https://youtu.be/KZpvgiAdD9c
@@ -123,7 +121,7 @@ public class UMAMaker1_Police: MonoBehaviour {
             umaData.Dirty();
         }
 
-        /* 
+        /* Expression play broke
     if (happy != expressionPlayer.midBrowUp_Down)
      {
          expressionPlayer.midBrowUp_Down = happy;
@@ -345,14 +343,12 @@ public class UMAMaker1_Police: MonoBehaviour {
         //TrenchCoat UMA and Blender Content creation https://youtu.be/_c8lrr-BOnM
         if (hatState && !lastHatState)
         {
+            Debug.Log(string.Format("Hatstate {0}", hatState));
             lastHatState = hatState;
             SetSlot(9, "HumanMaleHatPolice");
-           // AddOverlay(9, "MaleHair01");
-            //LinkOverlay(9, 2);
-          //  AddOverlay(9, "HumanMaleHatPolice");
-            //SetSlot(9, "UMA_Human_Male_Hat_Police");
-            //LinkOverlay(9, 3);
-            // AddOverlay(9, "UMAHumanMaleHatPoliceOverlay");
+
+            Debug.Log("Slot set attempting overlay");
+            AddOverlay(9, "HumanMaleHatPolice");
             umaData.isMeshDirty = true; //processor expensive use all 'dirty' commands to regenerate mesh.
             umaData.isTextureDirty = true;
             umaData.isShapeDirty = true;
@@ -363,6 +359,7 @@ public class UMAMaker1_Police: MonoBehaviour {
         if (!hatState && lastHatState)
         {
             lastHatState = hatState;
+            Debug.Log(string.Format("Hatstate {0}", hatState));
             RemoveSlot(9);
             umaData.isMeshDirty = true; //processor expensive use all 'dirty' commands to regenerate mesh.
             umaData.isTextureDirty = true;
@@ -407,9 +404,6 @@ public class UMAMaker1_Police: MonoBehaviour {
         
         // dynamic animation controller 
         umaDynamicAvatar.animationController = animController;
-
-
-
 
         // Generate Our UMA
         umaDynamicAvatar.UpdateNewRace();
@@ -462,13 +456,10 @@ public class UMAMaker1_Police: MonoBehaviour {
         umaData.umaRecipe.slotDataList[3].AddOverlay(overlayLibrary.InstantiateOverlay("MaleUnderwear01"));
         //umaData.umaRecipe.slotDataList[5].AddOverlay(overlayLibrary.InstantiateOverlay("MaleUnderwear01"));
 
-        // Practical Guide to UMA part 7 https://youtu.be/Czg1U-hlXn0
+      
+      // Practical Guide to UMA part 7 https://youtu.be/Czg1U-hlXn0
         //add eyebrow and set color
         umaData.umaRecipe.slotDataList[2].AddOverlay(overlayLibrary.InstantiateOverlay("MaleEyebrow01", Color.black));
-
-        
-
-
         // Practical Guide to UMA part 10 https://youtu.be/vNqBg-IZuQc?t=6m4s
         //  AddOverlay(3,"SA_Tee"); // t-shirt
         // AddOverlay(3, "SA_chestEmblem");// t-shirt chestEmblem
@@ -482,12 +473,13 @@ public class UMAMaker1_Police: MonoBehaviour {
 
         // UMA 2.0 & Blender 2.76b Custom Content Creation Part 5: Getting our Model/Slot in Unity https://youtu.be/NAw7z_x8Mos?t=11m
         umaData.umaRecipe.slotDataList[8] = slotLibrary.InstantiateSlot("UMA_Human_Male_Trenchcoat"); // mesh 
+        
 
         //Police hat
         umaData.umaRecipe.slotDataList[9] = slotLibrary.InstantiateSlot("HumanMaleHatPolice"); // mesh
-      
-        // AddOverlay(9, "UMA_Human_Male_Trenchcoat");
-       // umaData.umaRecipe.slotDataList[9].AddOverlay(overlayLibrary.InstantiateOverlay("HumanMaleHatPolice"));
+      //overlay doesn't work
+         //AddOverlay(9, "HumanMaleHatPolice");
+        //umaData.umaRecipe.slotDataList[9].AddOverlay(overlayLibrary.InstantiateOverlay("HumanMaleHatPolice"));
     }
 
     ///////////////   UMA Morph Routines   /////////////
