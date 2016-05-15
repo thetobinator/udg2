@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 using UMA;
 using System.IO;
@@ -38,52 +39,104 @@ public class UMAMaker1_Police: MonoBehaviour {
     private UMADnaTutorial umaTutorialDNA; // Extra DNA customizable values
 
     private int numberOfSlots = 20; // could be as big as we like
+                                    //
 
-    //slider
-    [Range(0.0f, 1.0f)]
+    #region UMA Customizable Variables
+    private string bloodName = "";
+    private string lastBloodName = "";
+    private bool lastHairState = false;
+    private Color lastHairColor;
+    private bool lastChestEmblemState = false;
+    private bool lastVestState = false;
+    private Color lastVestColor = Color.white;
+    private Color lastTrenchcoatColor;
+    private bool lastTrenchcoatState = false;
+    private int footSlot = 6;
+    private bool lastShoeState = true;
+    private bool lastHatState = true;
+    private bool lastBadgeState = true;
+    private bool lastShirtPoliceState = true;
+    private bool lastLegsPoliceState = true;
+    private bool lastLegsNightStickState = true;
+    private bool lastHandNightStickState = true;
+    
+    private bool lastBlood1 = true;
+    private bool lastbloodBreastR = true;
+    private bool lastbloodChest = true;
+    private bool lastbloodGuts1 = true;
+    private bool lastbloodShoulderBackL = true;
+    private bool lastbloodShoulderBackR = true;
+    private bool lastbloodShoulderR = true;
+    private bool lastbloodWhatR = true;
+
+    // this creates disclosure arrow
+
+    [System.Serializable]
+        public class Injury
+    {       
+        public bool Blood1 = false;  
+        public bool bloodBreastR = false;
+        public bool bloodChest = false;
+        public bool bloodGuts1 = false;
+        public bool bloodShoulderBackL = false;
+        public bool bloodShoulderBackR = false;
+        public bool bloodShoulderR = false;
+        public bool bloodWhatR = false;      
+    }
+
+    [System.Serializable]
+    public class Head
+    {
+        public bool hatState = false;
+        public bool hairState = false;
+        public Color hairColor;
+        //slider 
+        [Range(-1.0f, 1.0f)]
+        public float happy = 0f;
+    }
+
+    [System.Serializable]
+    public class Torso
+    {
+        public bool chestEmblemState = false;
+        public bool vestState = false;
+        public Color vestColor = Color.white;
+        public bool badgeState = false;
+        public bool shirtPoliceState = false;
+        public bool trenchcoatState = false;
+        public Color trenchcoatColor;
+    }
+
+    [System.Serializable]
+    public class CustomUMA
+    {      
+        //slider
+        [Range(0.0f, 1.0f)]
     public float bodyMass = 0.5f;
 
     // part 10b of practical guide to UMA https://youtu.be/jyboNBxVTQY?t=50s
     //slider
-    [Range(0, 8)]
-    public int injury;
-    private string bloodName;
-    private string lastBloodName;
-    // private bool bloodState = false;
-    // private bool lastBloodState = false;
+   /* [Range(0, 8)]
+    public int injury = 0;*/
 
     // practical guide to uma part 17 expression player https://youtu.be/nJI-kUYYuWE?t=11m36s
-    //slider 
-    [Range(-1.0f, 1.0f)]
-    public float happy = 0f;
+    
+        //Practical Guide to UMA part 1 Runtime Slot Changes. https://youtu.be/vB-tGGcFxDI?t=5m30s
 
-    //Practical Guide to UMA part 1 Runtime Slot Changes. https://youtu.be/vB-tGGcFxDI?t=5m30s
-    public bool hairState = false;
-    private bool lastHairState = false;
-    public Color hairColor;
-    private Color lastHairColor;
-
-    public bool chestEmblemState = false;
-    private bool lastChestEmblemState = false;
-
-    public bool vestState = false;
-    private bool lastVestState = false;
-
-    public Color vestColor = Color.white;
-    private Color lastVestColor = Color.white;
+        public Head head;
+        public Torso torso;
+        public Injury injury;
+ 
 
     //TrenchCoat UMA and Blender Content creation https://youtu.be/_c8lrr-BOnM
-    public bool trenchcoatState = false;
-    public Color trenchcoatColor;
-    private Color lastTrenchcoatColor;
-    private bool lastTrenchcoatState = false;
 
-    private int footSlot = 6;
-    public bool shoeState = false;
-    private bool lastShoeState = true;
+    public bool shoeState = false; 
 
-    public bool hatState = false;
-    private bool lastHatState = true;
+    
+    public bool legsPoliceState = false;
+    public bool legsNightStickState = false;
+        public bool handNightStickState = false;
+ 
 
     //Practical Guide To UMA part 14 https://youtu.be/ZKRQ4wzp0ac
     public string SaveString = "";
@@ -91,7 +144,12 @@ public class UMAMaker1_Police: MonoBehaviour {
     public bool loadText;
     public bool saveAsset;
     public bool loadAsset;
+    
+    }
 
+    public CustomUMA myCustomUMA;
+    #endregion
+   
     //practical guide to uma part 17 Expression player https://youtu.be/nJI-kUYYuWE?t=2m27s
 
     //public UMAExpressionPlayer expressionPlayer;
@@ -106,17 +164,15 @@ public class UMAMaker1_Police: MonoBehaviour {
 
     // Part 4 of practical guide to UMA https://youtu.be/KZpvgiAdD9c
     void Start()
-    {
-      
-        GenerateUMA();
-     
+    {  
+        GenerateUMA(); 
     }
 
     void Update()
     {
-        if (bodyMass != umaDna.upperMuscle)
+        if (myCustomUMA.bodyMass != umaDna.upperMuscle)
         {
-            SetBodyMass(bodyMass);
+            SetBodyMass(myCustomUMA.bodyMass);
             umaData.isShapeDirty = true;
             umaData.Dirty();
         }
@@ -130,15 +186,15 @@ public class UMAMaker1_Police: MonoBehaviour {
      }*/
 
         // part 10b of practical guid to UMA https://youtu.be/jyboNBxVTQY?t=1m6s
-        if (vestState && !lastVestState)
+        if (myCustomUMA.torso.vestState && !lastVestState)
         {
             lastVestState = true;
-            AddOverlay(3, "SA_Tee", vestColor);     
+            AddOverlay(3, "SA_Tee", myCustomUMA.torso.vestColor);     
             umaData.isTextureDirty = true;
             umaData.Dirty();
         }
 
-        if (!vestState && lastVestState)
+        if (!myCustomUMA.torso.vestState && lastVestState)
         {
             lastVestState = false;
             RemoveOverlay(3, "SA_Tee");       
@@ -147,15 +203,15 @@ public class UMAMaker1_Police: MonoBehaviour {
         }
 
 
-        if (vestColor != lastVestColor && vestState)
+        if (myCustomUMA.torso.vestColor != lastVestColor && myCustomUMA.torso.vestState)
         {
-            lastVestColor = vestColor;
-            ColorOverlay(3, "SA_Tee", vestColor);
+            lastVestColor = myCustomUMA.torso.vestColor;
+            ColorOverlay(3, "SA_Tee", myCustomUMA.torso.vestColor);
             umaData.isTextureDirty = true;
             umaData.Dirty();
         }
 
-        if (chestEmblemState && !lastChestEmblemState)
+        if (myCustomUMA.torso.chestEmblemState && !lastChestEmblemState)
         {
             lastChestEmblemState = true;
             AddOverlay(3, "SA_Logo");
@@ -163,7 +219,7 @@ public class UMAMaker1_Police: MonoBehaviour {
             umaData.Dirty();
         }
 
-        if (!chestEmblemState && lastChestEmblemState)
+        if (!myCustomUMA.torso.chestEmblemState && lastChestEmblemState)
         {
             lastChestEmblemState = false;    
             RemoveOverlay(3, "SA_Logo");
@@ -171,215 +227,308 @@ public class UMAMaker1_Police: MonoBehaviour {
             umaData.Dirty();
         }
 
-        if (injury != 0 && bloodName != lastBloodName)
+        //bloodName = "";
+        if (myCustomUMA.injury.Blood1 && !lastBlood1) { bloodName = "blood"; lastBlood1 = myCustomUMA.injury.Blood1; }
+        if (myCustomUMA.injury.bloodBreastR && !lastbloodBreastR) { bloodName = "bloodBreastR"; lastbloodBreastR = myCustomUMA.injury.bloodBreastR; }
+        if (myCustomUMA.injury.bloodChest && !lastbloodChest) { bloodName = "bloodChest"; lastbloodChest = myCustomUMA.injury.bloodChest; }
+        if (myCustomUMA.injury.bloodGuts1 && !lastbloodGuts1) { bloodName = "bloodGuts1"; lastbloodGuts1 = myCustomUMA.injury.bloodGuts1; }
+        if (myCustomUMA.injury.bloodShoulderBackL && !lastbloodShoulderBackL) { bloodName = "bloodShoulderBackL"; lastbloodShoulderBackL = myCustomUMA.injury.bloodShoulderBackL; }
+        if (myCustomUMA.injury.bloodShoulderBackR && !lastbloodShoulderBackR) { bloodName = "bloodShoulderBackR"; lastbloodShoulderBackR = myCustomUMA.injury.bloodShoulderBackR; }
+        if (myCustomUMA.injury.bloodShoulderR && !lastbloodShoulderR) { bloodName = "bloodShoulderR"; lastbloodShoulderR = myCustomUMA.injury.bloodShoulderR; }
+        if (myCustomUMA.injury.bloodWhatR && !lastbloodWhatR) { bloodName = "bloodWhatR"; lastbloodWhatR = myCustomUMA.injury.bloodWhatR; }
+
+        if (!myCustomUMA.injury.Blood1 && lastBlood1) { RemoveOverlay(3, "Blood1"); lastBlood1 = myCustomUMA.injury.Blood1; }
+        if (!myCustomUMA.injury.bloodBreastR && lastbloodBreastR) { RemoveOverlay(3, "bloodBreastR"); lastbloodBreastR = myCustomUMA.injury.bloodBreastR; }
+        if (!myCustomUMA.injury.bloodChest && lastbloodChest) { RemoveOverlay(3, "bloodChest"); lastbloodChest = myCustomUMA.injury.bloodChest; }
+        if (!myCustomUMA.injury.bloodGuts1 && lastbloodGuts1) { RemoveOverlay(3, "bloodGuts1"); lastbloodGuts1 = myCustomUMA.injury.bloodGuts1; }
+        if (!myCustomUMA.injury.bloodShoulderBackL && lastbloodShoulderBackL) { RemoveOverlay(3, "bloodShoulderBackL"); lastbloodShoulderBackL = myCustomUMA.injury.bloodShoulderBackL; }
+        if (!myCustomUMA.injury.bloodShoulderBackR && lastbloodShoulderBackR) { RemoveOverlay(3, "bloodShoulderBackR"); lastbloodShoulderBackR = myCustomUMA.injury.bloodShoulderBackR; }
+        if (!myCustomUMA.injury.bloodShoulderR && lastbloodShoulderR) { RemoveOverlay(3, "bloodShoulderR"); lastbloodShoulderR = myCustomUMA.injury.bloodShoulderR; }
+        if (!myCustomUMA.injury.bloodWhatR && lastbloodWhatR) { RemoveOverlay(3, "bloodWhatR"); lastbloodWhatR = myCustomUMA.injury.bloodWhatR; }
+
+        if (bloodName != lastBloodName)
         {
-            //bloodState = true;
-            switch (injury)
-            {
-                case 1:
-                    bloodName = "blood";
-                    break;
-                case 2:
-                    bloodName = "bloodBreastR";
-                    break;
-                case 3:
-                    bloodName = "bloodChest";
-                    break;
-                case 4:
-                    bloodName = "bloodGuts1";
-                    break;
-                case 5:
-                    bloodName = "bloodShoulderBackL";
-                    break;
-                case 6:
-                    bloodName = "bloodShoulderBackR";
-                    break;
-
-                case 7:
-                    bloodName = "bloodShoulderR";
-                    break;
-
-                case 8:
-                    bloodName = "bloodWhatR";
-                    break;
-            }
-
-          if (lastBloodName != "") { RemoveOverlay(3, lastBloodName); } 
-           
+           // RemoveOverlay(3, lastBloodName);
             lastBloodName = bloodName;
-            AddOverlay(3, bloodName);
-            umaData.isTextureDirty = true;
-            umaData.Dirty();
+            if (bloodName != "")
+            {
+                AddOverlay(3, bloodName);
+            }
+            DirtyUMAUpdate(umaData);
         }
-        else
-        {
-            if (lastBloodName != "") { RemoveOverlay(3, lastBloodName); }
         
-            umaData.isTextureDirty = true;
-            umaData.Dirty();
-            lastBloodName = "";
-            bloodName = "";
-        }
+        
 
         // practical guide to uma part 11 Change Slots At Runtime. https://youtu.be/vB-tGGcFxDI?t=5m30s
 
-        if (hairState && !lastHairState)
+        if (myCustomUMA.head.hairState && !lastHairState)
         {
-            lastHairState = hairState;
+            lastHairState = myCustomUMA.head.hairState;
             SetSlot(7, "M_Hair_Shaggy");
-            AddOverlay(7,"M_Hair_Shaggy", hairColor);
-            umaData.isMeshDirty = true; //processor expensive use all 'dirty' commands to regenerate mesh.
-            umaData.isTextureDirty = true;
-            umaData.isShapeDirty = true;
-            umaData.Dirty();
+            AddOverlay(7,"M_Hair_Shaggy", myCustomUMA.head.hairColor);
+            DirtyUMAUpdate(umaData);
         }
 
-        if (!hairState && lastHairState)
+        if (!myCustomUMA.head.hairState && lastHairState)
         {
-            lastHairState = hairState;
+            lastHairState = myCustomUMA.head.hairState;
             RemoveSlot(7);
-           
-            umaData.isMeshDirty = true; //processor expensive use all 'dirty' commands to regenerate mesh.
-            umaData.isTextureDirty = true;
-            umaData.isShapeDirty = true;
-            umaData.Dirty();
+            DirtyUMAUpdate(umaData);
         }
 
         //change haircolor at runtime.
-        if ( hairColor != lastHairColor && hairState)
+        if (myCustomUMA.head.hairColor != lastHairColor && myCustomUMA.head.hairState)
         {           
-            lastHairColor = hairColor;
-            ColorOverlay(7, "M_Hair_Shaggy", hairColor);
+            lastHairColor = myCustomUMA.head.hairColor;
+            ColorOverlay(7, "M_Hair_Shaggy", myCustomUMA.head.hairColor);
             umaData.isTextureDirty = true;
             umaData.Dirty();           
         }
 
 
-        if (shoeState && !lastShoeState)
+        if (myCustomUMA.shoeState && !lastShoeState)
         {
-            lastShoeState = shoeState;
+            lastShoeState = myCustomUMA.shoeState;
             SetSlot(footSlot, "Shoes");
            AddOverlay(footSlot, "Shoes");
-            umaData.isMeshDirty = true; //processor expensive use all 'dirty' commands to regenerate mesh.
-            umaData.isTextureDirty = true;
-            umaData.isShapeDirty = true;
-            umaData.Dirty();
+            DirtyUMAUpdate(umaData);
         }
 
-        if (!shoeState && lastShoeState)
+        if (!myCustomUMA.shoeState && lastShoeState)
         {
-            lastShoeState = shoeState;
+            lastShoeState = myCustomUMA.shoeState;
             //RemoveSlot(footSlot);
             SetSlot(footSlot, "MaleFeet");
             LinkOverlay(footSlot, 3);
             //AddOverlay(footSlot, "Shoes");
-            umaData.isMeshDirty = true; //processor expensive use all 'dirty' commands to regenerate mesh.
-            umaData.isTextureDirty = true;
-            umaData.isShapeDirty = true;
-            umaData.Dirty();
+            DirtyUMAUpdate(umaData);
         }
 
 
 
         //practical guide to uma part 14 https://youtu.be/ZKRQ4wzp0ac
-        if (saveText)
+        if (myCustomUMA.saveText)
         {
-            saveText = false;
+            myCustomUMA.saveText = false;
             SaveText();
         }
-        if (loadText)
+        if (myCustomUMA.loadText)
         {
-            loadText = false;
+            myCustomUMA.loadText = false;
             LoadText();   
         }
 
         // practical guide to UMA part 14b https://youtu.be/Q6bLMusuhbo?t=10m18s
-        if (saveAsset)
+        if (myCustomUMA.saveAsset)
         {
-            saveAsset = false;
+            myCustomUMA.saveAsset = false;
             SaveAsset();
         }
-        if (loadAsset)
+        if (myCustomUMA.loadAsset)
         {
-            loadAsset = false;
+            myCustomUMA.loadAsset = false;
             LoadAsset();
         }
 
 
 
         //TrenchCoat UMA and Blender Content creation https://youtu.be/_c8lrr-BOnM
-        if (trenchcoatState && !lastTrenchcoatState)
+        if (myCustomUMA.torso.trenchcoatState && !lastTrenchcoatState)
         {
-            lastTrenchcoatState = trenchcoatState;
+            lastTrenchcoatState = myCustomUMA.torso.trenchcoatState;
             SetSlot(8, "UMA_Human_Male_Trenchcoat");
-            AddOverlay(8, "UMA_Human_Male_Trenchcoat", trenchcoatColor);
-            umaData.isMeshDirty = true; //processor expensive use all 'dirty' commands to regenerate mesh.
-            umaData.isTextureDirty = true;
-            umaData.isShapeDirty = true;
-            umaData.Dirty();
+            AddOverlay(8, "UMA_Human_Male_Trenchcoat", myCustomUMA.torso.trenchcoatColor);
+            DirtyUMAUpdate(umaData);
         }
 
 
-        if (!trenchcoatState && lastTrenchcoatState)
+        if (!myCustomUMA.torso.trenchcoatState && lastTrenchcoatState)
         {
-            lastTrenchcoatState = trenchcoatState;
+            lastTrenchcoatState = myCustomUMA.torso.trenchcoatState;
             RemoveSlot(8);
-            umaData.isMeshDirty = true; //processor expensive use all 'dirty' commands to regenerate mesh.
-            umaData.isTextureDirty = true;
-            umaData.isShapeDirty = true;
-            umaData.Dirty();
+            DirtyUMAUpdate(umaData);
         }
 
         //change trenchcolor at runtime.
-        if (trenchcoatColor != lastTrenchcoatColor && trenchcoatState)
+        if (myCustomUMA.torso.trenchcoatColor != lastTrenchcoatColor && myCustomUMA.torso.trenchcoatState)
         {
-            lastTrenchcoatColor = trenchcoatColor;
-            ColorOverlay(8, "UMA_Human_Male_Trenchcoat", trenchcoatColor);
+            lastTrenchcoatColor = myCustomUMA.torso.trenchcoatColor;
+            ColorOverlay(8, "UMA_Human_Male_Trenchcoat", myCustomUMA.torso.trenchcoatColor);
             umaData.isTextureDirty = true;
             umaData.Dirty();
         }
 
 
         //TrenchCoat UMA and Blender Content creation https://youtu.be/_c8lrr-BOnM
-        if (hatState && !lastHatState)
+        if (myCustomUMA.head.hatState && !lastHatState)
         {
-            Debug.Log(string.Format("Hatstate {0}", hatState));
-            lastHatState = hatState;
+            Debug.Log(string.Format("Hatstate {0}", myCustomUMA.head.hatState));
+            lastHatState = myCustomUMA.head.hatState;
             SetSlot(9, "HumanMaleHatPolice");
 
             Debug.Log("Slot set attempting overlay");
             AddOverlay(9, "HumanMaleHatPolice");
-            umaData.isMeshDirty = true; //processor expensive use all 'dirty' commands to regenerate mesh.
-            umaData.isTextureDirty = true;
-            umaData.isShapeDirty = true;
-            umaData.Dirty();
+            DirtyUMAUpdate(umaData);
         }
 
 
-        if (!hatState && lastHatState)
+        if (!myCustomUMA.head.hatState && lastHatState)
         {
-            lastHatState = hatState;
-            Debug.Log(string.Format("Hatstate {0}", hatState));
+            lastHatState = myCustomUMA.head.hatState;
+          //  Debug.Log(string.Format("Hatstate {0}", hatState));
             RemoveSlot(9);
-            umaData.isMeshDirty = true; //processor expensive use all 'dirty' commands to regenerate mesh.
-            umaData.isTextureDirty = true;
-            umaData.isShapeDirty = true;
-            umaData.Dirty();
+            DirtyUMAUpdate(umaData);
+        }
+
+        //badge
+        if (myCustomUMA.torso.badgeState && !lastBadgeState)
+        {
+            lastBadgeState = myCustomUMA.torso.badgeState;
+            SetSlot(10, "HumanMaleBadgePolice");      
+            AddOverlay(10, "HumanMaleBadge", Color.yellow);
+            DirtyUMAUpdate(umaData);
         }
 
 
+        if (!myCustomUMA.torso.badgeState && lastBadgeState)
+        {
+            lastBadgeState = myCustomUMA.torso.badgeState;       
+            RemoveSlot(10);
+            DirtyUMAUpdate(umaData);
+        }
+
+
+        //police Shirt
+        if (myCustomUMA.torso.shirtPoliceState && !lastShirtPoliceState && myCustomUMA.legsPoliceState)
+        {
+            lastShirtPoliceState = myCustomUMA.torso.shirtPoliceState;
+            SetSlot(3, "HumanMaleShirtPoliceWPants");
+            AddOverlay(3, "HumanMaleShirtPolice");
+            SetSlot(5, "HumanMaleLegsPolice");
+            AddOverlay(5, "HumanMaleLegsPolice");
+            RemoveSlot(footSlot);
+            SetSlot(12, "HumanMaleArms"); // mesh
+            AddOverlay(12, "HumanMaleArms");
+            DirtyUMAUpdate(umaData);
+        }
+
+        if (myCustomUMA.torso.shirtPoliceState && !lastShirtPoliceState && !myCustomUMA.legsPoliceState)
+        {
+            
+            lastShirtPoliceState = myCustomUMA.torso.shirtPoliceState;
+            SetSlot(3, "HumanMaleShirtPoliceNoPants");
+            AddOverlay(3, "HumanMaleShirtPolice");
+            SetSlot(5, "MaleLegs");
+            LinkOverlay(5, 2);
+            AddOverlay(5, "MaleUnderwear01");
+            LinkOverlay(footSlot,2);
+            SetSlot(12, "HumanMaleArms"); // mesh
+            LinkOverlay(12, 2);
+            DirtyUMAUpdate(umaData);
+        }
+
+
+  
+        if (!myCustomUMA.torso.shirtPoliceState && lastShirtPoliceState && !myCustomUMA.legsPoliceState)
+        {
+            lastShirtPoliceState = myCustomUMA.torso.shirtPoliceState;
+            SetSlot(3, "MaleTorso");
+            AddOverlay(3, "MaleBody02");
+            SetSlot(5, "MaleLegs");
+            LinkOverlay(5, 3);
+            AddOverlay(5, "MaleUnderwear01");
+            SetSlot(footSlot, "MaleFeet");
+            LinkOverlay(footSlot, 3);
+            DirtyUMAUpdate(umaData);
+        }
+
+
+        //police Legs
+        if (myCustomUMA.legsPoliceState && !lastLegsPoliceState )
+        {
+            lastLegsPoliceState = myCustomUMA.legsPoliceState;     
+            SetSlot(5, "HumanMaleLegsPoliceNoNightStick");
+            AddOverlay(5, "HumanMaleLegsPolice");
+            SetSlot(13, "HumanMaleLegsPoliceNightStick");
+            RemoveSlot(footSlot);
+            DirtyUMAUpdate(umaData);
+        }
+
+        if (!myCustomUMA.legsPoliceState && lastLegsPoliceState)
+        {
+            lastLegsPoliceState = myCustomUMA.legsPoliceState;    
+            SetSlot(5, "MaleLegs");
+            LinkOverlay(5, 3);
+            AddOverlay(5, "MaleUnderwear01");
+            SetSlot(footSlot, "MaleFeet");
+            LinkOverlay(footSlot, 3);
+            RemoveSlot(13);
+            DirtyUMAUpdate(umaData);
+        }
+
+        if (myCustomUMA.legsNightStickState && !lastLegsNightStickState)
+        {
+            lastLegsNightStickState = myCustomUMA.legsNightStickState;
+            SetSlot(13, "HumanMaleLegsPoliceNightStick");
+            AddOverlay(13, "NightstickUV");
+            DirtyUMAUpdate(umaData);
+        }
+
+        if (!myCustomUMA.legsNightStickState && lastLegsNightStickState)
+        {
+            lastLegsNightStickState = myCustomUMA.legsNightStickState;
+            RemoveSlot(13);
+            DirtyUMAUpdate(umaData);
+        }
+
+        if (myCustomUMA.handNightStickState && !lastHandNightStickState)
+        {
+            lastHandNightStickState = myCustomUMA.handNightStickState;
+            SetSlot(4, "HumanMaleLeftHandNightStick");
+            LinkOverlay(4, 3);
+            DirtyUMAUpdate(umaData);
+        }
+        if (!myCustomUMA.handNightStickState && lastHandNightStickState)
+        {
+            lastHandNightStickState = myCustomUMA.handNightStickState;
+            SetSlot(4,"MaleHands");
+            LinkOverlay(4, 3);
+            DirtyUMAUpdate(umaData);
+        }
+    }
+
+    void DirtyUMAUpdate(UMAData umaData)
+    {
+        umaData.isMeshDirty = true; //processor expensive use all 'dirty' commands to regenerate mesh.
+        umaData.isTextureDirty = true;
+        umaData.isShapeDirty = true;
+        umaData.Dirty();
     }
 
     void GenerateUMA()
     {
         // Create a new game object and add UMA components to it
         GameObject GO = new GameObject("MyUMA");
+
+
+        // parent the new uma into the host game object
+        GO.transform.parent = this.gameObject.transform;
+        GO.transform.localPosition = Vector3.zero;
+        GO.transform.localRotation = Quaternion.identity;
+
+        GO.AddComponent(typeof(NavMeshAgent));
+        GO.AddComponent(typeof(CapsuleCollider));
+        var goCol = GO.GetComponent<CapsuleCollider>();
+        goCol.center = new Vector3(0f, 0.78f, 0f);
+        goCol.height = 1.7f;
+        goCol.radius = 0.2f;
+
         umaDynamicAvatar = GO.AddComponent<UMADynamicAvatar>();
 
         // Initialise Avatar and grab a reference to it's data component
         umaDynamicAvatar.Initialize();
         umaData = umaDynamicAvatar.umaData;
-
+       
         //practical guide to uma part 15 uma events https://youtu.be/_k-SZRCvgIk?t=8m20s
         umaData.OnCharacterCreated += CharacterCreatedCallback;
 
@@ -399,23 +548,15 @@ public class UMAMaker1_Police: MonoBehaviour {
         // Grab a reference to our recipe
         // var umaRecipe = umaDynamicAvatar.umaData.umaRecipe; //moved to subroutine MakeMale
 
-        // >>> This is whee the fun will happen according to Secret Anorak <<<<
-        CreateMale();
-        
+        // >>> This is where the fun will happen according to Secret Anorak <<<<
+        CreateMale();        
+
         // dynamic animation controller 
         umaDynamicAvatar.animationController = animController;
 
         // Generate Our UMA
         umaDynamicAvatar.UpdateNewRace();
-
-        // parent the new uma into the host game object
-        GO.transform.parent = this.gameObject.transform;
-        GO.transform.localPosition = Vector3.zero;
-        GO.transform.localRotation = Quaternion.identity;
-      
-        GO.AddComponent(typeof(NavMeshAgent));
-        GO.AddComponent(typeof(CapsuleCollider));
-       
+    
     }
 
     // Practical Guide to UMA part 5 https://youtu.be/N-NlNJv1ESE
@@ -441,25 +582,22 @@ public class UMAMaker1_Police: MonoBehaviour {
 
         umaData.umaRecipe.slotDataList[4] = slotLibrary.InstantiateSlot("MaleHands"); // mesh
         LinkOverlay(4, 3);
-       // umaData.umaRecipe.slotDataList[4].SetOverlayList(umaData.umaRecipe.slotDataList[3].GetOverlayList());
 
         umaData.umaRecipe.slotDataList[5] = slotLibrary.InstantiateSlot("MaleLegs"); // mesh
         LinkOverlay(5, 3);
-        //umaData.umaRecipe.slotDataList[5].SetOverlayList(umaData.umaRecipe.slotDataList[3].GetOverlayList()); 
-
+    
         //footSlot = 6
         umaData.umaRecipe.slotDataList[footSlot] = slotLibrary.InstantiateSlot("MaleFeet"); // mesh
-        LinkOverlay(footSlot, 3);
-       // umaData.umaRecipe.slotDataList[6].SetOverlayList(umaData.umaRecipe.slotDataList[3].GetOverlayList());
+        LinkOverlay(footSlot, 3); 
 
         // add underwear
         umaData.umaRecipe.slotDataList[3].AddOverlay(overlayLibrary.InstantiateOverlay("MaleUnderwear01"));
-        //umaData.umaRecipe.slotDataList[5].AddOverlay(overlayLibrary.InstantiateOverlay("MaleUnderwear01"));
 
-      
       // Practical Guide to UMA part 7 https://youtu.be/Czg1U-hlXn0
         //add eyebrow and set color
         umaData.umaRecipe.slotDataList[2].AddOverlay(overlayLibrary.InstantiateOverlay("MaleEyebrow01", Color.black));
+
+        #region Tutorials_for_overlays_umaDna_custom_content
         // Practical Guide to UMA part 10 https://youtu.be/vNqBg-IZuQc?t=6m4s
         //  AddOverlay(3,"SA_Tee"); // t-shirt
         // AddOverlay(3, "SA_chestEmblem");// t-shirt chestEmblem
@@ -470,22 +608,14 @@ public class UMAMaker1_Police: MonoBehaviour {
         // Modify umaDNA via script
         // max head room
         // umaDna.headSize = 1f;
-
         // UMA 2.0 & Blender 2.76b Custom Content Creation Part 5: Getting our Model/Slot in Unity https://youtu.be/NAw7z_x8Mos?t=11m
-        umaData.umaRecipe.slotDataList[8] = slotLibrary.InstantiateSlot("UMA_Human_Male_Trenchcoat"); // mesh 
-        
+        //umaData.umaRecipe.slotDataList[8] = slotLibrary.InstantiateSlot("UMA_Human_Male_Trenchcoat"); // mesh 
+        #endregion
 
-        //Police hat
-        umaData.umaRecipe.slotDataList[9] = slotLibrary.InstantiateSlot("HumanMaleHatPolice"); // mesh
-      //overlay doesn't work
-         //AddOverlay(9, "HumanMaleHatPolice");
-        //umaData.umaRecipe.slotDataList[9].AddOverlay(overlayLibrary.InstantiateOverlay("HumanMaleHatPolice"));
     }
 
     ///////////////   UMA Morph Routines   /////////////
     // Practical Guide to UMA Part 9 Changing Shape at Runtime  https://youtu.be/FaPPR7hdZy8
-
-
     void SetBodyMass(float mass)
     {
         umaDna.upperMuscle = mass;
@@ -494,7 +624,6 @@ public class UMAMaker1_Police: MonoBehaviour {
         umaDna.lowerWeight = mass;
         umaDna.armWidth = mass;
         umaDna.forearmWidth = mass;
-
     }
     ///////////////   Overlay Helpers   ///////////////
 
@@ -526,13 +655,10 @@ public class UMAMaker1_Police: MonoBehaviour {
     }
 
     ///////////////    Slot Helpers      ///////////////
-
     void SetSlot(int slotnumber, string SlotName)
     {
         umaData.umaRecipe.slotDataList[slotnumber] = slotLibrary.InstantiateSlot(SlotName);
-
     }
-
     void RemoveSlot(int slotNumber)
     {
         umaData.umaRecipe.slotDataList[slotNumber] = null;
@@ -547,13 +673,13 @@ public class UMAMaker1_Police: MonoBehaviour {
         //Generate UMA String
         UMATextRecipe recipe = ScriptableObject.CreateInstance<UMATextRecipe>();
         recipe.Save(umaDynamicAvatar.umaData.umaRecipe, umaDynamicAvatar.context);
-        SaveString = recipe.recipeString;
+        myCustomUMA.SaveString = recipe.recipeString;
         Destroy(recipe);
 
         //Save string to text file
         string fileName = "Assets/UMASavedTextFile.txt";
             StreamWriter stream = File.CreateText(fileName);
-        stream.WriteLine(SaveString);
+        stream.WriteLine(myCustomUMA.SaveString);
         stream.Close();
     }
 
@@ -562,12 +688,12 @@ public class UMAMaker1_Police: MonoBehaviour {
         //Save string to text file
         string fileName = "Assets/UMASavedTextFile.txt";
             StreamReader stream = File.OpenText(fileName);
-        SaveString = stream.ReadLine();
+        myCustomUMA.SaveString = stream.ReadLine();
         stream.Close();
 
         //Generate UMA String
         UMATextRecipe recipe = ScriptableObject.CreateInstance<UMATextRecipe>();        
-        recipe.recipeString = SaveString;
+        recipe.recipeString = myCustomUMA.SaveString;
         umaDynamicAvatar.Load(recipe);
         Destroy(recipe);
     }
@@ -575,7 +701,7 @@ public class UMAMaker1_Police: MonoBehaviour {
     // practical guide to UMA part 14b https://youtu.be/Q6bLMusuhbo?t=10m18s
     void LoadAsset()
     {
-        UMARecipeBase recipe = Resources.Load("Troll") as UMARecipeBase;
+        UMARecipeBase recipe = Resources.Load("Assets/UMASavedAsAsset.asset") as UMARecipeBase;
         umaDynamicAvatar.Load(recipe);
     }
 
@@ -595,17 +721,21 @@ public class UMAMaker1_Police: MonoBehaviour {
     {
         //GameObject myUMA = GameObject.Find("myUMA");
         //Debug.Log("UMA_Created");
-        // GrabStaff();
+       
 
         //attach scripts after creation
         
-        /*umaData.gameObject.transform.position =  new Vector3(this.transform.position.x, this.transform.position.y, this.transform.position.z);
-       Debug.Log("positioned zombie!");
+      umaData.gameObject.transform.position =  new Vector3(this.transform.position.x, this.transform.position.y, this.transform.position.z);
+       Debug.Log("positioned Police!");
         umaData.gameObject.tag = "Zombie";
         umaData.gameObject.AddComponent<HealthComponent>();
-        umaData.gameObject.AddComponent<ZombieBehavior>();*/
-
-        
+        umaData.gameObject.AddComponent<ZombieBehavior>();
+        // hand collision to prevent slide through
+        LeftFistBox();
+        RightFistBox();
+        SpawnStaff();
+        SpawnPistolUO();
+        #region    ---------------------   Expression Player Callback broken
         /*
         // A Practical Guide To UMA - Part 17 - Using the Expression Player  https://youtu.be/nJI-kUYYuWE
         UMAExpressionSet expressionSet = umaData.umaRecipe.raceData.expressionSet;
@@ -616,21 +746,91 @@ public class UMAMaker1_Police: MonoBehaviour {
         // automated expressions to look life like
         expressionPlayer.enableBlinking = true;
         expressionPlayer.enableSaccades = true;*/
+        #endregion
     }
 
-
+    
     //practical guide to UMA part 16 attaching props https://youtu.be/0Iy_G_IufKU?t=6m48s
-    void GrabStaff()
+    void SpawnStaff()
     {
-        GameObject staff = GameObject.Find("staff");
-        //Transform hand = umaDynamicAvatar.gameObject.transform.FindChild("Root/Global/Position/Hips..etc hiearchy style");
-
-        // right handed staff/sword/stick wielders will stab themselvse while running.
+     // right handed staff/sword/stick wielders will stab themselvse while running.
         Transform hand = umaData.skeleton.GetBoneGameObject(UMASkeleton.StringToHash("LeftHand")).transform﻿; //eli curtz style.
-
-        staff.transform.SetParent(hand);
+        GameObject staff = GameObject.CreatePrimitive(PrimitiveType.Cube);
+     
+        staff.name = "staff";
+        staff.tag = "Staff";
+        staff.transform.SetParent(hand);   
+        MeshRenderer cubeRenderer = staff.GetComponent<MeshRenderer>();
+        Color red = new Color(255, 0, 0, 1);
+        cubeRenderer.material.color = red;
         staff.transform.localPosition = Vector3.zero;
         staff.transform.localPosition = new Vector3(-0.117f, -0.543f, -0.017f);
         staff.transform.localRotation = Quaternion.Euler(new Vector3(0.0f, 344.0f, 0.0f));
+        staff.transform.localScale = new Vector3(0.02f, 1.0f, 0.02f);
+        staff.AddComponent(typeof(BoxCollider));
+    }
+    void SpawnPistolUO()
+    {
+
+        Transform hand = umaData.skeleton.GetBoneGameObject(UMASkeleton.StringToHash("LeftHandFinger03_01")).transform﻿; //eli curtz style.
+
+        if (umaData.transform != null)
+        {  
+            GameObject pistol = Instantiate(Resources.Load("Prefabs/weapons/Pistol1_uo", typeof(GameObject))) as GameObject;  
+            pistol.transform.parent = umaData.transform;
+            pistol.transform.Translate(umaData.transform.position);
+            pistol.gameObject.transform.tag = "Pistol";
+            pistol.transform.SetParent(hand);
+            pistol.transform.localPosition = Vector3.zero;
+            pistol.transform.localPosition = new Vector3(-0.02f, -0.0f, -0.05f);
+            pistol.transform.localRotation = Quaternion.Euler(new Vector3(340.0f,250.0f,200.0f));
+          //  pistol.transform.localRotation = Quaternion.Euler(new Vector3(0.0568f, 0.0590f, 0.0581f));
+        }
+    }
+
+    // Create Empty LeftFist and RightFist and add Capsule Collider to detect hits.
+    void LeftFistBox()
+    {
+        Transform hand = umaData.skeleton.GetBoneGameObject(UMASkeleton.StringToHash("LeftHandFinger03_01")).transform﻿; //eli curtz style.
+
+        if (umaData.transform != null)
+        {
+            GameObject LeftFist = new GameObject("LeftFist");
+            LeftFist.transform.parent = umaData.transform;
+            LeftFist.transform.Translate(umaData.transform.position);
+            LeftFist.AddComponent(typeof(CapsuleCollider));
+            LeftFist.gameObject.tag = "Fist";
+
+            CapsuleCollider LeftHandCol = LeftFist.GetComponent<CapsuleCollider>();      
+            LeftHandCol.height = .2f;
+            LeftHandCol.radius = 0.1f;
+            LeftHandCol.transform.SetParent(hand);
+            LeftHandCol.transform.localPosition = Vector3.zero;
+            LeftHandCol.transform.localPosition = new Vector3(-0.02f, -0.0f, -0.05f);
+            //leftHandCol.transform.localRotation = Quaternion.Euler(new Vector3(0.0f, 344.0f, 0.0f));
+        }
+    }
+
+    void RightFistBox()
+    {
+        Transform hand = umaData.skeleton.GetBoneGameObject(UMASkeleton.StringToHash("RightHandFinger03_01")).transform﻿; //eli curtz style.
+
+        if (umaData.transform != null)
+
+        {
+            GameObject RightFist = new GameObject("RightFist");
+            RightFist.transform.parent = umaData.transform;
+            RightFist.transform.Translate(umaData.transform.position);
+            RightFist.AddComponent(typeof(CapsuleCollider));
+            RightFist.gameObject.tag = "Fist";
+
+            CapsuleCollider RightHandCol = RightFist.GetComponent<CapsuleCollider>();
+            RightHandCol.height = .2f;
+            RightHandCol.radius = 0.1f;
+            RightHandCol.transform.SetParent(hand);
+            RightHandCol.transform.localPosition = Vector3.zero;
+             RightHandCol.transform.localPosition = new Vector3(-0.02f, -0.0f, -0.05f);
+            // RightHandCol.transform.localRotation = Quaternion.Euler(new Vector3(0.0f, 344.0f, 0.0f));
+        }
     }
 }

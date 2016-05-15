@@ -348,6 +348,17 @@ public class UMAMaker1_Zombies: MonoBehaviour {
     {
         // Create a new game object and add UMA components to it
         GameObject GO = new GameObject("MyUMA");
+        // parent the new uma into the host game object
+        GO.transform.parent = this.gameObject.transform;
+        GO.transform.localPosition = Vector3.zero;
+        GO.transform.localRotation = Quaternion.identity;
+
+        GO.AddComponent(typeof(NavMeshAgent));
+        GO.AddComponent(typeof(CapsuleCollider));
+        var goCol = GO.GetComponent<CapsuleCollider>();
+        goCol.center = new Vector3(0f, 0.78f, 0f);
+        goCol.height = 1.7f;
+        goCol.radius = 0.33f;
         umaDynamicAvatar = GO.AddComponent<UMADynamicAvatar>();
 
         // Initialise Avatar and grab a reference to it's data component
@@ -379,20 +390,8 @@ public class UMAMaker1_Zombies: MonoBehaviour {
         // dynamic animation controller 
         umaDynamicAvatar.animationController = animController;
 
-
-
-
         // Generate Our UMA
         umaDynamicAvatar.UpdateNewRace();
-
-        // parent the new uma into the host game object
-        GO.transform.parent = this.gameObject.transform;
-        GO.transform.localPosition = Vector3.zero;
-        GO.transform.localRotation = Quaternion.identity;
-      
-        GO.AddComponent(typeof(NavMeshAgent));
-        GO.AddComponent(typeof(CapsuleCollider));
-       
     }
 
     // Practical Guide to UMA part 5 https://youtu.be/N-NlNJv1ESE

@@ -31,7 +31,7 @@ namespace Utilties
     public string sourceObjectName;
     public string selected = "";
     private bool aboutState = true;
-    private Transform destinationOrigin;
+     
     //public Vector3 offset = new Vector3(1, 0, 0);
     //private Vector3 lastPos = new Vector3(0, 0, 0);
 
@@ -67,7 +67,8 @@ namespace Utilties
     {
         //destChildren.Clear();
         destChildren = new List<GameObject>(new GameObject[destinationObject.transform.childCount]);
-        destinationOrigin = destinationObject.GetComponent<Transform>() as Transform;
+        
+          //  Transform destinationOrigin = destinationObject.GetComponent<Transform>();
         int i = 0;
         destinationObject.GetComponent<Transform>().position = sourceObject.GetComponent<Transform>().position;
         destinationObject.GetComponent<Transform>().rotation = sourceObject.GetComponent<Transform>().rotation;
