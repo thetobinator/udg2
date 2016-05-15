@@ -719,22 +719,78 @@ public class UMAMaker1_Police: MonoBehaviour {
     //practical guide to UMA part 15 intercepting uma events https://youtu.be/_k-SZRCvgIk?t=4m17s
     void CharacterCreatedCallback(UMAData umaData)
     {
-        //GameObject myUMA = GameObject.Find("myUMA");
         //Debug.Log("UMA_Created");
-       
-
         //attach scripts after creation
-        
+
       umaData.gameObject.transform.position =  new Vector3(this.transform.position.x, this.transform.position.y, this.transform.position.z);
-       Debug.Log("positioned Police!");
-        umaData.gameObject.tag = "Zombie";
-        umaData.gameObject.AddComponent<HealthComponent>();
-        umaData.gameObject.AddComponent<ZombieBehavior>();
+       Debug.Log("positioned Zombie Police!");
+
         // hand collision to prevent slide through
         LeftFistBox();
         RightFistBox();
-        SpawnStaff();
-        SpawnPistolUO();
+
+
+        UnityEngine.Random.seed = (UnityEngine.Random.Range(UnityEngine.Random.Range(UnityEngine.Random.Range(UnityEngine.Random.Range(0, 25), UnityEngine.Random.Range(324, 5673)), UnityEngine.Random.Range(UnityEngine.Random.Range(53, 2378), UnityEngine.Random.Range(50, 423))), UnityEngine.Random.Range(UnityEngine.Random.Range(UnityEngine.Random.Range(23, 2354), UnityEngine.Random.Range(1, 3456)), UnityEngine.Random.Range(UnityEngine.Random.Range(7, 32421), UnityEngine.Random.Range(8, 23472)))));
+        int RNG;
+      
+
+        if (this.gameObject.tag == "SpawnPoint_Zombie") {
+            umaData.gameObject.tag = "Zombie";
+            umaData.gameObject.AddComponent<HealthComponent>();
+            umaData.gameObject.AddComponent<ZombieBehavior>();
+            Animator animator = umaData.gameObject.GetComponent<Animator>();
+            animator.runtimeAnimatorController = Resources.Load("Animation Controllers/ZombieAnimationController") as RuntimeAnimatorController;
+
+            RNG = UnityEngine.Random.Range(1, 8);
+          
+                  for (int i = 1; i <= RNG; i++)
+                {
+                switch (i)
+                {
+                    case 1:
+                        myCustomUMA.injury.Blood1 = true;
+                        break;
+                    case 2:
+                        myCustomUMA.injury.bloodBreastR = true;
+                        break;
+                    case 3:
+                        myCustomUMA.injury.bloodChest = true;
+                        break;
+                    case 4:
+                        myCustomUMA.injury.bloodGuts1 = true;
+                        break;
+                    case 5:
+                        myCustomUMA.injury.bloodShoulderBackL = true;
+                        break;
+                    case 6:
+                        myCustomUMA.injury.bloodShoulderBackR = true;
+                        break;
+
+                    case 7:
+                        myCustomUMA.injury.bloodShoulderR = true;
+                        break;
+
+                    case 8:
+                        myCustomUMA.injury.bloodWhatR = true;
+                        break;
+                }
+            }
+        }
+        else
+        {
+            umaData.gameObject.tag = "Human";
+            umaData.gameObject.AddComponent<HealthComponent>();
+          umaData.gameObject.AddComponent<HumanBehavior>();
+            Animator animator = umaData.gameObject.GetComponent<Animator>();
+            animator.runtimeAnimatorController = Resources.Load("Animation Controllers/Human_AnimationController") as RuntimeAnimatorController;
+         
+            //spawnsWeapons
+            SpawnStaff();
+            SpawnPistolUO();
+        }
+        
+ 
+
         #region    ---------------------   Expression Player Callback broken
         /*
         // A Practical Guide To UMA - Part 17 - Using the Expression Player  https://youtu.be/nJI-kUYYuWE
@@ -756,7 +812,6 @@ public class UMAMaker1_Police: MonoBehaviour {
      // right handed staff/sword/stick wielders will stab themselvse while running.
         Transform hand = umaData.skeleton.GetBoneGameObject(UMASkeleton.StringToHash("LeftHand")).transform﻿; //eli curtz style.
         GameObject staff = GameObject.CreatePrimitive(PrimitiveType.Cube);
-     
         staff.name = "staff";
         staff.tag = "Staff";
         staff.transform.SetParent(hand);   
@@ -769,9 +824,10 @@ public class UMAMaker1_Police: MonoBehaviour {
         staff.transform.localScale = new Vector3(0.02f, 1.0f, 0.02f);
         staff.AddComponent(typeof(BoxCollider));
     }
+
+    //spawn pistol unity object prefab
     void SpawnPistolUO()
     {
-
         Transform hand = umaData.skeleton.GetBoneGameObject(UMASkeleton.StringToHash("LeftHandFinger03_01")).transform﻿; //eli curtz style.
 
         if (umaData.transform != null)
