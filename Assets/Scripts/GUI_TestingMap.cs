@@ -30,11 +30,10 @@ public class GUI_TestingMap : MonoBehaviour
     {
         //GUI.Box(new Rect(10, 10, 430, 220), "Click here to start Camera");
         // GUI.DrawTexture(new Rect(20, 20, 32, 32), icon);
-
         GUI.contentColor = slowColor();
 		string controlsScreenText = "Currently: Click a few times to create zombies, click targets to send zombies to targets.";
-		
-        string oldcontrolsScreenText = "Controls\n" +
+        GUI.Label(new Rect(20, 60, 500, 600), controlsScreenText);
+        /*string oldcontrolsScreenText = "Controls\n" +
                                  " Mouse to look around\n" +
                                  " Click   To send a zombie to a location, or to attack a target\n" +
                                  " +Additional clicks send more zombies.\n" +
@@ -56,11 +55,7 @@ public class GUI_TestingMap : MonoBehaviour
                                  " \n" +
                                  " CMD+O to access unlocked levels\n" +
                                  " \n" +
-                                 " ESCAPE activates the menu";
-
-        
-			GUI.Label(new Rect(20, 60, 500, 600), controlsScreenText);
-			
+                                 " ESCAPE activates the menu"; */
 
 
         // previous text

@@ -18,7 +18,7 @@ public class ReceiveDamage : MonoBehaviour {
 	private static Vector3 originPosition;
 	private static Quaternion originRotation;
 	
-	private static float shakeDecay = 0.005f;
+	//private static float shakeDecay = 0.005f;
 	private static float shakeIntensity;
 	private static Vector3 childscale;
 

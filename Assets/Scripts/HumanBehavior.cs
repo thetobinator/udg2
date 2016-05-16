@@ -60,10 +60,11 @@ public class HumanBehavior : MonoBehaviour {
 				setTargetObject( null );
 				m_dangerPosition = GetComponent< Transform > ().position;
 			}
-			
-                foreach (GameObject zombie in zombies)
+            //Debug.Log(string.Format("Zombies = {0}", zombies));
+            foreach (GameObject zombie in zombies)
                 {
-                    if (zombie.GetComponent<HealthComponent>() == null || zombie.GetComponent<HealthComponent>().isDead())
+                //Debug.Log(string.Format("Zombie= {0}", zombie));
+                if (zombie.GetComponent<HealthComponent>() == null || zombie.GetComponent<HealthComponent>().isDead())
                     {
                         // ignore dead zombies for now
                         continue;
@@ -75,8 +76,10 @@ public class HumanBehavior : MonoBehaviour {
                     zombieCenter.y += 0.8f;
                     Vector3 direction = zombieCenter - zombieHeadPosition;
                     float sqrDistanceToZombie = direction.sqrMagnitude;
-                  
-                        if (updateEars && MainGameManager.instance.getObjectSpeed(zombie) > 1.0f)
+
+                // Why this bugging out? instance doesn't exist?
+               // Debug.Log(String.Format("getObjectSpeed = {0}",MainGameManager.instance.getObjectSpeed(zombie)));
+                if (updateEars && MainGameManager.instance.getObjectSpeed(zombie) > 1.0f)
                         {
                             // human is running
                             if (zombie == m_dangerObject)

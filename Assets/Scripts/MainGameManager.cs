@@ -1,29 +1,27 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.IO;
+using UnityEngine.SceneManagement;
+using System.Collections.Generic; // so we can use List<string> tText= new List<string>(); because that's 'easy' RRRRGgh
 
 public class MainGameManager : MainGameInit
 {
 
     // global score 
     private int currentScore;
+    public string currentScene;
+    public string scenePath;
 
-    // global text box update
-    private string theguiText;
 
+    
+
+    #region UDGINIT.LUA as C#
     // UDGInit.lua to C# 07 25 2015
     // -- UDGInit with copies from RTS Init 01 03 09; 
     // 
     // 
     /* turning things off to  debug 08 27 2015
      * 
-     /*this should inherit from MainGameInit
-    private string gameroot;//= Application.dataPath;
-    private string levelPath;// = Application.dataPath  + "/Data/Levels/"; 
-    private string gameRoot;// = gameroot; //break and fix this all at once ...later;
-    private string currentLevel;// = Application.loadedLevelName;
-    */
-
     /*this is old udeadgame Lua to C# should ineherit from the MainGameInit or Maybe Sub Manager scripts? Tracking.cs etc perhaps?
     private bool doShadows = true;
     private string masterAnimSource = "mcTrueBones.wtf";
@@ -69,12 +67,11 @@ public class MainGameManager : MainGameInit
     private int currentText = 1;
     private bool hideHUD = false;
     private bool wonThisLevel = false;
-  
-
     //public string CurrentLevel = Application.loadedLevelName; //local tCurrentLevel=ig3dGetLevels()
     //--write currentlevel.lua to UDG folder
     */
     //private char Quote = '\"';
+    #endregion
     //this is from a tutorial, it's a working example while I breakthings
     public static MainGameManager instance; //local tCurrentLevel=ig3dGetLevelNames()
 
@@ -193,6 +190,19 @@ public class MainGameManager : MainGameInit
 	public GameObject bullet;
 	public GameObject gun;
 	public GameObject destinationMarker;
+
+
+    // global text box update
+    [Range(0, 1)]
+    public int showScreenText = 0;
+    [Multiline]
+    public List<string> screenText = new List<string>();
+
+    float cnt = mainGameManager.screenText.Count;
+   
+
+
+    // what does populationData do?
     struct PopulationData
     {
         uint m_poolSize;
@@ -278,12 +288,12 @@ public class MainGameManager : MainGameInit
 
     void Awake()
     {
-        instance = this;
-        gameroot = Application.dataPath;
-        gameRoot = gameroot; // fix them all at once later.
-        levelPath = Application.dataPath + "/Data/Levels/";
-        currentLevel = "! Application.loadedLevelName is obsolete use SceneManager to determine what scenes are loaded.";
-
+       instance = this;
+        // gameroot = Application.dataPath;
+        // gameRoot = gameroot; // fix them all at once later.
+        // levelPath = Application.dataPath + "/Data/Levels/";
+        scenePath = SceneManager.GetActiveScene().path;
+        currentScene = SceneManager.GetActiveScene().name;
 
     }
 
@@ -291,7 +301,7 @@ public class MainGameManager : MainGameInit
 
     public void OnGUI()
     {
-        GUI.Label(new Rect(10, 10, 700, 200), theguiText);
+        GUI.Label(new Rect(10, 10, 700, 200), screenText[showScreenText]);
 
     }
 
@@ -306,15 +316,9 @@ public class MainGameManager : MainGameInit
 
     private void Start()
     {
-
-        theguiText = "Data Path: " + gameRoot + "\n" + "Scene " + currentLevel + "\n";
-        if (currentLevel != "UDGInstructions")
-        {
-            writeCurrentLevel(currentLevel);
-        }
-
-        m_humans.setup(10u, 10u, 3.0f, "Human", humans, "SpawnPoint_Human");
-        m_zombies.setup(7u, 7u, 3.0f, "Zombie", zombies, "SpawnPoint_Zombie");
+        //this looks like rouguelike spawning.
+       m_humans.setup(10u, 10u, 3.0f, "Human", humans, "SpawnPoint_Human");
+      m_zombies.setup(7u, 7u, 3.0f, "Zombie", zombies, "SpawnPoint_Zombie");
     }
 
     public void Update()
@@ -323,6 +327,7 @@ public class MainGameManager : MainGameInit
         m_zombies.update(Time.deltaTime);
 		m_movementObserver.update ();
 		m_zombieCommander.update ();
+        
     }
 
     //end MainGameManager

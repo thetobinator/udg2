@@ -35,7 +35,7 @@ public class RigidOnTouch : MonoBehaviour {
                 if (hasRigidBody == null)
                 {
                     print("Adding Rigid Body: " + this + "\n to " + child.gameObject.name);
-                    Rigidbody childBody = child.gameObject.AddComponent<Rigidbody>() as Rigidbody;
+                    //Rigidbody childBody = child.gameObject.AddComponent<Rigidbody>() as Rigidbody;
                      hasRigidBody = child.gameObject.GetComponent<Rigidbody>();
                 }
                     Vector3 childscale = child.gameObject.transform.localScale;

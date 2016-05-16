@@ -69,7 +69,11 @@ namespace UnityFBXExporter
 			{
 				ModelImporterMaterialName modelImportOld = modelImporter.materialName;
 				modelImporter.materialName = ModelImporterMaterialName.BasedOnMaterialName;
-				modelImporter.tangentImportMode = ModelImporterTangentSpaceMode.Import;
+                modelImporter.tangentImportMode = ModelImporterTangentSpaceMode.Import;
+                //`UnityEditor.ModelImporterTangentSpaceMode.Import' is obsolete:
+                //`Use ModelImporterNormals.Import instead'
+
+                
 				if(copyMaterials == false)
 					modelImporter.materialSearch = ModelImporterMaterialSearch.Everywhere;
 				

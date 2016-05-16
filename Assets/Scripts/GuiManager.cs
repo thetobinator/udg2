@@ -23,9 +23,13 @@ public class GuiManager : MainGameInit {
     {
         // string textupdate = screenText;
         //print(screenText.Count);
-        GUI.Label(new Rect(10, 10, 700, 200), mainGameInit.screenText[mainGameInit.screenText.Count - 1]);
+        GUI.Label(new Rect(10, 10, 700, 200), mainGameManager.screenText[mainGameManager.showScreenText]);
     }
 
+    void Update()
+    {
+        GUI.Label(new Rect(10, 10, 700, 200), mainGameManager.screenText[mainGameManager.showScreenText]);
+    }
     // end GUiManager
 }
 

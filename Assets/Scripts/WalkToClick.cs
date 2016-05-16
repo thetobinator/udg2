@@ -13,7 +13,7 @@ public class WalkToClick : MonoBehaviour {
 	public GameObject[] glass; // = GameObject.FindGameObjectsWithTag ("Window");
 	public GameObject[] door; // = GameObject.FindGameObjectsWithTag ("Door");
 	public GameObject[] barricade; // = GameObject.FindGameObjectsWithTag ("Barricade");
-	string[] Taglist = new string[] {"Barricade","Box","Door","Furniture","Human","Zombie"};
+	//string[] Taglist = new string[] {"Barricade","Box","Door","Furniture","Human","Zombie"};
 	string TargetTag;
 	// GameObject previousObject; // was used to keep humans busy.
 	bool m_hasDestination = false;

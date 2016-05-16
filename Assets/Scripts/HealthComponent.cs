@@ -3,7 +3,8 @@ using System.Collections;
 
 public class HealthComponent : MonoBehaviour {
 	public float initialHealth = 100.0f;
-	float m_health;
+    
+	public float current_health;
 
 	// Use this for initialization
 	void Start () {
@@ -16,14 +17,14 @@ public class HealthComponent : MonoBehaviour {
 	}
 
 	public void dealDamage( float damage ) {
-		m_health -= damage;
+        current_health -= damage;
 	}
 
 	public bool isDead() {
-		return m_health <= 0.0f;
+		return current_health <= 0.0f;
 	}
 
 	public void reanimate() {
-		m_health = initialHealth;
+        current_health = initialHealth;
 	}
 }

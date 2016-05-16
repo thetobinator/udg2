@@ -4,7 +4,9 @@ using System.Collections;
 using System.Collections.Generic; // so we can use List<string> tText= new List<string>(); because that's 'easy' RRRRGgh
 using System.IO;
 using System.Linq;
-//using System.Linq;
+using UnityEngine.SceneManagement;
+// Unity 5 SceneManagement replaces Application.LoadLevel type of calls. May 2016
+
 // this is like BoardManager RogueLike Tutorial
 // lets assume aroguemaze maker.
 public class MainGameInit : MonoBehaviour
@@ -14,25 +16,18 @@ public class MainGameInit : MonoBehaviour
     public static MainGameManager mainGameManager;
     //
 
-    /*  08 17 2015 conflict with entityspawning
-   
+    /*  08 17 2015 conflict with entityspawning   
     public List<GameObject> zombies;
     public GameObject[] humans;
      */
+    // GameObject Prefabs as levels or maps.
+    //public List<GameObject> levelMaps;
+    // public GameObject loadedLevel;
+    // public int currentMap = 1; // 
 
-    public List<GameObject> levelMaps;
-    public GameObject loadedLevel;
-    public int currentMap = 1; // 
 
-    // UDGInit.lua to C# 08 17 2015
-    // -- UDGInit with copies from RTS Init 01 03 09; 
-    // 
-    // 
-    public string gameroot;//= Application.dataPath;
-    public string levelPath;// = Application.dataPath  + "/Data/Levels/"; 
-    public string gameRoot;// = gameroot; //break and fix this all at once ...later;
-    public string currentLevel;// = Application.loadedLevelName;
-
+    private char Quote = '\"';
+    #region OLD uDeadGame Lua variables
     /*    // variables off for working clean inspector 08 17 2015
     public bool doShadows = true;
     public string masterAnimSource = "mcTrueBones.wtf";
@@ -43,7 +38,6 @@ public class MainGameInit : MonoBehaviour
     public int teamSelect = 0;
     public int lastClick = 0;
     public float doubleClickInterval = 0.4f;
-
     public int cameraSpeed = 5;
     public float velocityClamp = 1.16f;
     public bool levelIsLit = false;
@@ -51,23 +45,18 @@ public class MainGameInit : MonoBehaviour
     public bool trackLightEnabled = false;
     public string nextUDGLevel = null;
     public bool CAPSLOCKKEY = false;
-
     // -- this tracks the screamer with  light 5; 
     public GameObject[] screamerObject;
     public Vector3[] screamVector3;
     //ScreamX,ScreamY,gScreamZ = new Transform.position(); // nil,nil,nil; 
     public Vector3[] trackedPosition;
-
     // -- counts how long the gun flare is on; 
     public int gunLightCount = 0;
-
     public bool reloadLevel = false; //-- added 02 08 2009 ; 
     public float startPositionTimer = 0.0f;
-
     // -- added 02 26 2009 keyboard teleport; 
     public bool teleportTimerActive = false;
     public float teleportTime = 0.0f;
-
     // int because trackedObject is in a list somewhere?
     public int trackedObject = 3; //TrackedPosition.x,TrackedPosition.y,TrackedPosition.z = 0,0,0; 
     public bool displayLoading = false;
@@ -80,9 +69,7 @@ public class MainGameInit : MonoBehaviour
     public bool hideHUD = false;
     public bool wonThisLevel = false;
   
-
-   
-   // these were those files
+   // these were those startup files
    // USING RTS SCRIPTS?!? ARGH Lets move what we can to UDG specifics!
    public List<string> RTSFUNCTIONS = new List<string>(new string[] { "Attributes", "Utilities", "Sounds", "Tasks", "Behaviours", "Senses", "Vehicles", "Weapons", "Orders", "Events", "AI", "Collisions", "Keyboard", "astar", "Game" });
    public List<string> UDGFUNCTIONS = new List<string>(new string[] { "Editor", "Lights", "AI", "Utilities", "Sounds", "Fallback", "Textboxes", "Keyboard", "Game", "Music" });
@@ -91,7 +78,6 @@ public class MainGameInit : MonoBehaviour
    // List of old uDeadGame Lua files at Init // perhaps use again?
    public List<string> initFileList = new List<string>();
     //end of old igame3d udeadgame variables.
-
    //maybe these gameobject arrays is a per level/character thing, maybe shoulds be List<string>s?
    public GameObject[] furniture; 
    public GameObject[] windows;
@@ -100,49 +86,42 @@ public class MainGameInit : MonoBehaviour
    public GameObject[] door;
    public GameObject[] barricade; 
    */
+    #endregion
 
-    // global text box update
-    [Multiline]
-    public List<string> screenText = new List<string>();
-    private char Quote = '\"';
+
+
     private Transform mapHolder; //parent the map to this...eventually?
-    private Transform SpawnHolder; // this will parent spawns in the editor
-    
+    private Transform SpawnHolder; // this will parent spawns in the editor   
     private List <Vector3> gridPositions = new List<Vector3>(); //Track all objects 3D position and avoid spawn same spot
-    
   
-    //
-    //
-    //
     void Awake()
     {
+      
         mainGameInit = this;
-        gameroot = Application.dataPath;
-        gameRoot = gameroot; // fix them all at once later.
-        levelPath = Application.dataPath + "/Data/Levels/";
-        currentLevel = Application.loadedLevelName;
+    
         InitialiseList();
-        
             //Instantiate gameManager prefab
             Instantiate(mainGameManager);  
-        
-        
     }
-    // Use this for initialization
-    void Start()
-    {
-        /*
-        // This Seems to creat dynamic, ie,whatever is in Resources/<path> load and become part of
-        // the component
-        print("Attaching Resources/Prefabs/zombies/ to this :" + this.name);
-        object[] zombs = Resources.LoadAll("Prefabs/zombies");
-            foreach (GameObject z in zombs)
+
+    
+    public void writeCurrentLevel(string currentLevel)
+    {// Add some text to the file.
+
+        int Len = SceneManager.GetActiveScene().path.Length - 5;
+        string sceneTextPath = SceneManager.GetActiveScene().path.Substring(0, Len) + "txt";
+        Debug.Log(String.Format("sceneTextPath = {0}", sceneTextPath));
+        using (StreamWriter currentLevelFile = new StreamWriter(sceneTextPath))
+        {
+            string thislevelout = "currentLevel =" + Quote + SceneManager.GetActiveScene().name + Quote + "\n";
+            Debug.Log(String.Format("thislevelout = {0}", thislevelout));
+            currentLevelFile.Write(thislevelout);
+            if (System.IO.File.Exists(Application.dataPath + "/Data/Levels/UDG/" + currentLevel + ".txt"))
             {
-            string t = z.ToString();
-            zombies.Add(z);    
-             }
-         */
-    }
+                print("writeCurrentLevel  =" + thislevelout); //do stuff
+            }
+        }
+    }// end writecurrentlevel
 
     void listPrefabs(string tFolder)
     {
@@ -173,17 +152,6 @@ public class MainGameInit : MonoBehaviour
     }
 
 
-  /* no need to run this really 08 17 2015
-   * void OldUDGLuaFilesList()
-    { //old igame3d udeadgame lua initialisation scripts LIST, just a list for now.
-        // probably need to    load script component on runtime
-        foreach (string tFile in RTSFUNCTIONS) { initFileList.Add(gameroot + "Data/Scripts/RTS_Functions/RTS_" + tFile + ".lua"); }
-        foreach (string tFile in UDGFUNCTIONS) { initFileList.Add(gameroot + "Data/Scripts/UDG_Functions/RTS_" + tFile + ".lua"); }
-        foreach (string tFile in UDGENTITIES) { initFileList.Add(gameroot + "Data/Scripts/UDG_Functions/UDG_Entities/UDG_" + tFile + ".lua"); }
-        // concatenate the list to an array string with delimiter
-        print("OLD _Initalization Files List:\n\t" + String.Join("\n\t", initFileList.ToArray()));
-    }
-   */
 
     // loads a game object prefab as a whole level
   public  void LoadLevel(GameObject gameObject)
@@ -195,31 +163,11 @@ public class MainGameInit : MonoBehaviour
     // a little redundant?
     public void SetupScene()
     {
-        LoadLevel(levelMaps[currentMap].gameObject);
+        // May 16 2016, we are not using this 'yet'
+       // LoadLevel(levelMaps[currentMap].gameObject);
     }
 
     
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
-
-    // Until I know better how to move the functions into other files and not cause a jam
-    public void writeCurrentLevel(string currentLevel)
-    {// Add some text to the file.
-        using (StreamWriter currentLevelFile = new StreamWriter(gameroot + "/Data/Levels/UDG/" + currentLevel + ".txt"))
-        {
-            string thislevelout = "currentLevel =" + Quote + currentLevel + Quote + "\n";
-            currentLevelFile.Write(thislevelout);
-            if (System.IO.File.Exists(gameroot + "/Data/Levels/UDG/" + currentLevel + ".txt"))
-            {
-                print("writeCurrentLevel  =" +  thislevelout); //do stuff
-            }
-        }
-    }// end writecurrentlevel
 
 
 

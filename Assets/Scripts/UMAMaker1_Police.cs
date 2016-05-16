@@ -723,17 +723,14 @@ public class UMAMaker1_Police: MonoBehaviour {
         //attach scripts after creation
 
       umaData.gameObject.transform.position =  new Vector3(this.transform.position.x, this.transform.position.y, this.transform.position.z);
-       Debug.Log("positioned Zombie Police!");
+       Debug.Log("positioned.");
 
         // hand collision to prevent slide through
         LeftFistBox();
         RightFistBox();
-
-
         UnityEngine.Random.seed = (UnityEngine.Random.Range(UnityEngine.Random.Range(UnityEngine.Random.Range(UnityEngine.Random.Range(0, 25), UnityEngine.Random.Range(324, 5673)), UnityEngine.Random.Range(UnityEngine.Random.Range(53, 2378), UnityEngine.Random.Range(50, 423))), UnityEngine.Random.Range(UnityEngine.Random.Range(UnityEngine.Random.Range(23, 2354), UnityEngine.Random.Range(1, 3456)), UnityEngine.Random.Range(UnityEngine.Random.Range(7, 32421), UnityEngine.Random.Range(8, 23472)))));
         int RNG;
-      
-
+        RNG = UnityEngine.Random.Range(1, 8);
         if (this.gameObject.tag == "SpawnPoint_Zombie") {
             umaData.gameObject.tag = "Zombie";
             umaData.gameObject.AddComponent<HealthComponent>();
@@ -741,8 +738,6 @@ public class UMAMaker1_Police: MonoBehaviour {
             Animator animator = umaData.gameObject.GetComponent<Animator>();
             animator.runtimeAnimatorController = Resources.Load("Animation Controllers/ZombieAnimationController") as RuntimeAnimatorController;
 
-            RNG = UnityEngine.Random.Range(1, 8);
-          
                   for (int i = 1; i <= RNG; i++)
                 {
                 switch (i)
