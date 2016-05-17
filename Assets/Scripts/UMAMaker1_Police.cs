@@ -3,7 +3,7 @@ using System;
 using System.Collections;
 using UMA;
 using System.IO;
-using UMA.PoseTools;
+//using UMA.PoseTools; //PoseTools for expressions
 
 
 // A practical guide to UMA Part 14b Using the "Asset" format https://youtu.be/Q6bLMusuhbo?t=8m13s

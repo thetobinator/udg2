@@ -164,6 +164,7 @@ public class MainGameManager : MainGameInit
 
 		public float getObjectSpeed( GameObject obj )
 		{
+           
 			int key = obj.GetInstanceID ();
 			if (m_oldObjectPositions.ContainsKey (key)
 				&& m_newObjectPositions.ContainsKey (key)) {
@@ -197,9 +198,6 @@ public class MainGameManager : MainGameInit
     public int showScreenText = 0;
     [Multiline]
     public List<string> screenText = new List<string>();
-
-    float cnt = mainGameManager.screenText.Count;
-   
 
 
     // what does populationData do?
@@ -252,7 +250,8 @@ public class MainGameManager : MainGameInit
 			if( m_time == 0.0f  && m_prefabs.Length > 0u )
 			{
 				m_time = 1.0f;// *sigh*
-				spawnOneAtEachSpawnpoint();
+                // prefabbed UMA self spawns.
+				//spawnOneAtEachSpawnpoint();
 			}
 			// :TO: enable below code for testing the old delayed spawning code            
             /*
@@ -317,14 +316,14 @@ public class MainGameManager : MainGameInit
     private void Start()
     {
         //this looks like rouguelike spawning.
-       m_humans.setup(10u, 10u, 3.0f, "Human", humans, "SpawnPoint_Human");
-      m_zombies.setup(7u, 7u, 3.0f, "Zombie", zombies, "SpawnPoint_Zombie");
+    // m_humans.setup(10u, 10u, 3.0f, "Human", humans, "SpawnPoint_Human");
+     //m_zombies.setup(7u, 7u, 3.0f, "Zombie", zombies, "SpawnPoint_Zombie");
     }
 
     public void Update()
     {
-        m_humans.update(Time.deltaTime);
-        m_zombies.update(Time.deltaTime);
+        //m_humans.update(Time.deltaTime);
+        //m_zombies.update(Time.deltaTime);
 		m_movementObserver.update ();
 		m_zombieCommander.update ();
         
