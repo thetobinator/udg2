@@ -149,11 +149,12 @@ public class UMAMaker1_FemaleCivilian: MonoBehaviour {
 
     public CustomUMA myCustomUMA;
     #endregion
-   
+
     //practical guide to uma part 17 Expression player https://youtu.be/nJI-kUYYuWE?t=2m27s
 
     //public UMAExpressionPlayer expressionPlayer;
 
+    public bool cameraToFront = false;
     void Awake()
     {
         slotLibrary = GameObject.Find("SlotLibrary").GetComponent<SlotLibrary>();
@@ -264,8 +265,8 @@ public class UMAMaker1_FemaleCivilian: MonoBehaviour {
         if (myCustomUMA.head.hairState && !lastHairState)
         {
             lastHairState = myCustomUMA.head.hairState;
-            SetSlot(7, "F_Hair_Shaggy");
-            AddOverlay(7,"F_Hair_Shaggy", myCustomUMA.head.hairColor);
+            SetSlot(7, "FemaleLongHair01");
+            AddOverlay(7, "FemaleLongHair01", myCustomUMA.head.hairColor);
             DirtyUMAUpdate(umaData);
         }
 
@@ -280,9 +281,10 @@ public class UMAMaker1_FemaleCivilian: MonoBehaviour {
         if (myCustomUMA.head.hairColor != lastHairColor && myCustomUMA.head.hairState)
         {           
             lastHairColor = myCustomUMA.head.hairColor;
-            ColorOverlay(7, "F_Hair_Shaggy", myCustomUMA.head.hairColor);
+            ColorOverlay(7, "FemaleLongHair01", myCustomUMA.head.hairColor);
             umaData.isTextureDirty = true;
-            umaData.Dirty();           
+            umaData.Dirty();
+            
         }
 
 
@@ -407,8 +409,8 @@ public class UMAMaker1_FemaleCivilian: MonoBehaviour {
             SetSlot(5, "HumanMaleLegsPolice");
             AddOverlay(5, "HumanMaleLegsPolice");
             RemoveSlot(footSlot);
-            SetSlot(12, "HumanFemaleArms"); // mesh
-            AddOverlay(12, "HumanFemaleArms");
+            SetSlot(12, "HumanMaleArms"); // mesh
+            AddOverlay(12, "HumanMaleArms");
             DirtyUMAUpdate(umaData);
         }
 
@@ -422,7 +424,7 @@ public class UMAMaker1_FemaleCivilian: MonoBehaviour {
             LinkOverlay(5, 2);
             AddOverlay(5, "FemaleUnderwear01");
             LinkOverlay(footSlot,2);
-            SetSlot(12, "HumanFemaleArms"); // mesh
+            SetSlot(12, "HumanMaleArms"); // mesh
             LinkOverlay(12, 2);
             DirtyUMAUpdate(umaData);
         }
@@ -495,6 +497,9 @@ public class UMAMaker1_FemaleCivilian: MonoBehaviour {
             LinkOverlay(4, 3);
             DirtyUMAUpdate(umaData);
         }
+
+        if (cameraToFront) { Camera.main.transform.rotation = Quaternion.Euler(0, 180, 0); }
+       
     }
 
     void DirtyUMAUpdate(UMAData umaData)

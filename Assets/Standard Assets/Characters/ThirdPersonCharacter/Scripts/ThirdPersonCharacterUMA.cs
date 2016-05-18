@@ -87,6 +87,7 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 				HandleAirborneMovement();
 			}
 
+            // crouching interferes with hand collission checks
 			//ScaleCapsuleForCrouching(crouch);
 			//PreventStandingInLowHeadroom();
 
