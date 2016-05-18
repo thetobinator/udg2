@@ -14,7 +14,7 @@ public class HumanBehavior : MonoBehaviour {
 		Dead,				// dead, this time really
 	};
 	
-	public float initDelay = 0.0f;
+	public float initDelay = 2.0f;
 	GameObject m_nonLocalizedTargetCandidate = null;
 	GameObject m_localizedTargetCandidate = null;
 	GameObject m_dangerObject = null;

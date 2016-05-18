@@ -182,7 +182,7 @@ namespace UMA.PoseTools
 
 			foreach (PoseBone pose in poses)
 			{
-				umaSkeleton.Morph(pose.hash, pose.position, pose.scale, pose.rotation, weight);
+				umaSkeleton.Lerp(pose.hash, pose.position, pose.scale, pose.rotation, weight);
 			}
 		}
 

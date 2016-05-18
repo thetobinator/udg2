@@ -1,1 +1,0 @@
-currentLevel ="! Application.loadedLevelName is obsolete use SceneManager to determine what scenes are loaded."

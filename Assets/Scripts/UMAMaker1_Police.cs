@@ -298,7 +298,7 @@ public class UMAMaker1_Police: MonoBehaviour {
         {
             lastShoeState = myCustomUMA.shoeState;
             //RemoveSlot(footSlot);
-            SetSlot(footSlot, "MaleFeet");
+            SetSlot(footSlot, "FemaleFeet");
             LinkOverlay(footSlot, 3);
             //AddOverlay(footSlot, "Shoes");
             DirtyUMAUpdate(umaData);
@@ -646,7 +646,7 @@ public class UMAMaker1_Police: MonoBehaviour {
 
     void RemoveOverlay( int slotNumber, string overlayName)
     {
-        umaData.umaRecipe.slotDataList[slotNumber].RemoveOverlay(overlayName);
+        //umaData.umaRecipe.slotDataList[slotNumber].RemoveOverlay(overlayName);
     }
 
     void ColorOverlay(int slotNumber, string overlayName, Color color)

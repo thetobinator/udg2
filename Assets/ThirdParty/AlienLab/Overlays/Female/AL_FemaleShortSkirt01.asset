@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c4834e6077abe64e968f9f87c9ac70a, type: 3}
+  m_Name: AL_FemaleShortSkirt01
+  m_EditorClassIdentifier: 
+  overlayName: AL_FemaleShortSkirt01
+  rect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 0
+    height: 0
+  textureList:
+  - {fileID: 2800000, guid: 18c2e2fc3bb640048816c190e5913e26, type: 3}
+  - {fileID: 2800000, guid: 39ef150f65a9d6a40a84c9ddd122079f, type: 3}
+  tags: []
+  material: {fileID: 11400000, guid: 30f58efe335b9cc419271f828db88622, type: 2}

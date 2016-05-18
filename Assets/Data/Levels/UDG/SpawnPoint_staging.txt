@@ -1,1 +1,0 @@
-currentLevel ="SpawnPoint_staging"

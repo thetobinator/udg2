@@ -53,6 +53,7 @@ public class ZombieBehavior : MonoBehaviour {
 		if( updateEars || updateEyes )
 		{
 			GameObject[] humans = GameObject.FindGameObjectsWithTag( opposingFactionTag() );
+
 			GameObject closestHeardHuman = null;
 			GameObject closestSeenHuman = null;
 			bool targetIsHeardOrSeen = false;
@@ -67,69 +68,71 @@ public class ZombieBehavior : MonoBehaviour {
 				setTargetObject( null );
 				m_targetPosition = GetComponent< Transform > ().position;
 			}
+            Debug.Log(string.Format("Humans = {0}", humans));
+            if (humans != null)
+            {
+                foreach (GameObject human in humans)
+                {
+                    if (human.GetComponent<HealthComponent>() == null || human.GetComponent<HealthComponent>().isDead())
+                    {
+                        // ignore dead humans for now
+                        continue;
+                    }
+                    Vector3 zombieHeadPosition = GetComponent<Transform>().position;
+                    Vector3 zombieViewDirection = GetComponent<Transform>().forward;
+                    zombieHeadPosition.y += 1.5f;
+                    Vector3 humanCenter = human.GetComponent<Transform>().position;
+                    humanCenter.y += 0.8f;
+                    Vector3 direction = humanCenter - zombieHeadPosition;
+                    float sqrDistanceToHuman = direction.sqrMagnitude;
 
-			foreach( GameObject human in humans )
-			{
-				if( human.GetComponent<HealthComponent>() == null || human.GetComponent<HealthComponent>().isDead() )
-				{
-					// ignore dead humans for now
-					continue;
-				}
-				Vector3 zombieHeadPosition = GetComponent<Transform>().position;
-				Vector3 zombieViewDirection = GetComponent<Transform>().forward;
-				zombieHeadPosition.y += 1.5f;
-				Vector3 humanCenter = human.GetComponent<Transform>().position;
-				humanCenter.y += 0.8f;
-				Vector3 direction = humanCenter - zombieHeadPosition;
-				float sqrDistanceToHuman = direction.sqrMagnitude;
+                    if (updateEars && MainGameManager.instance.getObjectSpeed(human) > 1.0f)
+                    {
+                        // human is running
+                        if (human == m_targetObject)
+                        {
+                            targetIsHeardOrSeen = true;
+                        }
 
-				if( updateEars && MainGameManager.instance.getObjectSpeed( human ) > 1.0f )
-				{
-					// human is running
-					if( human == m_targetObject )
-					{
-						targetIsHeardOrSeen = true;
-					}
+                        if (sqrDistanceToHuman < closestHeardHumanSqrDistance)
+                        {
+                            closestHeardHuman = human;
+                            closestHeardHumanSqrDistance = sqrDistanceToHuman;
+                        }
+                    }
 
-					if( sqrDistanceToHuman < closestHeardHumanSqrDistance )
-					{
-						closestHeardHuman = human;
-						closestHeardHumanSqrDistance = sqrDistanceToHuman;
-					}
-				}
-
-				if( updateEyes )
-				{
-					direction.Normalize();
-					Vector3 direction2D = direction;
-					direction2D.y = 0.0f;
-					direction2D.Normalize();
-					if( Vector3.Dot( direction2D, zombieViewDirection ) > 0.707f )
-					{
-						// in azimuth
-						Vector3 rayStart = zombieHeadPosition + 0.5f * direction;
-						Ray ray = new Ray( rayStart, direction );
-						RaycastHit hit = new RaycastHit();
-						if( Physics.Raycast( ray, out hit ) )
-						{
-							if( ( hit.point - humanCenter ).sqrMagnitude < 0.5f )
-							{
-								// ray hit is near human -> no obstacle in between
-								if( human == m_targetObject )
-								{
-									targetIsHeardOrSeen = true;
-								}
-								if( sqrDistanceToHuman < closestSeenHumanSqrDistance )
-								{
-									closestSeenHuman = human;
-									closestSeenHumanSqrDistance = sqrDistanceToHuman;
-								}
-							}
-						}
-					}
-				}
-			}
-
+                    if (updateEyes)
+                    {
+                        direction.Normalize();
+                        Vector3 direction2D = direction;
+                        direction2D.y = 0.0f;
+                        direction2D.Normalize();
+                        if (Vector3.Dot(direction2D, zombieViewDirection) > 0.707f)
+                        {
+                            // in azimuth
+                            Vector3 rayStart = zombieHeadPosition + 0.5f * direction;
+                            Ray ray = new Ray(rayStart, direction);
+                            RaycastHit hit = new RaycastHit();
+                            if (Physics.Raycast(ray, out hit))
+                            {
+                                if ((hit.point - humanCenter).sqrMagnitude < 0.5f)
+                                {
+                                    // ray hit is near human -> no obstacle in between
+                                    if (human == m_targetObject)
+                                    {
+                                        targetIsHeardOrSeen = true;
+                                    }
+                                    if (sqrDistanceToHuman < closestSeenHumanSqrDistance)
+                                    {
+                                        closestSeenHuman = human;
+                                        closestSeenHumanSqrDistance = sqrDistanceToHuman;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+           
 			/*
 			if( targetIsHeardOrSeen )
 			{
@@ -151,7 +154,8 @@ public class ZombieBehavior : MonoBehaviour {
 				}
 			}
 		}
-	}
+        }// end if humans not null
+    }
 
 	void approachPosition( Vector3 targetPosition )
 	{
