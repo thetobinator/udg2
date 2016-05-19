@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace UnityStandardAssets.Characters.ThirdPerson
 {
-	[RequireComponent(typeof(Rigidbody))]
-	[RequireComponent(typeof(CapsuleCollider))]
-	[RequireComponent(typeof(Animator))]
+	//[RequireComponent(typeof(Rigidbody))]
+	//[RequireComponent(typeof(CapsuleCollider))]
+	//[RequireComponent(typeof(Animator))]
 	public class ThirdPersonCharacterUMA : MonoBehaviour
 	{
 		[SerializeField] float m_MovingTurnSpeed = 360;
@@ -35,9 +35,11 @@ namespace UnityStandardAssets.Characters.ThirdPerson
         private string UMAName;
         void Start()
 		{
-			m_Animator = GetComponent<Animator>();
-			m_Rigidbody = GetComponent<Rigidbody>();
-			m_Capsule = GetComponent<CapsuleCollider>();
+           
+
+            m_Animator = transform.Find("MyUMA").GetComponent<Animator>();
+			m_Rigidbody = transform.Find("MyUMA").GetComponent<Rigidbody>();
+			m_Capsule = transform.Find("MyUMA").GetComponent<CapsuleCollider>();
 			m_CapsuleHeight = m_Capsule.height;
 			m_CapsuleCenter = m_Capsule.center;
 
@@ -54,9 +56,9 @@ namespace UnityStandardAssets.Characters.ThirdPerson
                 if (transform.Find("MyUMA").GetComponent<Animator>())
                 {
                     UMAAnimator = transform.Find("MyUMA").GetComponent<Animator>();
-                    Debug.Log("UMA Found");
+                    Debug.Log("MyUMA Found");
                     m_Animator = UMAAnimator;
-                    m_Animator.applyRootMotion = false;
+                 m_Animator.applyRootMotion = false; // if this is true on female something weird happens.
                 }
              }
            }
@@ -170,6 +172,7 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 				// don't use that while airborne
 				m_Animator.speed = 1;
 			}
+            
 		}
 
 
@@ -179,7 +182,7 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 			Vector3 extraGravityForce = (Physics.gravity * m_GravityMultiplier) - Physics.gravity;
 			m_Rigidbody.AddForce(extraGravityForce);
 
-			m_GroundCheckDistance = m_Rigidbody.velocity.y < 0 ? m_OrigGroundCheckDistance : 0.01f;
+			//m_GroundCheckDistance = m_Rigidbody.velocity.y < 0 ? m_OrigGroundCheckDistance : 0.01f;
 		}
 
 
@@ -233,14 +236,14 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 				m_GroundNormal = hitInfo.normal;
 				m_IsGrounded = true;
                 //practical guide to UMA part 8 https://youtu.be/T-wyww9vNf0
-                //m_Animator.applyRootMotion = true;
+               // m_Animator.applyRootMotion = true;
             }
             else
 			{
 				m_IsGrounded = false;
 				m_GroundNormal = Vector3.up;
                 //practical guide to UMA part 8 https://youtu.be/T-wyww9vNf0
-                //m_Animator.applyRootMotion = false;
+               // m_Animator.applyRootMotion = false;
             }
         }
 	}

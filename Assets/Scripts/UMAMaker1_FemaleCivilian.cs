@@ -4,7 +4,7 @@ using System.Collections;
 using UMA;
 using System.IO;
 //using UMA.PoseTools; //PoseTools for expressions
-
+using UnityStandardAssets.Characters.ThirdPerson;
 
 // A practical guide to UMA Part 14b Using the "Asset" format https://youtu.be/Q6bLMusuhbo?t=8m13s
 #if UNITY_EDITOR
@@ -50,7 +50,7 @@ public class UMAMaker1_FemaleCivilian: MonoBehaviour {
     private bool lastVestState = false;
     private Color lastVestColor = Color.white;
     private Color lastTrenchcoatColor;
-    private bool lastTrenchcoatState = false;
+    private bool lastTrenchcoatState = true;
     private int footSlot = 6;
     private bool lastShoeState = true;
     private bool lastHatState = true;
@@ -59,6 +59,7 @@ public class UMAMaker1_FemaleCivilian: MonoBehaviour {
     private bool lastLegsPoliceState = true;
     private bool lastLegsNightStickState = true;
     private bool lastHandNightStickState = true;
+    private bool lastLegsFemaleJeans = true;
     
     private bool lastBlood1 = true;
     private bool lastbloodBreastR = true;
@@ -105,7 +106,18 @@ public class UMAMaker1_FemaleCivilian: MonoBehaviour {
         public bool shirtPoliceState = false;
         public bool trenchcoatState = false;
         public Color trenchcoatColor;
+        public bool handNightStickState = false;
     }
+
+    [System.Serializable]
+    public class Legs
+    {
+        public bool femaleJeansState = false;
+        public bool legsPoliceState = false;
+        public bool legsNightStickState = false;
+        public bool shoeState = false;
+    }
+
 
     [System.Serializable]
     public class CustomUMA
@@ -125,17 +137,12 @@ public class UMAMaker1_FemaleCivilian: MonoBehaviour {
 
         public Head head;
         public Torso torso;
+        public Legs legs;
         public Injury injury;
  
 
     //TrenchCoat UMA and Blender Content creation https://youtu.be/_c8lrr-BOnM
 
-    public bool shoeState = false; 
-
-    
-    public bool legsPoliceState = false;
-    public bool legsNightStickState = false;
-        public bool handNightStickState = false;
  
 
     //Practical Guide To UMA part 14 https://youtu.be/ZKRQ4wzp0ac
@@ -154,7 +161,7 @@ public class UMAMaker1_FemaleCivilian: MonoBehaviour {
 
     //public UMAExpressionPlayer expressionPlayer;
 
-    public bool cameraToFront = false;
+    
     void Awake()
     {
         slotLibrary = GameObject.Find("SlotLibrary").GetComponent<SlotLibrary>();
@@ -171,7 +178,16 @@ public class UMAMaker1_FemaleCivilian: MonoBehaviour {
 
     void Update()
     {
-        if (myCustomUMA.bodyMass != umaDna.upperMuscle)
+
+
+        if (this.gameObject.tag == "SpawnPoint_Human")
+        {
+            Transform myUmaTransform = umaData.gameObject.GetComponent<Transform>();
+            Camera.main.transform.parent = myUmaTransform;
+        }
+
+            #region Pre female region update conditions
+    if (myCustomUMA.bodyMass != umaDna.upperMuscle)
         {
             SetBodyMass(myCustomUMA.bodyMass);
             umaData.isShapeDirty = true;
@@ -288,17 +304,17 @@ public class UMAMaker1_FemaleCivilian: MonoBehaviour {
         }
 
 
-        if (myCustomUMA.shoeState && !lastShoeState)
+        if (myCustomUMA.legs.shoeState && !lastShoeState)
         {
-            lastShoeState = myCustomUMA.shoeState;
+            lastShoeState = myCustomUMA.legs.shoeState;
             SetSlot(footSlot, "Shoes");
            AddOverlay(footSlot, "Shoes");
             DirtyUMAUpdate(umaData);
         }
 
-        if (!myCustomUMA.shoeState && lastShoeState)
+        if (!myCustomUMA.legs.shoeState && lastShoeState)
         {
-            lastShoeState = myCustomUMA.shoeState;
+            lastShoeState = myCustomUMA.legs.shoeState;
             //RemoveSlot(footSlot);
             SetSlot(footSlot, "FemaleFeet");
             LinkOverlay(footSlot, 3);
@@ -401,7 +417,7 @@ public class UMAMaker1_FemaleCivilian: MonoBehaviour {
 
 
         //police Shirt
-        if (myCustomUMA.torso.shirtPoliceState && !lastShirtPoliceState && myCustomUMA.legsPoliceState)
+        if (myCustomUMA.torso.shirtPoliceState && !lastShirtPoliceState && myCustomUMA.legs.legsPoliceState)
         {
             lastShirtPoliceState = myCustomUMA.torso.shirtPoliceState;
             SetSlot(3, "HumanMaleShirtPoliceWPants");
@@ -414,24 +430,25 @@ public class UMAMaker1_FemaleCivilian: MonoBehaviour {
             DirtyUMAUpdate(umaData);
         }
 
-        if (myCustomUMA.torso.shirtPoliceState && !lastShirtPoliceState && !myCustomUMA.legsPoliceState)
+        if (myCustomUMA.torso.shirtPoliceState && !lastShirtPoliceState && !myCustomUMA.legs.legsPoliceState)
         {
             
             lastShirtPoliceState = myCustomUMA.torso.shirtPoliceState;
             SetSlot(3, "HumanMaleShirtPoliceNoPants");
             AddOverlay(3, "HumanMaleShirtPolice");
             SetSlot(5, "FemaleLegs");
-            LinkOverlay(5, 2);
-            AddOverlay(5, "FemaleUnderwear01");
-            LinkOverlay(footSlot,2);
+            LinkOverlay(5, 3);
+            AddOverlay(5, "FemaleUnderwear01"); //
+            LinkOverlay(footSlot,3);
+            //RemoveSlot(12);
             SetSlot(12, "HumanMaleArms"); // mesh
             LinkOverlay(12, 2);
+            RemoveSlot(4);
             DirtyUMAUpdate(umaData);
         }
 
 
-  
-        if (!myCustomUMA.torso.shirtPoliceState && lastShirtPoliceState && !myCustomUMA.legsPoliceState)
+        if (!myCustomUMA.torso.shirtPoliceState && lastShirtPoliceState && !myCustomUMA.legs.legsPoliceState)
         {
             lastShirtPoliceState = myCustomUMA.torso.shirtPoliceState;
             SetSlot(3, "FemaleTorso");
@@ -443,12 +460,12 @@ public class UMAMaker1_FemaleCivilian: MonoBehaviour {
             LinkOverlay(footSlot, 3);
             DirtyUMAUpdate(umaData);
         }
-
+        
 
         //police Legs
-        if (myCustomUMA.legsPoliceState && !lastLegsPoliceState )
+        if (myCustomUMA.legs.legsPoliceState && !lastLegsPoliceState )
         {
-            lastLegsPoliceState = myCustomUMA.legsPoliceState;     
+            lastLegsPoliceState = myCustomUMA.legs.legsPoliceState;     
             SetSlot(5, "HumanMaleLegsPoliceNoNightStick");
             AddOverlay(5, "HumanMaleLegsPolice");
             SetSlot(13, "HumanMaleLegsPoliceNightStick");
@@ -456,9 +473,9 @@ public class UMAMaker1_FemaleCivilian: MonoBehaviour {
             DirtyUMAUpdate(umaData);
         }
 
-        if (!myCustomUMA.legsPoliceState && lastLegsPoliceState)
+        if (!myCustomUMA.legs.legsPoliceState && lastLegsPoliceState)
         {
-            lastLegsPoliceState = myCustomUMA.legsPoliceState;    
+            lastLegsPoliceState = myCustomUMA.legs.legsPoliceState;    
             SetSlot(5, "FemaleLegs");
             LinkOverlay(5, 3);
             AddOverlay(5, "FemaleUnderwear01");
@@ -467,39 +484,63 @@ public class UMAMaker1_FemaleCivilian: MonoBehaviour {
             RemoveSlot(13);
             DirtyUMAUpdate(umaData);
         }
-
-        if (myCustomUMA.legsNightStickState && !lastLegsNightStickState)
+       
+        if (myCustomUMA.legs.legsNightStickState && !lastLegsNightStickState)
         {
-            lastLegsNightStickState = myCustomUMA.legsNightStickState;
+            lastLegsNightStickState = myCustomUMA.legs.legsNightStickState;
             SetSlot(13, "HumanMaleLegsPoliceNightStick");
             AddOverlay(13, "NightstickUV");
             DirtyUMAUpdate(umaData);
         }
 
-        if (!myCustomUMA.legsNightStickState && lastLegsNightStickState)
+        if (!myCustomUMA.legs.legsNightStickState && lastLegsNightStickState)
         {
-            lastLegsNightStickState = myCustomUMA.legsNightStickState;
+            lastLegsNightStickState = myCustomUMA.legs.legsNightStickState;
             RemoveSlot(13);
             DirtyUMAUpdate(umaData);
         }
 
-        if (myCustomUMA.handNightStickState && !lastHandNightStickState)
+        if (myCustomUMA.torso.handNightStickState && !lastHandNightStickState)
         {
-            lastHandNightStickState = myCustomUMA.handNightStickState;
+            lastHandNightStickState = myCustomUMA.torso.handNightStickState;
             SetSlot(4, "HumanMaleLeftHandNightStick");
             LinkOverlay(4, 3);
             DirtyUMAUpdate(umaData);
         }
-        if (!myCustomUMA.handNightStickState && lastHandNightStickState)
+        if (!myCustomUMA.torso.handNightStickState && lastHandNightStickState)
         {
-            lastHandNightStickState = myCustomUMA.handNightStickState;
+            lastHandNightStickState = myCustomUMA.torso.handNightStickState;
             SetSlot(4,"FemaleHands");
             LinkOverlay(4, 3);
             DirtyUMAUpdate(umaData);
         }
 
-        if (cameraToFront) { Camera.main.transform.rotation = Quaternion.Euler(0, 180, 0); }
-       
+    
+
+        if (myCustomUMA.legs.femaleJeansState && !lastLegsFemaleJeans)
+        {
+          
+            lastLegsFemaleJeans = myCustomUMA.legs.femaleJeansState;
+          
+            SetSlot(5, "FemaleLegs");
+            AddOverlay(5, "FemaleJeans01");
+            // SetSlot(13, "HumanMaleLegsPoliceNightStick");
+            //RemoveSlot(footSlot);
+            DirtyUMAUpdate(umaData);
+        }
+
+        if (!myCustomUMA.legs.femaleJeansState && lastLegsFemaleJeans)
+        {
+            lastLegsFemaleJeans = myCustomUMA.legs.femaleJeansState;
+            SetSlot(5, "FemaleLegs");
+            LinkOverlay(5, 3);
+            AddOverlay(5, "FemaleUnderwear01");
+            // SetSlot(13, "HumanMaleLegsPoliceNightStick");
+            //RemoveSlot(footSlot);
+            DirtyUMAUpdate(umaData);
+        }
+        #endregion
+
     }
 
     void DirtyUMAUpdate(UMAData umaData)
@@ -522,11 +563,11 @@ public class UMAMaker1_FemaleCivilian: MonoBehaviour {
         GO.transform.localRotation = Quaternion.identity;
 
         GO.AddComponent(typeof(NavMeshAgent));
-        GO.AddComponent(typeof(CapsuleCollider));
+        /*GO.AddComponent(typeof(CapsuleCollider));
         var goCol = GO.GetComponent<CapsuleCollider>();
         goCol.center = new Vector3(0f, 0.78f, 0f);
         goCol.height = 1.7f;
-        goCol.radius = 0.2f;
+        goCol.radius = 0.2f;*/
 
         umaDynamicAvatar = GO.AddComponent<UMADynamicAvatar>();
 
@@ -731,8 +772,8 @@ public class UMAMaker1_FemaleCivilian: MonoBehaviour {
        Debug.Log("positioned.");
 
         // hand collision to prevent slide through
-        LeftFistBox();
-        RightFistBox();
+       // LeftFistBox();
+       // RightFistBox();
         UnityEngine.Random.seed = (UnityEngine.Random.Range(UnityEngine.Random.Range(UnityEngine.Random.Range(UnityEngine.Random.Range(0, 25), UnityEngine.Random.Range(324, 5673)), UnityEngine.Random.Range(UnityEngine.Random.Range(53, 2378), UnityEngine.Random.Range(50, 423))), UnityEngine.Random.Range(UnityEngine.Random.Range(UnityEngine.Random.Range(23, 2354), UnityEngine.Random.Range(1, 3456)), UnityEngine.Random.Range(UnityEngine.Random.Range(7, 32421), UnityEngine.Random.Range(8, 23472)))));
         int RNG;
         RNG = UnityEngine.Random.Range(1, 8);
@@ -742,6 +783,7 @@ public class UMAMaker1_FemaleCivilian: MonoBehaviour {
             umaData.gameObject.AddComponent<ZombieBehavior>();
             Animator animator = umaData.gameObject.GetComponent<Animator>();
             animator.runtimeAnimatorController = Resources.Load("Animation Controllers/ZombieAnimationController") as RuntimeAnimatorController;
+            
 
                   for (int i = 1; i <= RNG; i++)
                 {
@@ -778,7 +820,9 @@ public class UMAMaker1_FemaleCivilian: MonoBehaviour {
         }
         if (this.gameObject.tag == "SpawnPoint_Human")
         {
-            
+            Transform myUmaTransform = umaData.gameObject.GetComponent<Transform>();
+            Camera.main.transform.parent = myUmaTransform;
+
             umaData.gameObject.tag = "Human";
             umaData.gameObject.AddComponent<HealthComponent>();
           umaData.gameObject.AddComponent<HumanBehavior>();
@@ -790,21 +834,50 @@ public class UMAMaker1_FemaleCivilian: MonoBehaviour {
             SpawnPistolUO();
         }
 
-            if (this.gameObject.tag == "Player")
+            if (this.gameObject.tag == "SpawnPoint_Player")
             {
-               
-                    umaData.gameObject.tag = "Player";
+            umaData.gameObject.tag = "Player";
+      
+           // this.gameObject.AddComponent<Rigidbody>();
+           // Rigidbody hostBody = this.gameObject.GetComponent<Rigidbody>();
+           // hostBody.isKinematic = true;
 
+            umaData.gameObject.AddComponent<Rigidbody>();
+            umaData.gameObject.AddComponent<CapsuleCollider>();
+            CapsuleCollider umaCapsule = umaData.gameObject.GetComponent<CapsuleCollider>();
+
+            umaCapsule.material = (PhysicMaterial)Resources.Load("PhysicMaterials/ZeroFriction");
+            umaCapsule.center = new Vector3(0.0f, 0.85f, 0.0f);
+            umaCapsule.radius = 0.1f;
+                umaCapsule.height = 1.7f;
+
+
+           // umaData.gameObject.AddComponent<Animator>();
+            this.gameObject.AddComponent<ThirdPersonUserControlUMA>();
+            //this.gameObject.AddComponent<ThirdPersonCharacterUMA>();
+           // this.gameObject.AddComponent<Animator>();
+
+
+            //ThirdPersonCharacterUMA CharactersControl = this.gameObject.GetComponent<ThirdPersonCharacterUMA>();
+            //CharactersControl.
+           // Animator animator1 = this.gameObject.GetComponent<Animator>();
+          //  animator1.runtimeAnimatorController = Resources.Load("Animation Controllers/ThirdPersonAnimatorController") as RuntimeAnimatorController;
+            //animator1.applyRootMotion = true;
             Animator animator = umaData.gameObject.GetComponent<Animator>();
-                 animator.runtimeAnimatorController = Resources.Load("Animation Controllers/ThirdPersonAnimatorController") as RuntimeAnimatorController;
-           // umaData.gameObject.AddComponent<UnityStandardAssets.Characters.ThirdPerson.ThirdPersonUserControlUMA>();
-            //umaData.gameObject.AddComponent<UnityStandardAssets.Characters.ThirdPerson.ThirdPersonCharacterUMA>();
+            animator.runtimeAnimatorController = Resources.Load("Animation Controllers/ThirdPersonAnimatorController") as RuntimeAnimatorController;
+            animator.applyRootMotion = true;
+         
 
-            //spawnsWeapons
-            //SpawnStaff();
-            //SpawnPistolUO();
+            
+           
+
+            //spawnsWeaponss
+            SpawnStaff();
+            SpawnPistolUO();
         }
+       
 
+            
 
                 #region    ---------------------   Expression Player Callback broken
                 /*
@@ -837,13 +910,13 @@ public class UMAMaker1_FemaleCivilian: MonoBehaviour {
         staff.transform.localPosition = new Vector3(-0.117f, -0.543f, -0.017f);
         staff.transform.localRotation = Quaternion.Euler(new Vector3(0.0f, 344.0f, 0.0f));
         staff.transform.localScale = new Vector3(0.02f, 1.0f, 0.02f);
-        staff.AddComponent(typeof(BoxCollider));
+        // staff.AddComponent(typeof(BoxCollider));
     }
 
     //spawn pistol unity object prefab
     void SpawnPistolUO()
     {
-        Transform hand = umaData.skeleton.GetBoneGameObject(UMASkeleton.StringToHash("LeftHandFinger03_01")).transform﻿; //eli curtz style.
+        Transform hand = umaData.skeleton.GetBoneGameObject(UMASkeleton.StringToHash("RightHand")).transform﻿; //eli curtz style.
 
         if (umaData.transform != null)
         {  
@@ -853,8 +926,12 @@ public class UMAMaker1_FemaleCivilian: MonoBehaviour {
             pistol.gameObject.transform.tag = "Pistol";
             pistol.transform.SetParent(hand);
             pistol.transform.localPosition = Vector3.zero;
-            pistol.transform.localPosition = new Vector3(-0.02f, -0.0f, -0.05f);
-            pistol.transform.localRotation = Quaternion.Euler(new Vector3(340.0f,250.0f,200.0f));
+            pistol.transform.localPosition = new Vector3(-0.112f, -0.019f, -0.031f);
+            pistol.transform.localRotation = Quaternion.Euler(new Vector3(15.0f,272.0f,26.0f));
+           Rigidbody PistolRB = pistol.transform.GetComponent<Rigidbody>();
+            PistolRB.isKinematic = true;
+            PistolRB.useGravity = false;
+
           //  pistol.transform.localRotation = Quaternion.Euler(new Vector3(0.0568f, 0.0590f, 0.0581f));
         }
     }
