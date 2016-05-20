@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace UnityStandardAssets.Characters.ThirdPerson
 {
-	[RequireComponent(typeof(Rigidbody))]
-	[RequireComponent(typeof(CapsuleCollider))]
-	[RequireComponent(typeof(Animator))]
+	//[RequireComponent(typeof(Rigidbody))]
+	//[RequireComponent(typeof(CapsuleCollider))]
+	//[RequireComponent(typeof(Animator))]
 	public class ThirdPersonCharacter : MonoBehaviour
 	{
 		[SerializeField] float m_MovingTurnSpeed = 360;
@@ -14,7 +14,7 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 		[SerializeField] float m_RunCycleLegOffset = 0.2f; //specific to the character in sample assets, will need to be modified to work with others
 		[SerializeField] float m_MoveSpeedMultiplier = 1f;
 		[SerializeField] float m_AnimSpeedMultiplier = 1f;
-		[SerializeField] float m_GroundCheckDistance = 0.1f;
+		[SerializeField] float m_GroundCheckDistance = 0.6f;
 
 		Rigidbody m_Rigidbody;
 		Animator m_Animator;
@@ -117,8 +117,10 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 
 		void UpdateAnimator(Vector3 move)
 		{
-			// update the animator parameters
-			m_Animator.SetFloat("Forward", m_ForwardAmount, 0.1f, Time.deltaTime);
+            m_Animator = this.gameObject.GetComponent<Animator>();
+            //if (m_Animator == null) { return; }
+            // update the animator parameters
+            m_Animator.SetFloat("Forward", m_ForwardAmount, 0.1f, Time.deltaTime);
 			m_Animator.SetFloat("Turn", m_TurnAmount, 0.1f, Time.deltaTime);
 			m_Animator.SetBool("Crouch", m_Crouching);
 			m_Animator.SetBool("OnGround", m_IsGrounded);
@@ -186,6 +188,8 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 
 		public void OnAnimatorMove()
 		{
+            m_Animator = this.gameObject.GetComponent<Animator>();
+            if (m_Animator == null) { return; }
 			// we implement this function to override the default root motion.
 			// this allows us to modify the positional speed before it's applied.
 			if (m_IsGrounded && Time.deltaTime > 0)
@@ -218,7 +222,9 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 			{
 				m_IsGrounded = false;
 				m_GroundNormal = Vector3.up;
-				m_Animator.applyRootMotion = false;
+                // Disable for UMA Female
+                //    m_Animator.applyRootMotion = false;
+                
 			}
 		}
 	}

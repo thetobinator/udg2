@@ -39,12 +39,13 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 
             m_Animator = transform.Find("MyUMA").GetComponent<Animator>();
 			m_Rigidbody = transform.Find("MyUMA").GetComponent<Rigidbody>();
-			m_Capsule = transform.Find("MyUMA").GetComponent<CapsuleCollider>();
+
+            m_Capsule = transform.Find("MyUMA").GetComponent<CapsuleCollider>();        
 			m_CapsuleHeight = m_Capsule.height;
 			m_CapsuleCenter = m_Capsule.center;
 
-			m_Rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
-			m_OrigGroundCheckDistance = m_GroundCheckDistance;
+          m_Rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
+          m_OrigGroundCheckDistance = m_GroundCheckDistance;
 		}
 
         //practical guide to UMA part 8 https://youtu.be/T-wyww9vNf0
@@ -58,7 +59,7 @@ namespace UnityStandardAssets.Characters.ThirdPerson
                     UMAAnimator = transform.Find("MyUMA").GetComponent<Animator>();
                     Debug.Log("MyUMA Found");
                     m_Animator = UMAAnimator;
-                 m_Animator.applyRootMotion = false; // if this is true on female something weird happens.
+                    m_Animator.applyRootMotion = true; // if this is true on female something weird happens.
                 }
              }
            }
@@ -182,7 +183,7 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 			Vector3 extraGravityForce = (Physics.gravity * m_GravityMultiplier) - Physics.gravity;
 			m_Rigidbody.AddForce(extraGravityForce);
 
-			//m_GroundCheckDistance = m_Rigidbody.velocity.y < 0 ? m_OrigGroundCheckDistance : 0.01f;
+		m_GroundCheckDistance = m_Rigidbody.velocity.y < 0 ? m_OrigGroundCheckDistance : 0.01f;
 		}
 
 
@@ -203,7 +204,7 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 		{
 			// help the character turn faster (this is in addition to root rotation in the animation)
 			float turnSpeed = Mathf.Lerp(m_StationaryTurnSpeed, m_MovingTurnSpeed, m_ForwardAmount);
-			transform.Rotate(0, m_TurnAmount * turnSpeed * Time.deltaTime, 0);
+            transform.Find("MyUMA").Rotate(0, m_TurnAmount * turnSpeed * Time.deltaTime, 0);
 		}
 
 

@@ -4,7 +4,7 @@ using UnityStandardAssets.CrossPlatformInput;
 
 namespace UnityStandardAssets.Characters.ThirdPerson
 {
-    [RequireComponent(typeof (ThirdPersonCharacterUMA))]
+   // [RequireComponent(typeof (ThirdPersonCharacterUMA))]
     public class ThirdPersonUserControlUMA : MonoBehaviour
     {
         private ThirdPersonCharacterUMA m_Character; // A reference to the ThirdPersonCharacter on the object
@@ -30,6 +30,7 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 
             // get the third person character ( this should never be null due to require component )
             m_Character = GetComponent<ThirdPersonCharacterUMA>();
+            
         }
 
 

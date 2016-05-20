@@ -820,8 +820,7 @@ public class UMAMaker1_FemaleCivilian: MonoBehaviour {
         }
         if (this.gameObject.tag == "SpawnPoint_Human")
         {
-            Transform myUmaTransform = umaData.gameObject.GetComponent<Transform>();
-            Camera.main.transform.parent = myUmaTransform;
+            
 
             umaData.gameObject.tag = "Human";
             umaData.gameObject.AddComponent<HealthComponent>();
@@ -837,39 +836,25 @@ public class UMAMaker1_FemaleCivilian: MonoBehaviour {
             if (this.gameObject.tag == "SpawnPoint_Player")
             {
             umaData.gameObject.tag = "Player";
-      
-           // this.gameObject.AddComponent<Rigidbody>();
-           // Rigidbody hostBody = this.gameObject.GetComponent<Rigidbody>();
-           // hostBody.isKinematic = true;
 
             umaData.gameObject.AddComponent<Rigidbody>();
             umaData.gameObject.AddComponent<CapsuleCollider>();
             CapsuleCollider umaCapsule = umaData.gameObject.GetComponent<CapsuleCollider>();
 
-            umaCapsule.material = (PhysicMaterial)Resources.Load("PhysicMaterials/ZeroFriction");
+            umaCapsule.material = (PhysicMaterial)Resources.Load("PhysicsMaterials/ZeroFriction");
             umaCapsule.center = new Vector3(0.0f, 0.85f, 0.0f);
             umaCapsule.radius = 0.1f;
-                umaCapsule.height = 1.7f;
+            umaCapsule.height = 1.7f;
+
+         //   Animator animator = umaData.gameObject.GetComponent<Animator>();
+           // animator.runtimeAnimatorController = Resources.Load("Animation Controllers/ThirdPersonAnimatorController") as RuntimeAnimatorController;
+            //animator.applyRootMotion = true;
+
+            umaData.gameObject.AddComponent<ThirdPersonUserControl>();
 
 
-           // umaData.gameObject.AddComponent<Animator>();
-            this.gameObject.AddComponent<ThirdPersonUserControlUMA>();
-            //this.gameObject.AddComponent<ThirdPersonCharacterUMA>();
-           // this.gameObject.AddComponent<Animator>();
-
-
-            //ThirdPersonCharacterUMA CharactersControl = this.gameObject.GetComponent<ThirdPersonCharacterUMA>();
-            //CharactersControl.
-           // Animator animator1 = this.gameObject.GetComponent<Animator>();
-          //  animator1.runtimeAnimatorController = Resources.Load("Animation Controllers/ThirdPersonAnimatorController") as RuntimeAnimatorController;
-            //animator1.applyRootMotion = true;
-            Animator animator = umaData.gameObject.GetComponent<Animator>();
-            animator.runtimeAnimatorController = Resources.Load("Animation Controllers/ThirdPersonAnimatorController") as RuntimeAnimatorController;
-            animator.applyRootMotion = true;
-         
-
-            
-           
+            //  Transform myUmaTransform = umaData.gameObject.GetComponent<Transform>();
+            //Camera.main.transform.parent = myUmaTransform;
 
             //spawnsWeaponss
             SpawnStaff();
