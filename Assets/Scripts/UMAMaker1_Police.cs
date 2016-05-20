@@ -511,17 +511,7 @@ public class UMAMaker1_Police: MonoBehaviour {
         GameObject GO = new GameObject("MyUMA");
 
 
-        // parent the new uma into the host game object
-        GO.transform.parent = this.gameObject.transform;
-        GO.transform.localPosition = Vector3.zero;
-        GO.transform.localRotation = Quaternion.identity;
-
-        GO.AddComponent(typeof(NavMeshAgent));
-        GO.AddComponent(typeof(CapsuleCollider));
-        var goCol = GO.GetComponent<CapsuleCollider>();
-        goCol.center = new Vector3(0f, 0.78f, 0f);
-        goCol.height = 1.7f;
-        goCol.radius = 0.2f;
+    
 
         umaDynamicAvatar = GO.AddComponent<UMADynamicAvatar>();
 
@@ -556,7 +546,20 @@ public class UMAMaker1_Police: MonoBehaviour {
 
         // Generate Our UMA
         umaDynamicAvatar.UpdateNewRace();
-    
+
+        // parent the new uma into the host game object
+        GO.transform.parent = this.gameObject.transform;
+        GO.transform.localPosition = Vector3.zero;
+        GO.transform.localRotation = Quaternion.identity;
+
+        GO.AddComponent(typeof(NavMeshAgent));
+        GO.AddComponent(typeof(Rigidbody));
+        GO.AddComponent(typeof(CapsuleCollider));
+        var goCol = GO.GetComponent<CapsuleCollider>();
+        goCol.center = new Vector3(0f, 0.78f, 0f);
+        goCol.height = 1.7f;
+        goCol.radius = 0.2f;
+
     }
 
     // Practical Guide to UMA part 5 https://youtu.be/N-NlNJv1ESE

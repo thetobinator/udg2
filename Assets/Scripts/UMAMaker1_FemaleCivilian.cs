@@ -820,8 +820,6 @@ public class UMAMaker1_FemaleCivilian: MonoBehaviour {
         }
         if (this.gameObject.tag == "SpawnPoint_Human")
         {
-            
-
             umaData.gameObject.tag = "Human";
             umaData.gameObject.AddComponent<HealthComponent>();
           umaData.gameObject.AddComponent<HumanBehavior>();
@@ -853,8 +851,8 @@ public class UMAMaker1_FemaleCivilian: MonoBehaviour {
             umaData.gameObject.AddComponent<ThirdPersonUserControl>();
 
 
-            //  Transform myUmaTransform = umaData.gameObject.GetComponent<Transform>();
-            //Camera.main.transform.parent = myUmaTransform;
+              Transform myUmaTransform = umaData.gameObject.GetComponent<Transform>();
+            Camera.main.transform.parent = myUmaTransform;
 
             //spawnsWeaponss
             SpawnStaff();

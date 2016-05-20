@@ -371,6 +371,14 @@ public class UMAMaker1_Trenchcoat: MonoBehaviour {
         GO.transform.parent = this.gameObject.transform;
         GO.transform.localPosition = Vector3.zero;
         GO.transform.localRotation = Quaternion.identity;
+       // GO.AddComponent(typeof(Animator));
+        GO.AddComponent(typeof(NavMeshAgent));
+        GO.AddComponent(typeof(Rigidbody));
+        GO.AddComponent(typeof(CapsuleCollider));
+        var goCol = GO.GetComponent<CapsuleCollider>();
+        goCol.center = new Vector3(0f, 0.78f, 0f);
+        goCol.height = 1.7f;
+        goCol.radius = 0.2f;
     }
 
     // Practical Guide to UMA part 5 https://youtu.be/N-NlNJv1ESE

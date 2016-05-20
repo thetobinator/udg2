@@ -300,7 +300,8 @@ public class MainGameManager : MainGameInit
 
     public void OnGUI()
     {
-        GUI.Label(new Rect(10, 10, 700, 200), screenText[showScreenText]);
+        if (screenText.Count != 0) { GUI.Label(new Rect(10, 10, 700, 200), screenText[showScreenText]); }
+        
 
     }
 

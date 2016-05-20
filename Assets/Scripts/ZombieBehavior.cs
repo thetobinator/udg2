@@ -68,7 +68,7 @@ public class ZombieBehavior : MonoBehaviour {
 				setTargetObject( null );
 				m_targetPosition = GetComponent< Transform > ().position;
 			}
-            Debug.Log(string.Format("Humans = {0}", humans));
+           // Debug.Log(string.Format("Humans = {0}", humans));
             if (humans != null)
             {
                 foreach (GameObject human in humans)

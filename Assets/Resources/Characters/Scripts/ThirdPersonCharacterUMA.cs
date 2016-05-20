@@ -140,6 +140,7 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 
 		void UpdateAnimator(Vector3 move)
 		{
+            if (!m_Animator) { return; }
 			// update the animator parameters
 			m_Animator.SetFloat("Forward", m_ForwardAmount, 0.1f, Time.deltaTime);
 			m_Animator.SetFloat("Turn", m_TurnAmount, 0.1f, Time.deltaTime);
@@ -210,9 +211,10 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 
 		public void OnAnimatorMove()
 		{
-			// we implement this function to override the default root motion.
-			// this allows us to modify the positional speed before it's applied.
-			if (m_IsGrounded && Time.deltaTime > 0)
+            if (!m_Animator) { m_Animator = transform.Find("MyUMA").GetComponent<Animator>(); }
+            // we implement this function to override the default root motion.
+            // this allows us to modify the positional speed before it's applied.
+            if (m_IsGrounded && Time.deltaTime > 0)
 			{
 				Vector3 v = (m_Animator.deltaPosition * m_MoveSpeedMultiplier) / Time.deltaTime;
 
