@@ -50,7 +50,7 @@ public class UMAMaker1_Police: MonoBehaviour {
     private bool lastVestState = false;
     private Color lastVestColor = Color.white;
     private Color lastTrenchcoatColor;
-    private bool lastTrenchcoatState = false;
+    private bool lastTrenchcoatState = true;
     private int footSlot = 6;
     private bool lastShoeState = true;
     private bool lastHatState = true;
@@ -68,6 +68,7 @@ public class UMAMaker1_Police: MonoBehaviour {
     private bool lastbloodShoulderBackR = true;
     private bool lastbloodShoulderR = true;
     private bool lastbloodWhatR = true;
+    private bool lastUnityManArmor = true;
 
     // this creates disclosure arrow
 
@@ -98,8 +99,9 @@ public class UMAMaker1_Police: MonoBehaviour {
     [System.Serializable]
     public class Torso
     {
-        public bool chestEmblemState = false;
+        public bool unityManArmor = false;      
         public bool vestState = false;
+        public bool chestEmblemState = false;
         public Color vestColor = Color.white;
         public bool badgeState = false;
         public bool shirtPoliceState = false;
@@ -170,6 +172,10 @@ public class UMAMaker1_Police: MonoBehaviour {
 
     void Update()
     {
+
+       
+        
+
         if (myCustomUMA.bodyMass != umaDna.upperMuscle)
         {
             SetBodyMass(myCustomUMA.bodyMass);
@@ -495,6 +501,34 @@ public class UMAMaker1_Police: MonoBehaviour {
             LinkOverlay(4, 3);
             DirtyUMAUpdate(umaData);
         }
+
+        if (myCustomUMA.torso.unityManArmor && !lastUnityManArmor)
+        {
+            Debug.Log("clicked.");
+            lastUnityManArmor = myCustomUMA.torso.unityManArmor;
+            RemoveSlot(3);
+            RemoveSlot(5);
+            RemoveSlot(6);
+            SetSlot(3, "UnityManBody");
+            AddOverlay(3, "UnityManBodyUV", myCustomUMA.torso.trenchcoatColor);
+            DirtyUMAUpdate(umaData);
+        }
+
+         if (!myCustomUMA.torso.unityManArmor && lastUnityManArmor)
+         {
+             lastUnityManArmor = myCustomUMA.torso.unityManArmor;
+            RemoveSlot(3);
+            RemoveSlot(5);
+            RemoveSlot(6);
+            SetSlot(3, "MaleTorso");
+             AddOverlay(3, "MaleBody02", myCustomUMA.torso.trenchcoatColor);
+            SetSlot(5, "MaleLegs");
+            LinkOverlay(5, 2);
+            SetSlot(6, "MaleFeet");
+            LinkOverlay(6, 2);
+         }
+
+
     }
 
     void DirtyUMAUpdate(UMAData umaData)
@@ -547,19 +581,7 @@ public class UMAMaker1_Police: MonoBehaviour {
         // Generate Our UMA
         umaDynamicAvatar.UpdateNewRace();
 
-        // parent the new uma into the host game object
-        GO.transform.parent = this.gameObject.transform;
-        GO.transform.localPosition = Vector3.zero;
-        GO.transform.localRotation = Quaternion.identity;
-
-        GO.AddComponent(typeof(NavMeshAgent));
-        GO.AddComponent(typeof(Rigidbody));
-        GO.AddComponent(typeof(CapsuleCollider));
-        var goCol = GO.GetComponent<CapsuleCollider>();
-        goCol.center = new Vector3(0f, 0.78f, 0f);
-        goCol.height = 1.7f;
-        goCol.radius = 0.2f;
-
+        
     }
 
     // Practical Guide to UMA part 5 https://youtu.be/N-NlNJv1ESE
@@ -724,9 +746,22 @@ public class UMAMaker1_Police: MonoBehaviour {
     {
         //Debug.Log("UMA_Created");
         //attach scripts after creation
-
+        GameObject GO = umaData.gameObject;
       umaData.gameObject.transform.position =  new Vector3(this.transform.position.x, this.transform.position.y, this.transform.position.z);
-       Debug.Log("positioned.");
+        // parent the new uma into the host game object
+        GO.transform.parent = this.gameObject.transform;
+        GO.transform.localPosition = Vector3.zero;
+        GO.transform.localRotation = Quaternion.identity;
+
+        GO.AddComponent(typeof(NavMeshAgent));
+        GO.AddComponent(typeof(Rigidbody));
+        GO.AddComponent(typeof(CapsuleCollider));
+        var goCol = GO.GetComponent<CapsuleCollider>();
+        goCol.center = new Vector3(0f, 0.78f, 0f);
+        goCol.height = 1.7f;
+        goCol.radius = 0.2f;
+
+        Debug.Log("positioned.");
 
         // hand collision to prevent slide through
         LeftFistBox();

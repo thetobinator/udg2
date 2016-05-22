@@ -10,7 +10,7 @@ public class UMA_ApplyBehaviorsToChildren : MonoBehaviour
     public List<GameObject> sourceChildren;
     private GameObject sourceChild;
     // [ExecuteInEditMode]
-    void Update()
+    void Start()
     {
       
         //  sourceChildren.Clear();
@@ -23,21 +23,38 @@ public class UMA_ApplyBehaviorsToChildren : MonoBehaviour
         }
         foreach (GameObject sourceChild in sourceChildren)
         {
-            if (!sourceChild.GetComponent <NavMeshAgent>()) { sourceChild.AddComponent(typeof(NavMeshAgent)); }
-            if (!sourceChild.GetComponent<HumanBehavior>()) {
-                sourceChild.gameObject.tag = "Human";
-                sourceChild.gameObject.AddComponent<HealthComponent>();
-                sourceChild.gameObject.AddComponent<HumanBehavior>();
-                Animator animator = sourceChild.gameObject.GetComponent<Animator>();
-                animator.runtimeAnimatorController = Resources.Load("Animation Controllers/Human_AnimationController") as RuntimeAnimatorController;
+            if (!sourceChild.GetComponent<NavMeshAgent>()) { sourceChild.AddComponent(typeof(NavMeshAgent)); }
 
-                //spawnsWeapons
-              //  SpawnStaff();
-              //  SpawnPistolUO();
+
+            if (sourceChild.tag == "SpawnPoint_Human")
+            {
+                if (!sourceChild.GetComponent<HumanBehavior>())
+                {
+                    sourceChild.gameObject.tag = "Human";
+                    sourceChild.gameObject.AddComponent<HealthComponent>();
+                    sourceChild.gameObject.AddComponent<HumanBehavior>();
+
+                     Animator animator = sourceChild.gameObject.GetComponent<Animator>();
+                    animator.runtimeAnimatorController = Resources.Load("Animation Controllers/Human_AnimationController") as RuntimeAnimatorController;
+
+                    //spawnsWeapons
+                    //  SpawnStaff();
+                    //  SpawnPistolUO();
+                }
+            }
+            else
+            {
+
+                sourceChild.gameObject.tag = "Zombie";
+                sourceChild.gameObject.AddComponent<HealthComponent>();
+                sourceChild.gameObject.AddComponent<ZombieBehavior>();
+                Animator animator = sourceChild.gameObject.GetComponent<Animator>();
+                animator.runtimeAnimatorController = Resources.Load("Animation Controllers/ZombieAnimationController") as RuntimeAnimatorController;
+                }
             }
         }
  
-    }
+    
 }
 
 

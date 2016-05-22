@@ -40,7 +40,27 @@ public class UMACrowd : MonoBehaviour
 	public UMADataEvent CharacterDestroyed;
 	public UMADataEvent CharacterUpdated;
 
-	void Awake()
+    [System.Serializable]
+    public class Injury
+    {
+        public bool Blood1 = false;
+        public bool bloodBreastR = false;
+        public bool bloodChest = false;
+        public bool bloodGuts1 = false;
+        public bool bloodShoulderBackL = false;
+        public bool bloodShoulderBackR = false;
+        public bool bloodShoulderR = false;
+        public bool bloodWhatR = false;
+    }
+    [System.Serializable]
+    public class CustomUMA
+    {
+        public Injury injury;
+    }
+
+    public CustomUMA myCustomUMA;
+
+    void Awake()
 	{
 		if (space <= 0) space = 1;
 	}
@@ -407,16 +427,83 @@ public class UMACrowd : MonoBehaviour
 
 	void CharacterCreatedCallback(UMAData umaData)
 	{
-		if (generateLotsUMA && hideWhileGeneratingLots)
+        Animator animator = umaData.gameObject.GetComponent<Animator>();
+        //animator.runtimeAnimatorController = Resources.Load("Animation Controllers/ZombieAnimationController") as RuntimeAnimatorController;
+         animator.runtimeAnimatorController = Resources.Load("Animation Controllers/Human_AnimationController") as RuntimeAnimatorController;
+        if (generateLotsUMA && hideWhileGeneratingLots)
 		{
 			if (umaData.animator != null)
 				umaData.animator.enabled = false;
 			if (umaData.myRenderer != null)
 				umaData.myRenderer.enabled = false;
 		}
-	}
 
-	protected virtual void GenerateUMAShapes()
+
+
+        if (!umaData.gameObject.GetComponent<NavMeshAgent>())
+        {
+            umaData.gameObject.AddComponent<NavMeshAgent>();
+        }
+
+        if (this.gameObject.tag == "SpawnPoint_Zombie")
+        {
+            umaData.gameObject.tag = "Zombie";
+
+     
+            animator.runtimeAnimatorController = Resources.Load("Animation Controllers/ZombieAnimationController") as RuntimeAnimatorController;
+            umaData.gameObject.AddComponent<HealthComponent>();
+            umaData.gameObject.AddComponent<ZombieBehavior>();
+
+            int RNG;
+            RNG = UnityEngine.Random.Range(1, 8);
+            for (int i = 1; i <= RNG; i++)
+            {
+                switch (i)
+                {
+                    case 1:
+                        myCustomUMA.injury.Blood1 = true;
+                        break;
+                    case 2:
+                        myCustomUMA.injury.bloodBreastR = true;
+                        break;
+                    case 3:
+                        myCustomUMA.injury.bloodChest = true;
+                        break;
+                    case 4:
+                        myCustomUMA.injury.bloodGuts1 = true;
+                        break;
+                    case 5:
+                        myCustomUMA.injury.bloodShoulderBackL = true;
+                        break;
+                    case 6:
+                        myCustomUMA.injury.bloodShoulderBackR = true;
+                        break;
+
+                    case 7:
+                        myCustomUMA.injury.bloodShoulderR = true;
+                        break;
+
+                    case 8:
+                        myCustomUMA.injury.bloodWhatR = true;
+                        break;
+                }
+            }
+        }
+        if (this.gameObject.tag == "SpawnPoint_Human")
+        {
+            umaData.gameObject.tag = "Human";
+            animator.runtimeAnimatorController = Resources.Load("Animation Controllers/Human_AnimationController") as RuntimeAnimatorController;
+            umaData.gameObject.AddComponent<HealthComponent>();
+            umaData.gameObject.AddComponent<HumanBehavior>();
+            //spawnsWeapons
+         //   SpawnStaff();
+           // SpawnPistolUO();
+
+        }
+
+    }
+
+    protected virtual void GenerateUMAShapes()
 	{
 		UMADnaHumanoid umaDna = umaData.umaRecipe.GetDna<UMADnaHumanoid>();
 		if (umaDna ==  null)

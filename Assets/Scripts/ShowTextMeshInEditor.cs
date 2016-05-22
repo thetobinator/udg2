@@ -2,6 +2,8 @@
 using UnityEditor;
 using System.Collections;
 
+[RequireComponent(typeof(TextMesh))]
+
 [ExecuteInEditMode]
 public class ShowTextMeshInEditor : MonoBehaviour {
     [Multiline]
@@ -31,7 +33,17 @@ public class ShowTextMeshInEditor : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
+        if (this.tag == "SpawnPoint_Human")
+        {
+            this.editingText = "H\nU\nM\nA\nN";
+                
+        }
+        else
+        {
+            this.editingText = "Z\nO\nM\nB\nI\nE";
+        }
         TextMeshUpdate(); 
+     
     }
 
 

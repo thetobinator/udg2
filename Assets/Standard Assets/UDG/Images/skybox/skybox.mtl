@@ -1,0 +1,42 @@
+newmtl acmat_0
+Kd 1 1 1
+Ka 0.2 0.2 0.2
+Ks 0.2 0.2 0.2
+Ns 16
+Tr 0
+map_Kd left.png
+newmtl acmat_1
+Kd 1 1 1
+Ka 0.2 0.2 0.2
+Ks 0.2 0.2 0.2
+Ns 16
+Tr 0
+map_Kd right.png
+newmtl acmat_2
+Kd 1 1 1
+Ka 0.2 0.2 0.2
+Ks 0.2 0.2 0.2
+Ns 16
+Tr 0
+map_Kd top.png
+newmtl acmat_3
+Kd 1 1 1
+Ka 0.2 0.2 0.2
+Ks 0.2 0.2 0.2
+Ns 16
+Tr 0
+map_Kd bottom.png
+newmtl acmat_4
+Kd 1 1 1
+Ka 0.2 0.2 0.2
+Ks 0.2 0.2 0.2
+Ns 16
+Tr 0
+map_Kd back.png
+newmtl acmat_5
+Kd 1 1 1
+Ka 0.2 0.2 0.2
+Ks 0.2 0.2 0.2
+Ns 16
+Tr 0
+map_Kd front.png

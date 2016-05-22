@@ -17,6 +17,8 @@ public class UMAMaker1_FemaleCivilian: MonoBehaviour {
     //udeadgame UMA Maker for Police
 
 
+    // public UnityStandardAssets.Characters.ThirdPerson.ThirdPersonCharacter characterController;
+    ThirdPersonCharacter characterController;
 
     /* All UMA content that provides a mesh is a slot. Slots are basically containers
        holding all necessary data to be combined with the rest of an UMA avatar */
@@ -173,7 +175,9 @@ public class UMAMaker1_FemaleCivilian: MonoBehaviour {
     // Part 4 of practical guide to UMA https://youtu.be/KZpvgiAdD9c
     void Start()
     {  
-        GenerateUMA(); 
+        GenerateUMA();
+        characterController = GameObject.FindObjectOfType<ThirdPersonCharacter>();
+
     }
 
     void Update()
@@ -555,20 +559,6 @@ public class UMAMaker1_FemaleCivilian: MonoBehaviour {
     {
         // Create a new game object and add UMA components to it
         GameObject GO = new GameObject("MyUMA");
-
-
-        // parent the new uma into the host game object
-        GO.transform.parent = this.gameObject.transform;
-        GO.transform.localPosition = Vector3.zero;
-        GO.transform.localRotation = Quaternion.identity;
-
-        GO.AddComponent(typeof(NavMeshAgent));
-        /*GO.AddComponent(typeof(CapsuleCollider));
-        var goCol = GO.GetComponent<CapsuleCollider>();
-        goCol.center = new Vector3(0f, 0.78f, 0f);
-        goCol.height = 1.7f;
-        goCol.radius = 0.2f;*/
-
         umaDynamicAvatar = GO.AddComponent<UMADynamicAvatar>();
 
         // Initialise Avatar and grab a reference to it's data component
@@ -602,7 +592,6 @@ public class UMAMaker1_FemaleCivilian: MonoBehaviour {
 
         // Generate Our UMA
         umaDynamicAvatar.UpdateNewRace();
-    
     }
 
     // Practical Guide to UMA part 5 https://youtu.be/N-NlNJv1ESE
@@ -767,25 +756,36 @@ public class UMAMaker1_FemaleCivilian: MonoBehaviour {
     {
         //Debug.Log("UMA_Created");
         //attach scripts after creation
-
-      umaData.gameObject.transform.position =  new Vector3(this.transform.position.x, this.transform.position.y, this.transform.position.z);
-       Debug.Log("positioned.");
+        GameObject GO = umaData.gameObject;
+        GO.transform.position = new Vector3(this.transform.position.x, this.transform.position.y, this.transform.position.z);
+        // parent the new uma into the host game object
+        GO.transform.parent = this.gameObject.transform;
+        GO.transform.localPosition = Vector3.zero;
+        GO.transform.localRotation = Quaternion.identity;
+        Debug.Log("positioned.");
+        GO.AddComponent(typeof(Rigidbody));
+        GO.AddComponent(typeof(CapsuleCollider));
+        var goCol = GO.GetComponent<CapsuleCollider>();
+        goCol.center = new Vector3(0f, 0.78f, 0f);
+        goCol.height = 1.7f;
+        goCol.radius = 0.2f;
+        GO.AddComponent(typeof(NavMeshAgent));
 
         // hand collision to prevent slide through
-       // LeftFistBox();
-       // RightFistBox();
+        // LeftFistBox();
+        // RightFistBox();
         UnityEngine.Random.seed = (UnityEngine.Random.Range(UnityEngine.Random.Range(UnityEngine.Random.Range(UnityEngine.Random.Range(0, 25), UnityEngine.Random.Range(324, 5673)), UnityEngine.Random.Range(UnityEngine.Random.Range(53, 2378), UnityEngine.Random.Range(50, 423))), UnityEngine.Random.Range(UnityEngine.Random.Range(UnityEngine.Random.Range(23, 2354), UnityEngine.Random.Range(1, 3456)), UnityEngine.Random.Range(UnityEngine.Random.Range(7, 32421), UnityEngine.Random.Range(8, 23472)))));
-        int RNG;
-        RNG = UnityEngine.Random.Range(1, 8);
+       
         if (this.gameObject.tag == "SpawnPoint_Zombie") {
             umaData.gameObject.tag = "Zombie";
             umaData.gameObject.AddComponent<HealthComponent>();
             umaData.gameObject.AddComponent<ZombieBehavior>();
             Animator animator = umaData.gameObject.GetComponent<Animator>();
             animator.runtimeAnimatorController = Resources.Load("Animation Controllers/ZombieAnimationController") as RuntimeAnimatorController;
-            
 
-                  for (int i = 1; i <= RNG; i++)
+            int RNG;
+            RNG = UnityEngine.Random.Range(1, 8);
+            for (int i = 1; i <= RNG; i++)
                 {
                 switch (i)
                 {
@@ -835,28 +835,37 @@ public class UMAMaker1_FemaleCivilian: MonoBehaviour {
             {
             umaData.gameObject.tag = "Player";
 
-            umaData.gameObject.AddComponent<Rigidbody>();
-            umaData.gameObject.AddComponent<CapsuleCollider>();
+          // umaData.gameObject.AddComponent<Rigidbody>();
+           // Rigidbody RB = umaData.gameObject.GetComponent<Rigidbody>();
+            //RB.isKinematic = true;
+
+         //   umaData.gameObject.AddComponent<CapsuleCollider>();
             CapsuleCollider umaCapsule = umaData.gameObject.GetComponent<CapsuleCollider>();
 
             umaCapsule.material = (PhysicMaterial)Resources.Load("PhysicsMaterials/ZeroFriction");
-            umaCapsule.center = new Vector3(0.0f, 0.85f, 0.0f);
+            umaCapsule.center = new Vector3(0.0f, 0.87f, 0.0f);
             umaCapsule.radius = 0.1f;
             umaCapsule.height = 1.7f;
 
-         //   Animator animator = umaData.gameObject.GetComponent<Animator>();
-           // animator.runtimeAnimatorController = Resources.Load("Animation Controllers/ThirdPersonAnimatorController") as RuntimeAnimatorController;
-            //animator.applyRootMotion = true;
 
             umaData.gameObject.AddComponent<ThirdPersonUserControl>();
+            Animator animator = umaData.gameObject.GetComponent<Animator>();
+           // animator.applyRootMotion = true;
 
 
-              Transform myUmaTransform = umaData.gameObject.GetComponent<Transform>();
+
+               Transform myUmaTransform = umaData.gameObject.GetComponent<Transform>();
             Camera.main.transform.parent = myUmaTransform;
 
             //spawnsWeaponss
             SpawnStaff();
             SpawnPistolUO();
+
+            /*if (animator.GetComponent<ThirdPersonCharacter>())
+            {
+                ThirdPersonCharacter TPC = umaData.gameObject.GetComponent<ThirdPersonCharacter>();
+               // characterController.m_GroundCheckDistance = (0.09f); 
+            }*/
         }
        
 
