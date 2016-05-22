@@ -415,7 +415,32 @@ public class UMACrowd : MonoBehaviour
 				tempSlotList[tempSlotList.Count - 1].AddOverlay(GetOverlayLibrary().InstantiateOverlay("FemaleLongHair01_Module", HairColor));
 			}
 
-			umaData.SetSlots(tempSlotList.ToArray());
+            //Zombies are bloody
+            Debug.Log(this.gameObject.tag);
+            if (this.gameObject.tag == "SpawnPoint_Zombie")
+            {
+                Color bloodColor = new Color(Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), 1);
+
+                randomResult = Random.Range(0, 1);
+                if (randomResult == 0) { tempSlotList[bodyIndex].AddOverlay(GetOverlayLibrary().InstantiateOverlay("blood", bloodColor)); }
+
+                randomResult = Random.Range(0, 1);
+                if (randomResult == 0) { tempSlotList[bodyIndex].AddOverlay(GetOverlayLibrary().InstantiateOverlay("bloodBreastR", bloodColor)); }
+                randomResult = Random.Range(0, 1);
+                if (randomResult == 0) { tempSlotList[bodyIndex].AddOverlay(GetOverlayLibrary().InstantiateOverlay("bloodChest", bloodColor)); }
+                randomResult = Random.Range(0, 1);
+                if (randomResult == 0) { tempSlotList[bodyIndex].AddOverlay(GetOverlayLibrary().InstantiateOverlay("bloodGuts1", bloodColor)); }
+                randomResult = Random.Range(0, 1);
+                if (randomResult == 0) { tempSlotList[bodyIndex].AddOverlay(GetOverlayLibrary().InstantiateOverlay("bloodShoulderBackL", bloodColor)); }
+                randomResult = Random.Range(0, 1);
+                if (randomResult == 0) { tempSlotList[bodyIndex].AddOverlay(GetOverlayLibrary().InstantiateOverlay("bloodShoulderBackR", bloodColor)); }
+                randomResult = Random.Range(0, 1);
+                if (randomResult == 0) { tempSlotList[bodyIndex].AddOverlay(GetOverlayLibrary().InstantiateOverlay("bloodShoulderR", bloodColor)); }
+                randomResult = Random.Range(0, 1);
+                if (randomResult == 0) { tempSlotList[bodyIndex].AddOverlay(GetOverlayLibrary().InstantiateOverlay("bloodWhatR", bloodColor)); }
+            }//endifspawnpoint_zombie
+
+            umaData.SetSlots(tempSlotList.ToArray());
 		}
 	}
 
@@ -453,41 +478,6 @@ public class UMACrowd : MonoBehaviour
             animator.runtimeAnimatorController = Resources.Load("Animation Controllers/ZombieAnimationController") as RuntimeAnimatorController;
             umaData.gameObject.AddComponent<HealthComponent>();
             umaData.gameObject.AddComponent<ZombieBehavior>();
-
-            int RNG;
-            RNG = UnityEngine.Random.Range(1, 8);
-            for (int i = 1; i <= RNG; i++)
-            {
-                switch (i)
-                {
-                    case 1:
-                        myCustomUMA.injury.Blood1 = true;
-                        break;
-                    case 2:
-                        myCustomUMA.injury.bloodBreastR = true;
-                        break;
-                    case 3:
-                        myCustomUMA.injury.bloodChest = true;
-                        break;
-                    case 4:
-                        myCustomUMA.injury.bloodGuts1 = true;
-                        break;
-                    case 5:
-                        myCustomUMA.injury.bloodShoulderBackL = true;
-                        break;
-                    case 6:
-                        myCustomUMA.injury.bloodShoulderBackR = true;
-                        break;
-
-                    case 7:
-                        myCustomUMA.injury.bloodShoulderR = true;
-                        break;
-
-                    case 8:
-                        myCustomUMA.injury.bloodWhatR = true;
-                        break;
-                }
-            }
         }
         if (this.gameObject.tag == "SpawnPoint_Human")
         {
