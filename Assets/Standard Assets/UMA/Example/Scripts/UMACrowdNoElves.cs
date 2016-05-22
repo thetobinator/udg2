@@ -300,19 +300,22 @@ public CustomUMA myCustomUMA;
         }
         else if (umaData.umaRecipe.raceData.raceName == "HumanFemale")
         {
-            int randomResult = 0;
+           
+               
+                int randomResult = 0;
             //Female Avatar
 
             //Example of dynamic list
             List<SlotData> tempSlotList = new List<SlotData>();
-
+ 
+            
             tempSlotList.Add(GetSlotLibrary().InstantiateSlot("FemaleEyes"));
             tempSlotList[tempSlotList.Count - 1].AddOverlay(GetOverlayLibrary().InstantiateOverlay("EyeOverlay"));
             tempSlotList[tempSlotList.Count - 1].AddOverlay(GetOverlayLibrary().InstantiateOverlay("EyeOverlayAdjust", new Color(Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), 1)));
-
-            int headIndex = 0;
-
-            randomResult = Random.Range(0, 2);
+                tempSlotList.Add(GetSlotLibrary().InstantiateSlot("FemaleTorso"));
+                int headIndex = 0;
+            
+                randomResult = Random.Range(0, 2);
             if (randomResult == 0)
             {
 
@@ -362,7 +365,16 @@ public CustomUMA myCustomUMA;
             tempSlotList.Add(GetSlotLibrary().InstantiateSlot("FemaleEyelash"));
             tempSlotList[tempSlotList.Count - 1].AddOverlay(GetOverlayLibrary().InstantiateOverlay("FemaleEyelash", Color.black));
 
-            tempSlotList.Add(GetSlotLibrary().InstantiateSlot("FemaleTorso"));
+            if (this.gameObject.tag == "SpawnPoint_Human")
+            {
+                tempSlotList.Add(GetSlotLibrary().InstantiateSlot("FemaleTorso"));
+            }
+            else
+            {
+            tempSlotList.Add(GetSlotLibrary().InstantiateSlot("ZombieGirl_BodyNew"));
+             }
+
+
             int bodyIndex = tempSlotList.Count - 1;
             randomResult = Random.Range(0, 2);
             if (randomResult == 0)
@@ -373,6 +385,8 @@ public CustomUMA myCustomUMA;
             {
                 tempSlotList[bodyIndex].AddOverlay(GetOverlayLibrary().InstantiateOverlay("FemaleBody02", skinColor));
             }
+
+
 
             tempSlotList[bodyIndex].AddOverlay(GetOverlayLibrary().InstantiateOverlay("FemaleUnderwear01", new Color(Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), 1)));
 
