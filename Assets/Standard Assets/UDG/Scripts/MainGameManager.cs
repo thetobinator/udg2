@@ -188,6 +188,7 @@ public class MainGameManager : MainGameInit
 
     public GameObject[] zombies;
     public GameObject[] humans;
+
 	public GameObject bullet;
 	public GameObject gun;
 	public GameObject destinationMarker;
@@ -198,6 +199,10 @@ public class MainGameManager : MainGameInit
     public int showScreenText = 0;
     [Multiline]
     public List<string> screenText = new List<string>();
+
+
+
+        //= "ScreenText is the word.";
 
 
     // what does populationData do?
@@ -301,8 +306,6 @@ public class MainGameManager : MainGameInit
     public void OnGUI()
     {
         if (screenText.Count != 0) { GUI.Label(new Rect(10, 10, 700, 200), screenText[showScreenText]); }
-        
-
     }
 
     public void AdjustScore(int num)
@@ -316,18 +319,19 @@ public class MainGameManager : MainGameInit
 
     private void Start()
     {
-        //this looks like rouguelike spawning.
+      screenText.Add("ScreenText is the word");
+        showScreenText = screenText.Count-1;
+    //this looks like Unity Tutorial rouguelike spawning.
     // m_humans.setup(10u, 10u, 3.0f, "Human", humans, "SpawnPoint_Human");
-     //m_zombies.setup(7u, 7u, 3.0f, "Zombie", zombies, "SpawnPoint_Zombie");
-    }
+    //m_zombies.setup(7u, 7u, 3.0f, "Zombie", zombies, "SpawnPoint_Zombie");
+}
 
     public void Update()
     {
         //m_humans.update(Time.deltaTime);
         //m_zombies.update(Time.deltaTime);
 		m_movementObserver.update ();
-		m_zombieCommander.update ();
-        
+		m_zombieCommander.update ();       
     }
 
     //end MainGameManager

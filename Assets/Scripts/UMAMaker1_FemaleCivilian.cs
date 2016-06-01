@@ -248,35 +248,7 @@ public class UMAMaker1_FemaleCivilian: MonoBehaviour {
             umaData.Dirty();
         }
 
-        //bloodName = "";
-        if (myCustomUMA.injury.Blood1 && !lastBlood1) { bloodName = "blood"; lastBlood1 = myCustomUMA.injury.Blood1; }
-        if (myCustomUMA.injury.bloodBreastR && !lastbloodBreastR) { bloodName = "bloodBreastR"; lastbloodBreastR = myCustomUMA.injury.bloodBreastR; }
-        if (myCustomUMA.injury.bloodChest && !lastbloodChest) { bloodName = "bloodChest"; lastbloodChest = myCustomUMA.injury.bloodChest; }
-        if (myCustomUMA.injury.bloodGuts1 && !lastbloodGuts1) { bloodName = "bloodGuts1"; lastbloodGuts1 = myCustomUMA.injury.bloodGuts1; }
-        if (myCustomUMA.injury.bloodShoulderBackL && !lastbloodShoulderBackL) { bloodName = "bloodShoulderBackL"; lastbloodShoulderBackL = myCustomUMA.injury.bloodShoulderBackL; }
-        if (myCustomUMA.injury.bloodShoulderBackR && !lastbloodShoulderBackR) { bloodName = "bloodShoulderBackR"; lastbloodShoulderBackR = myCustomUMA.injury.bloodShoulderBackR; }
-        if (myCustomUMA.injury.bloodShoulderR && !lastbloodShoulderR) { bloodName = "bloodShoulderR"; lastbloodShoulderR = myCustomUMA.injury.bloodShoulderR; }
-        if (myCustomUMA.injury.bloodWhatR && !lastbloodWhatR) { bloodName = "bloodWhatR"; lastbloodWhatR = myCustomUMA.injury.bloodWhatR; }
-
-        if (!myCustomUMA.injury.Blood1 && lastBlood1) { RemoveOverlay(3, "Blood1"); lastBlood1 = myCustomUMA.injury.Blood1; }
-        if (!myCustomUMA.injury.bloodBreastR && lastbloodBreastR) { RemoveOverlay(3, "bloodBreastR"); lastbloodBreastR = myCustomUMA.injury.bloodBreastR; }
-        if (!myCustomUMA.injury.bloodChest && lastbloodChest) { RemoveOverlay(3, "bloodChest"); lastbloodChest = myCustomUMA.injury.bloodChest; }
-        if (!myCustomUMA.injury.bloodGuts1 && lastbloodGuts1) { RemoveOverlay(3, "bloodGuts1"); lastbloodGuts1 = myCustomUMA.injury.bloodGuts1; }
-        if (!myCustomUMA.injury.bloodShoulderBackL && lastbloodShoulderBackL) { RemoveOverlay(3, "bloodShoulderBackL"); lastbloodShoulderBackL = myCustomUMA.injury.bloodShoulderBackL; }
-        if (!myCustomUMA.injury.bloodShoulderBackR && lastbloodShoulderBackR) { RemoveOverlay(3, "bloodShoulderBackR"); lastbloodShoulderBackR = myCustomUMA.injury.bloodShoulderBackR; }
-        if (!myCustomUMA.injury.bloodShoulderR && lastbloodShoulderR) { RemoveOverlay(3, "bloodShoulderR"); lastbloodShoulderR = myCustomUMA.injury.bloodShoulderR; }
-        if (!myCustomUMA.injury.bloodWhatR && lastbloodWhatR) { RemoveOverlay(3, "bloodWhatR"); lastbloodWhatR = myCustomUMA.injury.bloodWhatR; }
-
-        if (bloodName != lastBloodName)
-        {
-           // RemoveOverlay(3, lastBloodName);
-            lastBloodName = bloodName;
-            if (bloodName != "")
-            {
-                AddOverlay(3, bloodName);
-            }
-            DirtyUMAUpdate(umaData);
-        }
+       
         
         
 

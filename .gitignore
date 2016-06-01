@@ -9,3 +9,5 @@ udg2.userprefs
 ProjectSettings/QualitySettings.asset
 obj/Debug/DesignTimeResolveAssemblyReferencesInput.cache
 udg2-csharp.v12.suo
+MeshMaker/
+Assets/MeshMaker.meta

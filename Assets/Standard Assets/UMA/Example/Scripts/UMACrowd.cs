@@ -423,7 +423,6 @@ public class UMACrowd : MonoBehaviour
 
                 randomResult = Random.Range(0, 1);
                 if (randomResult == 0) { tempSlotList[bodyIndex].AddOverlay(GetOverlayLibrary().InstantiateOverlay("blood", bloodColor)); }
-
                 randomResult = Random.Range(0, 1);
                 if (randomResult == 0) { tempSlotList[bodyIndex].AddOverlay(GetOverlayLibrary().InstantiateOverlay("bloodBreastR", bloodColor)); }
                 randomResult = Random.Range(0, 1);

@@ -57,6 +57,7 @@ public class MainGameInit : MonoBehaviour
     // -- added 02 26 2009 keyboard teleport; 
     public bool teleportTimerActive = false;
     public float teleportTime = 0.0f;
+
     // int because trackedObject is in a list somewhere?
     public int trackedObject = 3; //TrackedPosition.x,TrackedPosition.y,TrackedPosition.z = 0,0,0; 
     public bool displayLoading = false;

@@ -365,14 +365,18 @@ public CustomUMA myCustomUMA;
             tempSlotList.Add(GetSlotLibrary().InstantiateSlot("FemaleEyelash"));
             tempSlotList[tempSlotList.Count - 1].AddOverlay(GetOverlayLibrary().InstantiateOverlay("FemaleEyelash", Color.black));
 
-            if (this.gameObject.tag == "SpawnPoint_Human")
-            {
+        
+            
                 tempSlotList.Add(GetSlotLibrary().InstantiateSlot("FemaleTorso"));
-            }
-            else
+
+            if (this.gameObject.tag == "SpawnPoint_Zombie")
             {
-            tempSlotList.Add(GetSlotLibrary().InstantiateSlot("ZombieGirl_BodyNew"));
-             }
+                tempSlotList.Add(GetSlotLibrary().InstantiateSlot("ZombieGirl_BodyNew"));
+                tempSlotList.Add(GetSlotLibrary().InstantiateSlot("ZombieGirl_TopNew"));
+                //tempSlotList[bodyIndex].AddOverlay(GetOverlayLibrary().InstantiateOverlay("ZombieGirlTop", new Color(Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), 1)));
+
+                tempSlotList.Add(GetSlotLibrary().InstantiateSlot("ZombieGirl_PantsNew"));
+            }
 
 
             int bodyIndex = tempSlotList.Count - 1;
@@ -397,7 +401,9 @@ public CustomUMA myCustomUMA;
             }
             else if (randomResult == 1)
             {
+              
                 tempSlotList[bodyIndex].AddOverlay(GetOverlayLibrary().InstantiateOverlay("FemaleShirt02", new Color(Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), 1)));
+
             }
             else if (randomResult == 2)
             {
@@ -408,6 +414,9 @@ public CustomUMA myCustomUMA;
             {
 
             }
+
+
+            
 
             tempSlotList.Add(GetSlotLibrary().InstantiateSlot("FemaleHands", tempSlotList[bodyIndex].GetOverlayList()));
 
