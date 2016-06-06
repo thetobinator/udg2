@@ -151,10 +151,10 @@ namespace ProceduralToolkit.Examples
 
         private void Update()
         {
-            if (Input.GetMouseButtonDown(0))
+           /* if (Input.GetMouseButtonDown(0))
             {
                 Generate();
-            }
+            }*/
         }
 
         private void Generate()
@@ -802,10 +802,10 @@ namespace ProceduralToolkit.Examples
             return draft;
         }
 
-        private void OnGUI()
+       /* private void OnGUI()
         {
             GUI.color = Color.black;
             GUI.Label(new Rect(20, 20, Screen.width, Screen.height), "Click to generate new khrushchyovka");
-        }
+        }*/
     }
 }

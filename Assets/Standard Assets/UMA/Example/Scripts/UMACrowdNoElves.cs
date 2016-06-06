@@ -637,6 +637,8 @@ public CustomUMA myCustomUMA;
     public GameObject GenerateOneUMA(int sex)
     {
         Vector3 zeroPos = Vector3.zero;
+        if (zeroPoint == null) { zeroPoint = this.gameObject.transform; }
+
         if (zeroPoint != null)
             zeroPos = zeroPoint.position;
         Vector3 newPos = zeroPos + new Vector3((spawnX - umaCrowdSize.x / 2f + 0.5f) * space, 0f, (spawnY - umaCrowdSize.y / 2f + 0.5f) * space);
@@ -713,7 +715,7 @@ public CustomUMA myCustomUMA;
         {
             DefineSlots();
         }
-
+        
         AddAdditionalSlots();
 
         GenerateUMAShapes();
