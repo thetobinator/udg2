@@ -2,11 +2,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Timers;
 
 namespace ProceduralCity
 { 
    //[ExecuteInEditMode]
     public class Building : MonoBehaviour {
+		
 
         private GameObject buildingFloor;
 
@@ -78,14 +80,35 @@ namespace ProceduralCity
 
         private float checksum;
         private float floorsChecksum;
-    
+		private float startTime;
+		public float regeneratTime = 12.0f;
         // Use this for initialization
 		public void Start()
 		{
 			RandomizeSettings ();
 			Generate();
 			this.transform.localScale = new Vector3 (2.1f, 2.1f, 2.1f);
+			startTime = Time.time;
 		}
+
+
+
+		// Update is called once per frame
+		void Update () {
+			float timePassed = Time.time - startTime;
+			string minutes = ((int)timePassed / 60).ToString ();
+			string seconds = (timePassed % 60).ToString ("f2");
+			//timerText.text = minutes + ":" + seconds;
+			if (timePassed > regeneratTime)
+			{
+				startTime = Time.time;
+			//	RandomizeSettings ();
+				//Generate();
+				//this.transform.localScale = new Vector3 (2.1f, 2.1f, 2.1f);
+			}
+		}
+
+
 
         public void Awake() { RandomizeSettings(); }
 
@@ -324,6 +347,9 @@ namespace ProceduralCity
             mesh.CombineMeshes(combine);
             return mesh.bounds;
         }
+
+
+
 
     }
 }
