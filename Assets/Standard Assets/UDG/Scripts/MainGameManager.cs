@@ -192,6 +192,8 @@ public class MainGameManager : MainGameInit
 	public GameObject bullet;
 	public GameObject gun;
 	public GameObject destinationMarker;
+	public GameObject ragdollTemplatePrefab;
+	private GameObject m_ragdollTemplate;
 
 
     // global text box update
@@ -319,12 +321,18 @@ public class MainGameManager : MainGameInit
 
     private void Start()
     {
-      screenText.Add("ScreenText is the word");
+		m_ragdollTemplate = (GameObject)Instantiate(ragdollTemplatePrefab, transform.position, transform.rotation);
+      	screenText.Add("ScreenText is the word");
         showScreenText = screenText.Count-1;
     //this looks like Unity Tutorial rouguelike spawning.
     // m_humans.setup(10u, 10u, 3.0f, "Human", humans, "SpawnPoint_Human");
     //m_zombies.setup(7u, 7u, 3.0f, "Zombie", zombies, "SpawnPoint_Zombie");
-}
+	}
+
+	public GameObject getRagdollTemplate()
+	{
+		return m_ragdollTemplate;
+	}
 
     public void Update()
     {

@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-
 public class HumanBehavior : MonoBehaviour {
 	enum State
 	{
+		WaitForComponents,	// wait until other components have been created (such as Animator by UMA)
 		Init,				// initialize (do nothing for initDelay seconds)
 		Spawning,			// go from spawn point to idle point
 		Idle,				// no zombies sensed, just stand there
@@ -182,6 +182,44 @@ public class HumanBehavior : MonoBehaviour {
 			m_state = State.Idle;
 		}
 	}
+
+	void updateWaitForComponentsBehaviour()
+	{
+		if( GetComponent<Animator>() == null || handBone == null )
+		{
+			return;
+		} 
+		m_hasGun = Random.Range (0, 2) == 0;
+		m_state = State.Init;
+		m_targetPosition = transform.position;
+		m_dangerPosition = transform.position;
+
+		// for now, let each human walk to a differnt spawn point after spawning
+		GameObject[] spawnPoints = GameObject.FindGameObjectsWithTag("SpawnPoint_Human");
+		float maxDiffSqr = 0.0f;
+		for( uint i = 0u; i < spawnPoints.Length; ++i )
+		{
+			Vector3 diff = spawnPoints[ i ].transform.position - transform.position;
+			if( diff.sqrMagnitude > maxDiffSqr )
+			{
+				m_dangerPosition = spawnPoints[ i ].transform.position;
+				maxDiffSqr = diff.sqrMagnitude;
+			}
+		}		
+
+		if( m_hasGun && GameObject.Find("gun" ))
+		{
+			m_gun = (GameObject)Instantiate (MainGameManager.instance.gun);
+			m_gun.transform.parent = handBone.transform;
+			m_gun.GetComponent<CannonBehavior> ().enabled = false; // maybe use this script later on
+			m_gun.transform.localPosition = new Vector3 (0.0f, 0.0f, 0.0f);
+			m_gun.transform.localEulerAngles = new Vector3 (270.0f, 180.0f, 0.0f);
+		}	
+		else
+		{
+			m_gun = null;
+		}
+	}
 	
 	void updateIdleBehaviour()
 	{
@@ -344,6 +382,10 @@ public class HumanBehavior : MonoBehaviour {
 
 		switch( m_state )
 		{
+		case State.WaitForComponents:
+			updateWaitForComponentsBehaviour ();
+			break;
+
 		case State.Init:
 			m_state = State.Spawning;
 			break;
@@ -382,12 +424,15 @@ public class HumanBehavior : MonoBehaviour {
 		{
 			m_stateTime = 0.0f;
 		}
-		
-		GetComponent<Animator> ().SetFloat ("human_stateTime", m_stateTime);
-		GetComponent<Animator> ().SetBool ("human_walk", !reachedPosition() );
-		GetComponent<Animator> ().SetBool ("human_shoot", m_state == State.StandAndShoot );
-        GetComponent<Animator>().SetBool("human_run", !reachedPosition());
-        GetComponent<Animator>().SetBool("human_idle", reachedPosition());
+
+		Animator animatorComponent = GetComponent<Animator> ();
+		if (animatorComponent != null) {
+			animatorComponent.SetFloat ("human_stateTime", m_stateTime);
+			animatorComponent.SetBool ("human_walk", !reachedPosition ());
+			animatorComponent.SetBool ("human_shoot", m_state == State.StandAndShoot);
+			animatorComponent.SetBool ("human_run", !reachedPosition ());
+			animatorComponent.SetBool ("human_idle", reachedPosition ());
+		}
     }
 
 	public void dropWeapon()
@@ -416,36 +461,7 @@ public class HumanBehavior : MonoBehaviour {
 
 	void Start()
 	{
-		m_hasGun = Random.Range (0, 2) == 0 && handBone != null;
-		m_state = State.Init;
-		m_targetPosition = transform.position;
-		m_dangerPosition = transform.position;
-
-		// for now, let each human walk to a differnt spawn point after spawning
-		GameObject[] spawnPoints = GameObject.FindGameObjectsWithTag("SpawnPoint_Human");
-		float maxDiffSqr = 0.0f;
-		for( uint i = 0u; i < spawnPoints.Length; ++i )
-		{
-			Vector3 diff = spawnPoints[ i ].transform.position - transform.position;
-			if( diff.sqrMagnitude > maxDiffSqr )
-			{
-				m_dangerPosition = spawnPoints[ i ].transform.position;
-				maxDiffSqr = diff.sqrMagnitude;
-			}
-		}		
-
-		if( m_hasGun && GameObject.Find("gun" ))
-		{
-			m_gun = (GameObject)Instantiate (MainGameManager.instance.gun);
-			m_gun.transform.parent = handBone.transform;
-			m_gun.GetComponent<CannonBehavior> ().enabled = false; // maybe use this script later on
-			m_gun.transform.localPosition = new Vector3 (0.0f, 0.0f, 0.0f);
-			m_gun.transform.localEulerAngles = new Vector3 (270.0f, 180.0f, 0.0f);
-		}	
-		else
-		{
-			m_gun = null;
-		}
+		m_state = State.WaitForComponents;
 	}
 
 	// Update is called once per frame

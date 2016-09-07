@@ -4,6 +4,7 @@ using System.Collections;
 public class ZombieBehavior : MonoBehaviour {
 	enum State
 	{
+		WaitForComponents,	// wait until other components have been created (such as Animator by UMA)
 		Init,				// initialize (do nothing for initDelay seconds)
 		Spawning,			// go from spawn point to idle point
 		Idle,				// no humans sensed, just stand there
@@ -188,6 +189,47 @@ public bool hasPlayerTask()
 		if( reachedPosition() )
 		{
 			m_state = State.Idle;
+		}
+	}
+
+	void updateWaitForComponentsBehavior()
+	{
+		if( GetComponent<Animator>() != null )
+		{
+			m_state = State.Idle;
+			m_targetPosition = transform.position;
+
+			// experimental: zombies go to player
+			GameObject player = GameObject.FindGameObjectWithTag ("Player");
+			if (player != null && initDelay == 0.0f ) {
+				setTargetObject (null);
+				m_targetPosition = player.transform.position;		
+				m_state = State.ApproachTarget;
+				m_hasPlayerTask = true;
+
+				GetComponent<Animator> ().SetBool ("zombie_attack", false);
+				GetComponent<Animator> ().SetBool ("zombie_eat", false);
+			}
+		}
+	}
+
+	void updateInitBehaviour()
+	{
+		if( m_stateTime >= initDelay )
+		{
+			if( initDelay > 0.0f )
+			{
+				if( !isInViewFrustum() )
+				{
+					// only resurrect when offscreen
+					reanimate();
+					m_state = State.Spawning;
+				}
+			}
+			else
+			{
+				m_state = State.Spawning;
+			}
 		}
 	}
 		
@@ -417,23 +459,12 @@ public bool hasPlayerTask()
 
 		switch( m_state )
 		{
+			case State.WaitForComponents:
+				updateWaitForComponentsBehavior ();
+				break;
+
 			case State.Init:
-				if( m_stateTime >= initDelay )
-				{
-					if( initDelay > 0.0f )
-					{
-						if( !isInViewFrustum() )
-						{
-							// only resurrect when offscreen
-							reanimate();
-							m_state = State.Spawning;
-						}
-					}
-					else
-					{
-						m_state = State.Spawning;
-					}
-				}
+				updateInitBehaviour ();
 				break;
 
 			case State.Spawning:
@@ -480,8 +511,11 @@ public bool hasPlayerTask()
 			m_stateTime = 0.0f;
 		}
       
-		GetComponent<Animator> ().SetFloat ("zombie_stateTime", m_stateTime);
-		GetComponent<Animator> ().SetBool ("zombie_walk", !reachedPosition());
+		Animator animatorComponent = GetComponent<Animator> ();
+		if (animatorComponent != null) {
+			animatorComponent.SetFloat ("zombie_stateTime", m_stateTime);
+			animatorComponent.SetBool ("zombie_walk", !reachedPosition ());
+		}
 
 		GetComponent<NavMeshAgent>().speed = m_hasPlayerTask ? 2.5f : 1.5f;
         
@@ -506,22 +540,7 @@ public bool hasPlayerTask()
 
     void Start()
     {
-		m_state = State.Init;
-		m_targetPosition = transform.position;
-
-
-		// experimental: zombies go to player
-		GameObject player = GameObject.FindGameObjectWithTag ("Player");
-		if (player != null && initDelay == 0.0f ) {
-			setTargetObject (null);
-			m_targetPosition = player.transform.position;		
-			m_state = State.ApproachTarget;
-			m_hasPlayerTask = true;
-           
-			GetComponent<Animator> ().SetBool ("zombie_attack", false);
-			GetComponent<Animator> ().SetBool ("zombie_eat", false);
-          
-        }
+		m_state = State.WaitForComponents;
     }
 
 
