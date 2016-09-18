@@ -475,15 +475,17 @@ public class UMACrowd : MonoBehaviour
 
      
             animator.runtimeAnimatorController = Resources.Load("Animation Controllers/ZombieAnimationController") as RuntimeAnimatorController;
-            umaData.gameObject.AddComponent<HealthComponent>();
-            umaData.gameObject.AddComponent<ZombieBehavior>();
+			print (":TO: fix this");
+//            umaData.gameObject.AddComponent<HealthComponent>();
+ //           umaData.gameObject.AddComponent<ZombieBehavior>();
         }
         if (this.gameObject.tag == "SpawnPoint_Human")
         {
             umaData.gameObject.tag = "Human";
             animator.runtimeAnimatorController = Resources.Load("Animation Controllers/Human_AnimationController") as RuntimeAnimatorController;
-            umaData.gameObject.AddComponent<HealthComponent>();
-            umaData.gameObject.AddComponent<HumanBehavior>();
+			print (":TO: fix this");
+            //umaData.gameObject.AddComponent<HealthComponent>();
+            //umaData.gameObject.AddComponent<HumanBehavior>();
             //spawnsWeapons
          //   SpawnStaff();
            // SpawnPistolUO();

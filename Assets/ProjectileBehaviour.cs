@@ -22,5 +22,21 @@ public class ProjectileBehaviour : MonoBehaviour {
 		}
 	}
 
+	GameObject getRootObject( GameObject obj )
+	{
+		GameObject root = obj; 
+		for( ; root.transform.parent != null; root = root.transform.parent.gameObject ){}
+		return root;
+	}
 
+	void OnCollisionEnter(Collision collision) {
+		GameObject rootColliderObject = getRootObject (collision.gameObject);
+		if (rootColliderObject.tag == "Human") {
+			rootColliderObject.GetComponent<HumanBehavior> ().handleBulletImpact (collision);
+		} else if (rootColliderObject.tag == "Zombie") {
+			rootColliderObject.GetComponent<ZombieBehavior> ().handleBulletImpact (collision);
+		}
+
+		Destroy (gameObject);
+	}
 }

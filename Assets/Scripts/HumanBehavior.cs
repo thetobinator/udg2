@@ -445,16 +445,13 @@ public class HumanBehavior : MonoBehaviour {
 		}
 	}
 
-	void OnCollisionEnter(Collision collision) {
-		string colliderTag = collision.gameObject.tag;
-		if (colliderTag == "Projectile" ) {
-			Destroy ( collision.gameObject );
-			HealthComponent h = GetComponent<HealthComponent>();
-			if( h != null && h.enabled ){
-				h.dealDamage( 25.0f );
-				if( h.isDead() ){
-					ZombieBehavior.turnIntoRagdoll( gameObject );
-				}
+	public void handleBulletImpact( Collision collision )
+	{
+		HealthComponent h = GetComponent<HealthComponent>();
+		if( h != null && h.enabled ){
+			h.dealDamage( 25.0f );
+			if( h.isDead() ){
+				ZombieBehavior.turnIntoRagdoll( gameObject );
 			}
 		}
 	}

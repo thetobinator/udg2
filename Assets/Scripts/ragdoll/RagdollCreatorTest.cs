@@ -96,7 +96,6 @@ public class RagdollCreatorTest : MonoBehaviour {
 				if (t.gameObject.name == "RightHand") {
 					HumanBehavior hb = GetComponent<HumanBehavior> ();
 					if (hb != null) {
-						print ("has handbone");
 						hb.handBone = t;
 					}
 				}

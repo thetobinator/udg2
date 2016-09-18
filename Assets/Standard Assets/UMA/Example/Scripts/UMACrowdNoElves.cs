@@ -515,8 +515,9 @@ public CustomUMA myCustomUMA;
 
             Animator animator = umaData.gameObject.GetComponent<Animator>();
             animator.runtimeAnimatorController = Resources.Load("Animation Controllers/ZombieAnimationController") as RuntimeAnimatorController;
-            umaData.gameObject.AddComponent<HealthComponent>();
-            umaData.gameObject.AddComponent<ZombieBehavior>();
+			print (":TO: fix this");
+			//umaData.gameObject.AddComponent<HealthComponent>();
+            //umaData.gameObject.AddComponent<ZombieBehavior>();
         }//endifzombie
 
         if (this.gameObject.tag == "SpawnPoint_Human")
@@ -525,8 +526,9 @@ public CustomUMA myCustomUMA;
            
             Animator animator = umaData.gameObject.GetComponent<Animator>();
             animator.runtimeAnimatorController = Resources.Load("Animation Controllers/Human_AnimationController") as RuntimeAnimatorController;
-            umaData.gameObject.AddComponent<HealthComponent>();
-            umaData.gameObject.AddComponent<HumanBehavior>();
+			print (":TO: fix this");
+			//umaData.gameObject.AddComponent<HealthComponent>();
+            //umaData.gameObject.AddComponent<HumanBehavior>();
             //spawnsWeapons
             SpawnStaff();
             SpawnPistolUO();

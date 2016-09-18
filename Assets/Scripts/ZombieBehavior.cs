@@ -268,16 +268,14 @@ public bool hasPlayerTask()
 	{
 		NavMeshAgent n = obj.GetComponent<NavMeshAgent>();
 		Animator a = obj.GetComponent<Animator>();
-		CapsuleCollider c = obj.GetComponent<CapsuleCollider> ();
 		HumanBehavior h = obj.GetComponent<HumanBehavior>();
 		ZombieBehavior z = obj.GetComponent<ZombieBehavior>();
+		RagdollHelper r = obj.GetComponent<RagdollHelper> ();
 
 		bool result = false;
-		if (n != null && a != null && c != null) {
-			Component[] bones = obj.GetComponentsInChildren<Rigidbody> ();
-			foreach (Rigidbody ragdoll in bones) {
-				ragdoll.isKinematic = false;
-			}
+		if (n != null && a != null && r != null) {
+			print ("ragdoll me");
+			r.ragdolled=true;
 			
 			if (h != null) {
 				h.dropWeapon();
@@ -289,7 +287,6 @@ public bool hasPlayerTask()
 			}
 			n.enabled = false;
 			a.enabled = false;
-			c.enabled = false;
 		}
 
 		return result;
@@ -543,21 +540,16 @@ public bool hasPlayerTask()
 		m_state = State.WaitForComponents;
     }
 
-
-	void OnCollisionEnter(Collision collision) {
-		string colliderTag = collision.gameObject.tag;
-		if (colliderTag == "Projectile" ) {
-			Destroy ( collision.gameObject );
-			HealthComponent h = GetComponent<HealthComponent>();
-			if( h != null && h.enabled ){
-				h.dealDamage( 25.0f );
-				if( h.isDead() ){
-					ZombieBehavior.turnIntoRagdoll( gameObject );
-				}
+	public void handleBulletImpact( Collision collision )
+	{
+		HealthComponent h = GetComponent<HealthComponent>();
+		if( h != null && h.enabled ){
+			h.dealDamage( 25.0f );
+			if( h.isDead() ){
+				ZombieBehavior.turnIntoRagdoll( gameObject );
 			}
 		}
 	}
-
 
 	/*
 	// stop the character at a barricade
