@@ -587,8 +587,9 @@ public bool hasPlayerTask()
 
 	public void setTargetFromRaycastHit( RaycastHit hit )
 	{
-		if (hit.collider.gameObject.tag == opposingFactionTag ()) {
-			setTargetObject (hit.collider.gameObject);
+		GameObject colliderRootObject = ProjectileBehaviour.getRootObject (hit.collider.gameObject);
+		if (colliderRootObject.tag == opposingFactionTag ()) {
+			setTargetObject (colliderRootObject);
 			//colorizeObject( hit.collider.gameObject, Color.red );
 			m_targetPosition = m_targetObject.GetComponent< Transform > ().position;
 		} else {

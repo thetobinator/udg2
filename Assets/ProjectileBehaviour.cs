@@ -22,7 +22,7 @@ public class ProjectileBehaviour : MonoBehaviour {
 		}
 	}
 
-	GameObject getRootObject( GameObject obj )
+	static public GameObject getRootObject( GameObject obj )
 	{
 		GameObject root = obj; 
 		for( ; root.transform.parent != null; root = root.transform.parent.gameObject ){}
