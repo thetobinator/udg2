@@ -5,7 +5,7 @@ using System.Collections;
 using System.Collections.Generic; 		//Allows us to use Lists.
 using Random = UnityEngine.Random; 		//Tells Random to use the Unity Engine random number generator.
 
-/* DISABLED TO Silence WARNINGS IN EDITOR MAY 16 2016
+//* DISABLED TO Silence WARNINGS IN EDITOR MAY 16 2016
 [ExecuteInEditMode]
 #if UNITY_EDITOR
 public class RogueLikeBoardManager : MonoBehaviour
@@ -241,4 +241,4 @@ public class RogueLikeBoardManager : MonoBehaviour
 
     }
 
-    */
+   // */
