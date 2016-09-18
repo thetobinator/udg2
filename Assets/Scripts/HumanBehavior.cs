@@ -185,10 +185,10 @@ public class HumanBehavior : MonoBehaviour {
 
 	void updateWaitForComponentsBehaviour()
 	{
-		if( GetComponent<Animator>() == null || handBone == null )
+		/*if( GetComponent<Animator>() == null || handBone == null )
 		{
 			return;
-		} 
+		} */
 		m_hasGun = Random.Range (0, 2) == 0;
 		m_state = State.Init;
 		m_targetPosition = transform.position;
