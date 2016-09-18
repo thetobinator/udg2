@@ -20,9 +20,26 @@ public class UMACharGen : MonoBehaviour
 
     void Start()
     {
+		setupFallbackObjects ();
 		GenerateUMA(name + "( generated object )");
 		Destroy (gameObject);
     }
+
+	void setupFallbackObjects()
+	{
+		if (generator == null) {
+			generator = GameObject.Find("UMAGenerator").GetComponent<UMAGenerator>();
+		}
+		if (slotLibrary == null) {
+			slotLibrary = GameObject.Find("SlotLibrary").GetComponent<SlotLibrary>();
+		}
+		if (overlayLibrary == null) {
+			overlayLibrary = GameObject.Find("OverlayLibrary").GetComponent<OverlayLibrary>();
+		}
+		if (raceLibrary == null) {
+			raceLibrary = GameObject.Find("RaceLibrary").GetComponent<RaceLibrary>();
+		}
+	}
 
     GameObject GenerateUMA(string name)
     {
