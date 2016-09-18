@@ -274,7 +274,6 @@ public bool hasPlayerTask()
 
 		bool result = false;
 		if (n != null && a != null && r != null) {
-			print ("ragdoll me");
 			r.ragdolled=true;
 			
 			if (h != null) {
