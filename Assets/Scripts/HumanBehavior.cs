@@ -207,7 +207,7 @@ public class HumanBehavior : MonoBehaviour {
 			}
 		}		
 
-		if( m_hasGun && GameObject.Find("gun" ))
+		if( m_hasGun )
 		{
 			m_gun = (GameObject)Instantiate (MainGameManager.instance.gun);
 			m_gun.transform.parent = handBone.transform;
