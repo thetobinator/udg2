@@ -21,6 +21,7 @@ public class UMACharGen : MonoBehaviour
     void Start()
     {
 		GenerateUMA(name + "( generated object )");
+		Destroy (gameObject);
     }
 
     GameObject GenerateUMA(string name)

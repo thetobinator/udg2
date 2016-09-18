@@ -143,8 +143,6 @@ public class RagdollCreatorTest : MonoBehaviour {
 			}
 			
 			gameObject.AddComponent<RagdollHelper>();
-			// :TO: comment this in to test ragdolling upon mouse ray collision
-			//gameObject.AddComponent<StairDismount>();
 		}
 	}
 }
