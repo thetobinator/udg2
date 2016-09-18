@@ -4,7 +4,7 @@ using System.Collections;
 public class RagdollPartScript : MonoBehaviour {
 	//Declare a reference to the main script (of type StairDismount).
 	//This will be set by the code that adds this script to all ragdoll parts
-	public StairDismount mainScript;
+	//public StairDismount mainScript;
 	// Use this for initialization
 	void Start () {
 	
@@ -23,7 +23,7 @@ public class RagdollPartScript : MonoBehaviour {
 				print (gameObject.name + " collided with " + collision.gameObject.name + ", giving score " + score);
 				
 				//increase the main script's score variable (see StairDismount.cs)
-				mainScript.score += score;
+				//mainScript.score += score;
 				/*
 				//Instantiate a text object
 				GameObject scoreText=Instantiate(mainScript.scoreTextTemplate) as GameObject;
