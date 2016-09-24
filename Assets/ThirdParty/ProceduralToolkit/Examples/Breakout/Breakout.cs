@@ -12,23 +12,38 @@ namespace ProceduralToolkit.Examples
     /// <summary>
     /// Breakout clone with procedurally generated levels
     /// </summary>
-    public class Breakout : MonoBehaviour
+    public class Breakout
     {
-        private GameObject paddle;
-        private GameObject ball;
-        private List<GameObject> bricks = new List<GameObject>();
+        private const float backgroundColorSaturation = 0.25f;
+        private const float backgroundColorValue = 0.7f;
+        private const float brickColorSaturation = 0.7f;
+        private const float brickColorMinValue = 0.6f;
+        private const float brickColorMaxValue = 0.8f;
+
+        private const float brickHeight = 0.5f;
+        private const float paddleHeight = 0.5f;
+        private const float paddleSpeed = 25f;
+        private const float ballRadius = 0.5f;
+        private const float ballForce = 200;
+
+        private Camera mainCamera;
         private Transform bricksContainer;
-        private Texture2D brickTexture;
-        private Sprite brickSprite;
-        private int brickWidth = 100;
-        private int brickHeight = 50;
-        private int wallWidth = 9;
-        private int wallHeight = 7;
-        private float paddleSpeed = 25f;
-        private PhysicsMaterial2D material;
-        private int wallHeightOffset = 5;
-        private float ballForce = 200;
-        private float ballVelocityMagnitude = 5;
+        private Sprite whiteSprite;
+        private PhysicsMaterial2D bouncyMaterial;
+        private GameObject borders;
+        private GameObject paddle;
+        private Transform paddleTransform;
+        private GameObject ball;
+        private Transform ballTransform;
+        private Rigidbody2D ballRigidbody;
+        private List<GameObject> bricks = new List<GameObject>();
+
+        private int wallWidth;
+        private int wallHeight;
+        private int wallHeightOffset;
+        private float paddleWidth;
+        private float ballSize;
+        private float ballVelocityMagnitude;
 
         private Dictionary<BrickSize, float> sizeValues = new Dictionary<BrickSize, float>
         {
@@ -36,135 +51,164 @@ namespace ProceduralToolkit.Examples
             {BrickSize.Wide, 1f},
         };
 
-        private void Awake()
+        public Breakout(Camera mainCamera)
         {
+            this.mainCamera = mainCamera;
             bricksContainer = new GameObject("Bricks").transform;
-            brickTexture = TextureE.whitePixel;
-            brickTexture.Resize(brickWidth, brickHeight);
-            brickSprite = Sprite.Create(brickTexture, new Rect(0, 0, brickWidth, brickHeight), new Vector2(0.5f, 0.5f));
-            material = new PhysicsMaterial2D {name = "Bouncy", bounciness = 1, friction = 0};
-            GeneratePaddle();
-            GenerateBorders();
+
+            // Generate texture and sprite for bricks, paddle and ball
+            var texture = Texture2D.whiteTexture;
+            whiteSprite = Sprite.Create(texture,
+                rect: new Rect(0, 0, texture.width, texture.width),
+                pivot: new Vector2(0.5f, 0.5f),
+                pixelsPerUnit: texture.width);
+
+            // Bouncy material for walls, paddle and everything else
+            bouncyMaterial = new PhysicsMaterial2D {name = "Bouncy", bounciness = 1, friction = 0};
         }
 
-        private void Start()
+        public void UpdateParameters(
+            int wallWidth,
+            int wallHeight,
+            int wallHeightOffset,
+            float paddleWidth,
+            float ballSize,
+            float ballVelocityMagnitude)
         {
-            ResetLevel();
+            this.wallWidth = wallWidth;
+            this.wallHeight = wallHeight;
+            this.wallHeightOffset = wallHeightOffset;
+            this.paddleWidth = paddleWidth;
+            this.ballSize = ballSize;
+            this.ballVelocityMagnitude = ballVelocityMagnitude;
         }
 
-        private void Update()
+        public void Update()
         {
-            if (Input.GetMouseButtonDown(0))
+            float delta = Input.GetAxis("Horizontal")*Time.deltaTime*paddleSpeed;
+            paddleTransform.position += new Vector3(delta, 0);
+
+            // Prevent paddle from penetrating walls
+            float halfWall = (wallWidth - 1)/2f;
+            if (paddleTransform.position.x > halfWall)
+            {
+                paddleTransform.position = new Vector3(halfWall, 0);
+            }
+            if (paddleTransform.position.x < -halfWall)
+            {
+                paddleTransform.position = new Vector3(-halfWall, 0);
+            }
+
+            // Ball should move with constant velocity
+            ballRigidbody.velocity = ballRigidbody.velocity.normalized*ballVelocityMagnitude;
+
+            if (ballTransform.position.y < -0.1f)
             {
                 ResetLevel();
             }
-            var delta = Input.GetAxis("Horizontal")*Time.deltaTime*paddleSpeed;
-            paddle.transform.position += new Vector3(delta, 0);
 
-            var halfWall = (wallWidth - 1)/2f;
-            if (paddle.transform.position.x > halfWall)
-            {
-                paddle.transform.position = new Vector3(halfWall, 0);
-            }
-            if (paddle.transform.position.x < -halfWall)
-            {
-                paddle.transform.position = new Vector3(-halfWall, 0);
-            }
-
-            ball.GetComponent<Rigidbody2D>().velocity = ball.GetComponent<Rigidbody2D>().velocity.normalized*ballVelocityMagnitude;
-            if (ball.transform.position.y < -0.1f)
-            {
-                ResetLevel();
-            }
-            var angle = Vector2.Angle(ball.GetComponent<Rigidbody2D>().velocity, Vector2.right);
+            float angle = Vector2.Angle(ballRigidbody.velocity, Vector2.right);
             if (angle < 30 || angle > 150)
             {
-                KickBall();
+                // Prevent ball from bouncing between walls
+                KickBallInRandomDirection();
             }
         }
 
-        private void ResetLevel()
+        public void ResetLevel()
         {
+            GenerateBorders();
             GenerateLevel();
+            GeneratePaddle();
             GenerateBall();
         }
 
         private void GenerateBorders()
         {
-            var borders = new GameObject("Border");
-            var bordersHeight = wallHeightOffset + wallHeight/2 + 1;
-            var bordersWidth = wallWidth + 1;
+            if (borders != null)
+            {
+                Object.Destroy(borders);
+            }
+            borders = new GameObject("Border");
+            float bordersHeight = wallHeightOffset + wallHeight/2 + 1 + ballSize;
+            float bordersWidth = wallWidth + 1;
 
-            var colliderDown = borders.AddComponent<BoxCollider2D>();
-            colliderDown.sharedMaterial = material;
-            colliderDown.offset = new Vector2(0, -1);
-            colliderDown.size = new Vector2(bordersWidth, 1);
+            // Bottom
+            CreateBoxCollider(offset: new Vector2(0, -1 - ballSize/2),
+                size: new Vector2(bordersWidth, 1));
+            // Left
+            CreateBoxCollider(offset: new Vector2(-bordersWidth/2f, bordersHeight/2f - 0.5f - ballSize/2),
+                size: new Vector2(1, bordersHeight + 1));
+            // Right
+            CreateBoxCollider(offset: new Vector2(bordersWidth/2f, bordersHeight/2f - 0.5f - ballSize/2),
+                size: new Vector2(1, bordersHeight + 1));
+            // Top
+            CreateBoxCollider(offset: new Vector2(0, bordersHeight - ballSize/2),
+                size: new Vector2(bordersWidth, 1));
+        }
 
-            var colliderLeft = borders.AddComponent<BoxCollider2D>();
-            colliderLeft.sharedMaterial = material;
-            colliderLeft.offset = new Vector2(-bordersWidth/2f, bordersHeight/2f - 0.5f);
-            colliderLeft.size = new Vector2(1, bordersHeight + 1);
-
-            var colliderRight = borders.AddComponent<BoxCollider2D>();
-            colliderRight.sharedMaterial = material;
-            colliderRight.offset = new Vector2(bordersWidth/2f, bordersHeight/2f - 0.5f);
-            colliderRight.size = new Vector2(1, bordersHeight + 1);
-
-            var colliderTop = borders.AddComponent<BoxCollider2D>();
-            colliderTop.sharedMaterial = material;
-            colliderTop.offset = new Vector2(0, bordersHeight);
-            colliderTop.size = new Vector2(bordersWidth, 1);
+        private void CreateBoxCollider(Vector2 offset, Vector2 size)
+        {
+            var collider = borders.AddComponent<BoxCollider2D>();
+            collider.sharedMaterial = bouncyMaterial;
+            collider.offset = offset;
+            collider.size = size;
         }
 
         private void GenerateLevel()
         {
+            // Destroy existing bricks
             foreach (var brick in bricks)
             {
-                Destroy(brick);
+                Object.Destroy(brick);
             }
             bricks.Clear();
 
-            var gradient = RandomE.gradientHSV;
+            float fromHue = Random.value;
+            float toHue = fromHue + 30/360f;
+
+            var backgroundColor = new ColorHSV(fromHue, backgroundColorSaturation, backgroundColorValue).complementary;
+            mainCamera.backgroundColor = backgroundColor.ToColor();
 
             for (int y = 0; y < wallHeight; y++)
             {
-                var lineColor = gradient.Evaluate(y/(wallHeight - 1f));
+                // Select color for current line
+                float hue = Mathf.Lerp(fromHue, toHue, y/(wallHeight - 1f));
 
-                var brickSizes = BrickSizes(wallWidth);
+                // Generate brick sizes for current line
+                List<BrickSize> brickSizes = FillWallWithBricks(wallWidth);
 
-                var x = 0f;
-                var previousColor = lineColor;
+                Vector3 leftEdge = Vector3.left*wallWidth/2 + Vector3.up*(wallHeightOffset + y*brickHeight);
                 for (int i = 0; i < brickSizes.Count; i++)
                 {
-                    var color = lineColor;
-                    while (previousColor == color)
-                    {
-                        color -= Color.white * RandomE.Range(-0.2f, 0.2f, 3);
-                    }
-                    previousColor = color;
-                    
                     var brickSize = brickSizes[i];
-                    if (i >= 0)
-                    {
-                        x += sizeValues[brickSize]/2;
-                    }
+                    var position = leftEdge + Vector3.right*sizeValues[brickSize]/2;
 
-                    var position = Vector3.right*(x - wallWidth/2f) + Vector3.up*(wallHeightOffset + y/2f);
+                    // Randomize tint of current brick
+                    float colorValue = Random.Range(brickColorMinValue, brickColorMaxValue);
+                    Color color = new ColorHSV(hue, brickColorSaturation, colorValue).ToColor();
+
                     bricks.Add(GenerateBrick(position, color, brickSize));
-                    x += sizeValues[brickSize]/2;
+                    leftEdge.x += sizeValues[brickSize];
                 }
             }
         }
 
-        private List<BrickSize> BrickSizes(float width)
+        private List<BrickSize> FillWallWithBricks(float width)
         {
-            var knapsack = GetRandomKnapsack(width);
-            while (KnapsackWidth(knapsack) > width)
+            // https://en.wikipedia.org/wiki/Knapsack_problem
+            // We are using knapsack problem solver to fill fixed width with bricks of random width
+            Dictionary<BrickSize, int> knapsack;
+            float knapsackWidth;
+            do
             {
+                // Prefill knapsack to get nicer distribution of widths
                 knapsack = GetRandomKnapsack(width);
-            }
+                // Calculate sum of brick widths in knapsack
+                knapsackWidth = KnapsackWidth(knapsack);
+            } while (knapsackWidth > width);
 
-            width -= KnapsackWidth(knapsack);
+            width -= knapsackWidth;
             knapsack = PTUtils.Knapsack(sizeValues, width, knapsack);
             var brickSizes = new List<BrickSize>();
             foreach (var pair in knapsack)
@@ -190,7 +234,7 @@ namespace ProceduralToolkit.Examples
 
         private float KnapsackWidth(Dictionary<BrickSize, int> knapsack)
         {
-            var knapsackWidth = 0f;
+            float knapsackWidth = 0f;
             foreach (var key in knapsack.Keys)
             {
                 knapsackWidth += knapsack[key]*sizeValues[key];
@@ -203,25 +247,35 @@ namespace ProceduralToolkit.Examples
             var brick = new GameObject("Brick");
             brick.transform.position = position;
             brick.transform.parent = bricksContainer;
-            brick.transform.localScale = new Vector3(sizeValues[size], 1);
+            brick.transform.localScale = new Vector3(sizeValues[size], brickHeight);
+
             var brickRenderer = brick.AddComponent<SpriteRenderer>();
-            brickRenderer.sprite = brickSprite;
+            brickRenderer.sprite = whiteSprite;
             brickRenderer.color = color;
+
             var brickCollider = brick.AddComponent<BoxCollider2D>();
-            brickCollider.sharedMaterial = material;
+            brickCollider.sharedMaterial = bouncyMaterial;
             brick.AddComponent<Brick>();
             return brick;
         }
 
         private void GeneratePaddle()
         {
-            paddle = new GameObject("Paddle");
-            paddle.transform.position = Vector3.zero;
-            var paddleRenderer = paddle.AddComponent<SpriteRenderer>();
-            paddleRenderer.sprite = brickSprite;
-            paddleRenderer.color = Color.black;
-            var paddleCollider = paddle.AddComponent<BoxCollider2D>();
-            paddleCollider.sharedMaterial = material;
+            if (paddle == null)
+            {
+                paddle = new GameObject("Paddle");
+                paddleTransform = paddle.transform;
+
+                var paddleRenderer = paddle.AddComponent<SpriteRenderer>();
+                paddleRenderer.sprite = whiteSprite;
+                paddleRenderer.color = Color.black;
+
+                var paddleCollider = paddle.AddComponent<BoxCollider2D>();
+                paddleCollider.sharedMaterial = bouncyMaterial;
+            }
+
+            paddleTransform.position = Vector3.zero;
+            paddleTransform.localScale = new Vector3(paddleWidth, paddleHeight);
         }
 
         private void GenerateBall()
@@ -229,34 +283,32 @@ namespace ProceduralToolkit.Examples
             if (ball == null)
             {
                 ball = new GameObject("Ball");
-                ball.transform.localScale = new Vector3(0.5f, 1);
+                ballTransform = ball.transform;
+
                 var ballRenderer = ball.AddComponent<SpriteRenderer>();
-                ballRenderer.sprite = brickSprite;
+                ballRenderer.sprite = whiteSprite;
                 ballRenderer.color = Color.black;
+
                 var ballCollider = ball.AddComponent<CircleCollider2D>();
-                ballCollider.radius = 0.3f;
-                ballCollider.sharedMaterial = material;
-                var ballRigidbody = ball.AddComponent<Rigidbody2D>();
+                ballCollider.radius = ballRadius;
+                ballCollider.sharedMaterial = bouncyMaterial;
+
+                ballRigidbody = ball.AddComponent<Rigidbody2D>();
                 ballRigidbody.gravityScale = 0;
                 ballRigidbody.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+                ballRigidbody.constraints = RigidbodyConstraints2D.FreezeRotation;
             }
 
-            ball.transform.position = Vector3.up;
-            ball.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
-            KickBall();
+            ballTransform.position = Vector3.up;
+            ballTransform.localScale = new Vector3(ballSize, ballSize);
+            ballRigidbody.velocity = Vector2.zero;
+            KickBallInRandomDirection();
         }
 
-        private void KickBall()
+        private void KickBallInRandomDirection()
         {
-            var direction = Random.Range(-0.5f, 0.5f)*Vector2.right + Vector2.up;
-            ball.GetComponent<Rigidbody2D>().AddForce(direction*ballForce);
-        }
-
-        private void OnGUI()
-        {
-            GUI.color = Color.black;
-            GUI.Label(new Rect(20, 20, Screen.width, Screen.height),
-                "Click to generate new level. Use A/D or Left/Right to move.");
+            Vector2 direction = Random.Range(-0.5f, 0.5f)*Vector2.right + Vector2.up;
+            ballRigidbody.AddForce(direction*ballForce);
         }
     }
 }

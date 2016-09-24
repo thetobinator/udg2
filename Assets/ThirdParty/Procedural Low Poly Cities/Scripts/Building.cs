@@ -296,8 +296,13 @@ namespace ProceduralCity
 			//Debug.Log (buildingPos);
            // CreateBuilding(Vector3.zero, 0f, 0);
 			CreateBuilding(buildingPos, 0f, 0);
+
+            // this scale provides more FPS sized doors/windows
+            this.transform.localScale = new Vector3(.9f, 1f, .9f);
+
             this.transform.position = buildingPos;
             this.transform.rotation = buildingRot;
+           
         }
 
         public void AssignValues(Floor floorScript)

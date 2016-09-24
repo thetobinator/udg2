@@ -3,83 +3,160 @@ using UnityEngine;
 
 namespace ProceduralToolkit
 {
+    /// <summary>
+    /// Texture extensions
+    /// </summary>
     public static class TextureE
     {
-        public static Texture2D whitePixel
+        /// <summary>
+        /// Draws line on texture
+        /// </summary>
+        public static void DrawLine(this Texture2D texture, Vector2Int v0, Vector2Int v1, Color color)
         {
-            get { return Pixel(Color.white); }
+            Draw.RasterLine(v0, v1, (x, y) => texture.SetPixel(x, y, color));
         }
 
-        public static Texture2D blackPixel
+        /// <summary>
+        /// Draws line on texture
+        /// </summary>
+        public static void DrawLine(this Texture2D texture, int x0, int y0, int x1, int y1, Color color)
         {
-            get { return Pixel(Color.black); }
+            Draw.RasterLine(x0, y0, x1, y1, (x, y) => texture.SetPixel(x, y, color));
         }
 
-        public static Texture2D checker
+        /// <summary>
+        /// Draws anti-aliased line on texture
+        /// </summary>
+        public static void DrawAALine(this Texture2D texture, Vector2Int v0, Vector2Int v1, Color color)
         {
-            get { return Checker(Color.white, Color.black); }
+            Draw.RasterAALine(v0, v1,
+                (x, y, t) => texture.SetPixel(x, y, Color.Lerp(texture.GetPixel(x, y), color, t)));
         }
 
-        public static Texture2D Pixel(Color color)
+        /// <summary>
+        /// Draws anti-aliased line on texture
+        /// </summary>
+        public static void DrawAALine(this Texture2D texture, int x0, int y0, int x1, int y1, Color color)
         {
-            var texture = new Texture2D(1, 1);
-            texture.SetPixel(0, 0, color);
-            texture.Apply();
-            return texture;
+            Draw.RasterAALine(x0, y0, x1, y1,
+                (x, y, t) => texture.SetPixel(x, y, Color.Lerp(texture.GetPixel(x, y), color, t)));
         }
 
-        public static Texture2D Gradient(Color top, Color bottom)
+        /// <summary>
+        /// Draws circle on texture
+        /// </summary>
+        public static void DrawCircle(this Texture2D texture, Vector2Int center, int radius, Color color)
         {
-            var texture = new Texture2D(2, 2) {wrapMode = TextureWrapMode.Clamp};
-            texture.SetPixels(new[] {bottom, bottom, top, top});
-            texture.Apply();
-            return texture;
+            Draw.RasterCircle(center, radius, (x, y) => texture.SetPixel(x, y, color));
         }
 
-        public static Texture2D Checker(Color first, Color second)
+        /// <summary>
+        /// Draws circle on texture
+        /// </summary>
+        public static void DrawCircle(this Texture2D texture, int centerX, int centerY, int radius, Color color)
         {
-            var texture = new Texture2D(2, 2) {filterMode = FilterMode.Point};
-            texture.SetPixels(new[] {second, first, first, second});
-            texture.Apply();
-            return texture;
+            Draw.RasterCircle(centerX, centerY, radius, (x, y) => texture.SetPixel(x, y, color));
         }
 
-        public static void DrawLine(this Texture2D texture, int x0, int y0, int x1, int y1, Color color, bool AA = false)
+        /// <summary>
+        /// Draws filled circle on texture using Bresenham's algorithm
+        /// </summary>
+        public static void DrawFilledCircle(this Texture2D texture, Vector2Int center, int radius, Color color)
         {
-            if (AA)
-            {
-                Action<int, int, float> draw =
-                    (x, y, t) => texture.SetPixel(x, y, Color.Lerp(texture.GetPixel(x, y), color, t));
-                PTUtils.WuLine(x0, y0, x1, y1, draw);
-            }
-            else
-            {
-                Action<int, int> draw = (x, y) => texture.SetPixel(x, y, color);
-                PTUtils.BresenhamLine(x0, y0, x1, y1, draw);
-            }
+            Draw.RasterFilledCircle(center, radius, (x, y) => texture.SetPixel(x, y, color));
         }
 
+        /// <summary>
+        /// Draws filled circle on texture using Bresenham's algorithm
+        /// </summary>
+        public static void DrawFilledCircle(this Texture2D texture, int centerX, int centerY, int radius, Color color)
+        {
+            Draw.RasterFilledCircle(centerX, centerY, radius, (x, y) => texture.SetPixel(x, y, color));
+        }
+
+        /// <summary>
+        /// Draws filled rectangle on texture
+        /// </summary>
         public static void DrawRect(this Texture2D texture, int x, int y, int blockWidth, int blockHeight, Color color)
         {
             var colors = new Color[blockWidth*blockHeight];
-            for (int i = 0; i < blockHeight; i++)
+            for (int _y = 0; _y < blockHeight; _y++)
             {
-                for (int j = 0; j < blockWidth; j++)
+                for (int _x = 0; _x < blockWidth; _x++)
                 {
-                    colors[j + i*blockWidth] = color;
+                    colors[_x + _y*blockWidth] = color;
                 }
             }
             texture.SetPixels(x, y, blockWidth, blockHeight, colors);
         }
 
+        /// <summary>
+        /// Fills texture with gradient
+        /// </summary>
+        public static void DrawGradient(this Texture2D texture, Gradient gradient, Directions progressionDirection)
+        {
+            texture.DrawGradientRect(0, 0, texture.width, texture.height, gradient, progressionDirection);
+        }
+
+        /// <summary>
+        /// Draws gradient rectangle on texture
+        /// </summary>t
+        public static void DrawGradientRect(this Texture2D texture, int x, int y, int blockWidth, int blockHeight,
+            Gradient gradient, Directions progressionDirection)
+        {
+            Func<int, int, Color> getColor;
+            switch (progressionDirection)
+            {
+                case Directions.Left:
+                    getColor = (_x, _y) => gradient.Evaluate(1 - (float) _x/(float) blockWidth);
+                    break;
+                case Directions.Right:
+                    getColor = (_x, _y) => gradient.Evaluate((float) _x/(float) blockWidth);
+                    break;
+                case Directions.Down:
+                    getColor = (_x, _y) => gradient.Evaluate(1 - (float) _y/(float) blockHeight);
+                    break;
+                case Directions.Up:
+                    getColor = (_x, _y) => gradient.Evaluate((float) _y/(float) blockHeight);
+                    break;
+                default:
+                    throw new ArgumentException("Not supported direction: " + progressionDirection,
+                        "progressionDirection");
+            }
+
+            var colors = new Color[blockWidth*blockHeight];
+            for (int _y = 0; _y < blockHeight; _y++)
+            {
+                for (int _x = 0; _x < blockWidth; _x++)
+                {
+                    colors[_x + _y*blockWidth] = getColor(_x, _y);
+                }
+            }
+            texture.SetPixels(x, y, blockWidth, blockHeight, colors);
+        }
+
+        /// <summary>
+        /// Fills texture with white color
+        /// </summary>
         public static void Clear(this Texture2D texture)
         {
             Clear(texture, Color.white);
         }
 
+        /// <summary>
+        /// Fills texture with specified color
+        /// </summary>
         public static void Clear(this Texture2D texture, Color color)
         {
-            var pixels = texture.GetPixels();
+            var pixels = new Color[texture.width*texture.height];
+            texture.Clear(color, ref pixels);
+        }
+
+        /// <summary>
+        /// Fills texture with specified color
+        /// </summary>
+        public static void Clear(this Texture2D texture, Color color, ref Color[] pixels)
+        {
             for (var i = 0; i < pixels.Length; ++i)
             {
                 pixels[i] = color;

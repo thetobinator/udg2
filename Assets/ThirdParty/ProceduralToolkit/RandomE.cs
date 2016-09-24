@@ -1,83 +1,185 @@
-﻿using System;
+﻿using UnityEngine;
 using System.Collections.Generic;
-using UnityEngine;
-using Random = UnityEngine.Random;
+using System.Text;
 
 namespace ProceduralToolkit
 {
     /// <summary>
-    /// Random extensions for arrays, value generators
+    /// Class for generating random data. Contains extensions for arrays and other classes.
     /// </summary>
     public static class RandomE
     {
+        #region Vectors
+
+        /// <summary>
+        /// Returns a random point on a circle with radius 1
+        /// </summary>
+        public static Vector2 onUnitCircle2 { get { return PTUtils.PointOnCircle2(1, Random.Range(0, 360f)); } }
+
+        /// <summary>
+        /// Returns a random point on a circle with radius 1
+        /// </summary>
+        public static Vector2 onUnitCircle3XY { get { return PTUtils.PointOnCircle3XY(1, Random.Range(0, 360f)); } }
+
+        /// <summary>
+        /// Returns a random point on a circle with radius 1
+        /// </summary>
+        public static Vector2 onUnitCircle3XZ { get { return PTUtils.PointOnCircle3XZ(1, Random.Range(0, 360f)); } }
+
+        /// <summary>
+        /// Returns a random point on a circle with radius 1
+        /// </summary>
+        public static Vector2 onUnitCircle3YZ { get { return PTUtils.PointOnCircle3YZ(1, Random.Range(0, 360f)); } }
+
+        /// <summary>
+        /// Returns a random point inside a square with side lengths 1
+        /// </summary>
+        public static Vector2 insideUnitSquare { get { return new Vector2(Random.value, Random.value); } }
+
+        /// <summary>
+        /// Returns a random point on a perimeter of square with side lengths 1
+        /// </summary>
+        public static Vector2 onUnitSquare { get { return PointOnSquare(1, 1); } }
+
+        /// <summary>
+        /// Returns a random point inside a cube with side lengths 1
+        /// </summary>
+        public static Vector3 insideUnitCube { get { return new Vector3(Random.value, Random.value, Random.value); } }
+
+        #endregion Vectors
+
+        #region Colors
+
         /// <summary>
         /// Returns a random color between black [inclusive] and white [inclusive]
         /// </summary>
-        public static Color color
-        {
-            get { return new Color(Random.value, Random.value, Random.value); }
-        }
+        public static Color color { get { return new Color(Random.value, Random.value, Random.value); } }
 
         /// <summary>
         /// Returns a color with random hue and maximum saturation and value in HSV model
         /// </summary>
-        public static Color colorHSV
-        {
-            get { return ColorE.HSVToRGB(Random.value, 1, 1); }
-        }
+        public static ColorHSV colorHSV { get { return new ColorHSV(Random.value, 1, 1); } }
 
         /// <summary>
         /// Returns a gradient between two random colors
         /// </summary>
-        public static Gradient gradient
-        {
-            get { return ColorE.Gradient(color, color); }
-        }
+        public static Gradient gradient { get { return ColorE.Gradient(color, color); } }
 
         /// <summary>
         /// Returns a gradient between two random HSV colors
         /// </summary>
-        public static Gradient gradientHSV
+        public static Gradient gradientHSV { get { return ColorE.Gradient(colorHSV, colorHSV); } }
+
+        /// <summary>
+        /// Returns a color with random hue and given <paramref name="saturation"/> and <paramref name="value"/>
+        /// </summary>
+        public static ColorHSV ColorHue(float saturation, float value, float alpha = 1)
         {
-            get { return ColorE.Gradient(colorHSV, colorHSV); }
+            return new ColorHSV(Random.value, saturation, value, alpha);
         }
+
+        /// <summary>
+        /// Returns a color with random saturation and given <paramref name="hue"/> and <paramref name="value"/>
+        /// </summary>
+        public static ColorHSV ColorSaturation(float hue, float value, float alpha = 1)
+        {
+            return new ColorHSV(hue, Random.value, value, alpha);
+        }
+
+        /// <summary>
+        /// Returns a color with random value and given <paramref name="hue"/> and <paramref name="saturation"/>
+        /// </summary>
+        public static ColorHSV ColorValue(float hue, float saturation, float alpha = 1)
+        {
+            return new ColorHSV(hue, saturation, Random.value, alpha);
+        }
+
+        /// <summary>
+        /// Returns a analogous palette based on a color with random hue
+        /// </summary>
+        public static List<ColorHSV> AnalogousPalette(
+            float saturation = 1,
+            float value = 1,
+            float alpha = 1,
+            int count = 2,
+            bool withComplementary = false)
+        {
+            return ColorHue(saturation, value, alpha).GetAnalogousPalette(count, withComplementary);
+        }
+
+        /// <summary>
+        /// Returns a triadic palette based on a color with random hue
+        /// </summary>
+        public static List<ColorHSV> TriadicPalette(
+            float saturation = 1,
+            float value = 1,
+            float alpha = 1,
+            bool withComplementary = false)
+        {
+            return ColorHue(saturation, value, alpha).GetTriadicPalette(withComplementary);
+        }
+
+        /// <summary>
+        /// Returns a tetradic palette based on a color with random hue
+        /// </summary>
+        public static List<ColorHSV> TetradicPalette(float saturation = 1, float value = 1, float alpha = 1)
+        {
+            return ColorHue(saturation, value, alpha).GetTetradicPalette();
+        }
+
+        #endregion Colors
+
+        #region Strings
 
         /// <summary>
         /// Returns a random alphanumeric 8-character string
         /// </summary>
-        public static string string8
-        {
-            get { return Datasets.alphanumerics.GetRandom(8); }
-        }
+        public static string string8 { get { return Datasets.alphanumerics.GetRandom(8); } }
 
         /// <summary>
         /// Returns a random alphanumeric 16-character string
         /// </summary>
-        public static string string16
-        {
-            get { return Datasets.alphanumerics.GetRandom(16); }
-        }
-
-        public static MeshDraft meshDraft
-        {
-            get
-            {
-                var draft = new MeshDraft();
-                for (int i = 0; i < 100; i++)
-                {
-                    var v0 = Random.onUnitSphere;
-                    var v1 = Random.onUnitSphere;
-                    var v2 = Random.onUnitSphere;
-                    var v3 = Random.onUnitSphere;
-                    draft.Add(MeshE.TriangleDraft(v0, v1, v2));
-                    draft.Add(MeshE.TriangleDraft(v1, v2, v3));
-                }
-                return draft;
-            }
-        }
+        public static string string16 { get { return Datasets.alphanumerics.GetRandom(16); } }
 
         /// <summary>
-        /// Returns a random element from list
+        /// Returns a random lowercase letter
+        /// </summary>
+        public static char lowercaseLetter { get { return Datasets.lowercase.GetRandom(); } }
+
+        /// <summary>
+        /// Returns a random uppercase letter
+        /// </summary>
+        public static char uppercaseLetter { get { return Datasets.uppercase.GetRandom(); } }
+
+        /// <summary>
+        /// Returns a random first name
+        /// </summary>
+        public static string name { get { return Chance(0.5f) ? femaleName : maleName; } }
+
+        /// <summary>
+        /// Returns a random female name
+        /// </summary>
+        public static string femaleName { get { return Datasets.femaleNames.GetRandom(); } }
+
+        /// <summary>
+        /// Returns a random male name
+        /// </summary>
+        public static string maleName { get { return Datasets.maleNames.GetRandom(); } }
+
+        /// <summary>
+        /// Returns a random last name
+        /// </summary>
+        public static string lastName { get { return Datasets.lastNames.GetRandom(); } }
+
+        /// <summary>
+        /// Returns a random full name in format "[First name] [Last name]"
+        /// </summary>
+        public static string fullName { get { return string.Format("{0} {1}", name, lastName); } }
+
+        #endregion Strings
+
+        /// <summary>
+        /// Returns a random element
         /// </summary>
         public static T GetRandom<T>(this List<T> items)
         {
@@ -90,7 +192,7 @@ namespace ProceduralToolkit
         }
 
         /// <summary>
-        /// Returns a random element from array
+        /// Returns a random element
         /// </summary>
         public static T GetRandom<T>(this T[] items)
         {
@@ -103,13 +205,16 @@ namespace ProceduralToolkit
         }
 
         /// <summary>
-        /// Returns a random element from list of elements
+        /// Returns a random element
         /// </summary>
         public static T GetRandom<T>(T item1, T item2, params T[] items)
         {
             return new List<T>(items) {item1, item2}.GetRandom();
         }
 
+        /// <summary>
+        /// Returns a random value from dictionary
+        /// </summary>
         public static TValue GetRandom<TKey, TValue>(this Dictionary<TKey, TValue> dictionary)
         {
             var keys = dictionary.Keys;
@@ -122,7 +227,7 @@ namespace ProceduralToolkit
         }
 
         /// <summary>
-        /// Returns a random element from list with chances for roll of each element based on <paramref name="weights"/>
+        /// Returns a random element with chances for roll of each element based on <paramref name="weights"/>
         /// </summary>
         /// <param name="weights">Positive floats representing chances</param>
         public static T GetRandom<T>(this List<T> list, List<float> weights)
@@ -167,9 +272,27 @@ namespace ProceduralToolkit
         /// <summary>
         /// Returns a random character from string
         /// </summary>
+        public static char GetRandom(this string chars)
+        {
+            if (string.IsNullOrEmpty(chars))
+            {
+                Debug.LogError("Empty string");
+                return default(char);
+            }
+            return chars[Random.Range(0, chars.Length)];
+        }
+
+        /// <summary>
+        /// Returns a random string consisting of characters from that string
+        /// </summary>
         public static string GetRandom(this string chars, int length)
         {
-            var randomString = new System.Text.StringBuilder();
+            if (string.IsNullOrEmpty(chars))
+            {
+                Debug.LogError("Empty string");
+                return default(string);
+            }
+            var randomString = new StringBuilder(length);
             for (int i = 0; i < length; i++)
             {
                 randomString.Append(chars[Random.Range(0, chars.Length)]);
@@ -177,6 +300,9 @@ namespace ProceduralToolkit
             return randomString.ToString();
         }
 
+        /// <summary>
+        /// Returns a random element and removes it from list
+        /// </summary>
         public static T PopRandom<T>(this List<T> items)
         {
             if (items.Count == 0)
@@ -193,6 +319,9 @@ namespace ProceduralToolkit
         /// <summary>
         /// Fisher–Yates shuffle
         /// </summary>
+        /// <remarks>
+        /// https://en.wikipedia.org/wiki/Fisher–Yates_shuffle
+        /// </remarks>
         public static void Shuffle<T>(this T[] array)
         {
             for (int i = 0; i < array.Length; i++)
@@ -207,6 +336,9 @@ namespace ProceduralToolkit
         /// <summary>
         /// Fisher–Yates shuffle
         /// </summary>
+        /// <remarks>
+        /// https://en.wikipedia.org/wiki/Fisher–Yates_shuffle
+        /// </remarks>
         public static void Shuffle<T>(this List<T> array)
         {
             for (int i = 0; i < array.Count; i++)
@@ -225,6 +357,29 @@ namespace ProceduralToolkit
         public static bool Chance(float percent)
         {
             return Random.value < percent;
+        }
+
+        /// <summary>
+        /// Returns a random point on a perimeter of square
+        /// </summary>
+        public static Vector2 PointOnSquare(float a, float b)
+        {
+            float value = Random.value*(2*a + 2*b);
+            if (value < a)
+            {
+                return new Vector2(value, 0);
+            }
+            value -= a;
+            if (value < b)
+            {
+                return new Vector2(a, value);
+            }
+            value -= b;
+            if (value < a)
+            {
+                return new Vector2(value, b);
+            }
+            return new Vector2(0, value - a);
         }
 
         /// <summary>
@@ -252,6 +407,10 @@ namespace ProceduralToolkit
                 Random.Range(min.w, max.w));
         }
 
+        /// <summary>
+        /// Returns a random float number between and <paramref name="min"/> [inclusive] and <paramref name="max"/> [inclusive].
+        /// Ensures that there will be only specified amount of variants.
+        /// </summary>
         public static float Range(float min, float max, int variants)
         {
             if (variants < 2)
@@ -262,17 +421,29 @@ namespace ProceduralToolkit
             return Mathf.Lerp(min, max, Random.Range(0, variants)/(variants - 1f));
         }
 
+        /// <summary>
+        /// Returns a random vector between and <paramref name="min"/> [inclusive] and <paramref name="max"/> [inclusive].
+        /// Ensures that there will be only specified amount of variants.
+        /// </summary>
         public static Vector2 Range(Vector2 min, Vector2 max, int variants)
         {
             return new Vector2(Range(min.x, max.x, variants), Range(min.y, max.y, variants));
         }
 
+        /// <summary>
+        /// Returns a random vector between and <paramref name="min"/> [inclusive] and <paramref name="max"/> [inclusive].
+        /// Ensures that there will be only specified amount of variants.
+        /// </summary>
         public static Vector3 Range(Vector3 min, Vector3 max, int variants)
         {
             return new Vector3(Range(min.x, max.x, variants), Range(min.y, max.y, variants),
                 Range(min.z, max.z, variants));
         }
 
+        /// <summary>
+        /// Returns a random vector between and <paramref name="min"/> [inclusive] and <paramref name="max"/> [inclusive].
+        /// Ensures that there will be only specified amount of variants.
+        /// </summary>
         public static Vector4 Range(Vector4 min, Vector4 max, int variants)
         {
             return new Vector4(Range(min.x, max.x, variants), Range(min.y, max.y, variants),
