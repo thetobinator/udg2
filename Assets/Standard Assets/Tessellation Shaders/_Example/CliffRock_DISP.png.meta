@@ -44,7 +44,23 @@ TextureImporter:
   spritePixelsToUnits: 100
   alphaIsTransparency: 0
   textureType: 5
-  buildTargetSettings: []
+  buildTargetSettings:
+  - buildTarget: iPhone
+    maxTextureSize: 256
+    textureFormat: 4
+    compressionQuality: 50
+  - buildTarget: Android
+    maxTextureSize: 256
+    textureFormat: 4
+    compressionQuality: 50
+  - buildTarget: BlackBerry
+    maxTextureSize: 256
+    textureFormat: -3
+    compressionQuality: 50
+  - buildTarget: WP8
+    maxTextureSize: 256
+    textureFormat: -3
+    compressionQuality: 50
   spriteSheet:
     sprites: []
   spritePackingTag: 
