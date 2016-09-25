@@ -10,6 +10,7 @@ public class UMACharGen : MonoBehaviour
     public OverlayLibrary overlayLibrary;
     public RaceLibrary raceLibrary;
     public RuntimeAnimatorController animationController;
+	public RuntimeAnimatorController secondaryAnimationController;
 
     private UMADynamicAvatar umaDynamicAvatar;
     private UMAData umaData;
@@ -52,7 +53,8 @@ public class UMACharGen : MonoBehaviour
 			GO.AddComponent<ZombieBehavior> ();
 			GO.tag = "Zombie";
 		} else {
-			GO.AddComponent<HumanBehavior> ();
+			HumanBehavior hb = GO.AddComponent<HumanBehavior> ();
+			hb.zombieAnimationController = secondaryAnimationController;
 			GO.tag = "Human";
 		}
 		GO.AddComponent<NavMeshAgent> ();

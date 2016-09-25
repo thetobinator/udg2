@@ -31,6 +31,7 @@ public class HumanBehavior : MonoBehaviour {
 	bool m_hasGun;
 	GameObject m_gun;
 	public Transform handBone = null;
+	public RuntimeAnimatorController zombieAnimationController = null;
 	
 	string opposingFactionTag()
 	{

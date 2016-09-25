@@ -31,8 +31,8 @@ public class RagdollScript : MonoBehaviour {
 	void Update () {
 		if (Input.GetKeyDown(KeyCode.Space))
 		{
-			SetKinematic(false);
-			GetComponent<Animator>().enabled=false;
+			//SetKinematic(false);
+			//GetComponent<Animator>().enabled=false;
 		}
 	}
 }

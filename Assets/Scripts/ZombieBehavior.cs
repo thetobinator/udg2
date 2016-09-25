@@ -171,7 +171,8 @@ public bool hasPlayerTask()
     
 	bool reachedPosition()
 	{
-		return (GetComponent< NavMeshAgent > ().destination - transform.position).sqrMagnitude < 1.5f;
+		NavMeshAgent nma = GetComponent<NavMeshAgent> ();
+		return (nma.destination - transform.position).sqrMagnitude < 1.5f || nma.enabled == false;
 	}
 
 	void updateSpawnBehaviour()
@@ -215,21 +216,23 @@ public bool hasPlayerTask()
 
 	void updateInitBehaviour()
 	{
+		if (initDelay == 0.0f) {
+			m_state = State.Spawning;
+			return;
+		}
+
+
+		if (m_stateTime >= initDelay / 2 ) {
+			RagdollHelper r = GetComponent<RagdollHelper> ();
+			if (r != null) {
+				r.ragdolled = false;
+			}
+		}
+
 		if( m_stateTime >= initDelay )
 		{
-			if( initDelay > 0.0f )
-			{
-				if( !isInViewFrustum() )
-				{
-					// only resurrect when offscreen
-					reanimate();
-					m_state = State.Spawning;
-				}
-			}
-			else
-			{
-				m_state = State.Spawning;
-			}
+			reanimate();
+			m_state = State.Spawning;
 		}
 	}
 		
@@ -278,6 +281,7 @@ public bool hasPlayerTask()
 			
 			if (h != null) {
 				h.dropWeapon();
+				a.runtimeAnimatorController = h.zombieAnimationController; // use zombie animation controller after resurrection
 				Destroy (h);
 				result = true;
 			} else if (z != null) {
@@ -285,7 +289,6 @@ public bool hasPlayerTask()
 				result = true;
 			}
 			n.enabled = false;
-			a.enabled = false;
 		}
 
 		return result;
@@ -323,13 +326,12 @@ public bool hasPlayerTask()
 		
 		NavMeshAgent n = GetComponent<NavMeshAgent>();
 		Animator a = GetComponent<Animator>();
-		CapsuleCollider c = GetComponent<CapsuleCollider> ();
+		RagdollHelper r = GetComponent<RagdollHelper> ();
 			
-		if (n != null && a != null && c != null) {			
+		if (n != null && a != null && r != null) {			
 			n.enabled = true;
 			a.enabled = true;
-			c.enabled = true;
-			a.SetBool ("zombie", true);
+			n.SetDestination (transform.position);
 		}
 	}
 
@@ -536,7 +538,11 @@ public bool hasPlayerTask()
 
     void Start()
     {
-		m_state = State.WaitForComponents;
+		if (initDelay > 0.0f) {
+			m_state = State.Init;
+		} else {
+			m_state = State.WaitForComponents;
+		}
     }
 
 	public void handleBulletImpact( Collision collision )
