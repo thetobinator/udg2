@@ -297,7 +297,7 @@ namespace ProceduralCity
            // CreateBuilding(Vector3.zero, 0f, 0);
 			CreateBuilding(buildingPos, 0f, 0);
 
-            // this scale provides more FPS sized doors/windows
+            // this scale provides more FPS sized doors/windows 09-24-2016 bill
             this.transform.localScale = new Vector3(.9f, 1f, .9f);
 
             this.transform.position = buildingPos;
