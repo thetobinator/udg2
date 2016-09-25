@@ -32,9 +32,15 @@ public class ProjectileBehaviour : MonoBehaviour {
 	void OnCollisionEnter(Collision collision) {
 		GameObject rootColliderObject = getRootObject (collision.gameObject);
 		if (rootColliderObject.tag == "Human") {
-			rootColliderObject.GetComponent<HumanBehavior> ().handleBulletImpact (collision);
+			HumanBehavior hb = rootColliderObject.GetComponent<HumanBehavior> ();
+			if (hb != null) {
+				hb.handleBulletImpact (collision);
+			}
 		} else if (rootColliderObject.tag == "Zombie") {
-			rootColliderObject.GetComponent<ZombieBehavior> ().handleBulletImpact (collision);
+			ZombieBehavior zb = rootColliderObject.GetComponent<ZombieBehavior> ();
+			if (zb != null) {
+				zb.handleBulletImpact (collision);
+			}
 		}
 
 		Destroy (gameObject);
