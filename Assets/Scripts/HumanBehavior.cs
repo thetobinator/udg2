@@ -167,6 +167,7 @@ public class HumanBehavior : MonoBehaviour {
 	
 	void updateSpawnBehaviour()
 	{
+		/*
 		updateSenses();
 		if( m_localizedTargetCandidate != null )
 		{
@@ -179,6 +180,7 @@ public class HumanBehavior : MonoBehaviour {
 		m_targetPosition = getTargetPositionForDangerPosition (m_dangerPosition);
 		approachPosition( m_targetPosition );
 		if( reachedPosition() )
+		*/
 		{
 			m_state = State.Idle;
 		}
@@ -224,6 +226,7 @@ public class HumanBehavior : MonoBehaviour {
 	
 	void updateIdleBehaviour()
 	{
+		GetComponent<Animator>().SetBool ("walk", false );
 		updateSenses ();
 		if( m_localizedTargetCandidate != null )
 		{
@@ -239,6 +242,7 @@ public class HumanBehavior : MonoBehaviour {
 	
 	void updateAlertBehaviour()
 	{
+		GetComponent<Animator>().SetBool ("walk", false );
 		updateSenses();
 		if( m_localizedTargetCandidate != null )
 		{
@@ -248,11 +252,11 @@ public class HumanBehavior : MonoBehaviour {
 			const float runOffThresholdSmall = 25.0f;
 			const float runOffThresholdLarge = 49.0f;
 			float sqrDistance = ( transform.position - m_dangerPosition ).sqrMagnitude;
-			if( sqrDistance < runOffThresholdSmall || sqrDistance > runOffThresholdLarge || !m_hasGun )
+			if( sqrDistance < runOffThresholdSmall || ( sqrDistance > runOffThresholdLarge && m_hasGun ) )
 			{
 				m_state = State.RunOff;
 			}
-			else
+			else if( m_hasGun )
 			{
 				m_state = State.StandAndShoot;
 			}
@@ -281,14 +285,16 @@ public class HumanBehavior : MonoBehaviour {
 
 		m_targetPosition = getTargetPositionForDangerPosition (m_dangerPosition);
 		approachPosition( m_targetPosition );
-		if( reachedPosition() )
-		{
+		if (reachedPosition () && m_stateTime > 0.5f ) {
 			m_state = State.Alerted;
+		} else {
+			GetComponent<Animator> ().SetBool ("walk", true);
 		}
 	}
 
 	void updateStandAndShootBehaviour()
 	{
+		GetComponent<Animator>().SetBool ("walk", false );
 		updateSenses ();
 		if( m_localizedTargetCandidate != null )
 		{
@@ -366,7 +372,7 @@ public class HumanBehavior : MonoBehaviour {
 
 		float sqrDistance = oppositeDirection.sqrMagnitude;
 		oppositeDirection.Normalize ();
-		if ( sqrDistance < 25.0f || sqrDistance > 49.0f ) {
+		if ( sqrDistance < 25.0f || ( sqrDistance > 49.0f && m_hasGun ) ) {
 
 			oppositeDirection.Scale (new Vector3 (5.0f, 0.0f, 5.0f));
 			return oppositeDirection + dangerPosition;
@@ -419,7 +425,7 @@ public class HumanBehavior : MonoBehaviour {
 		
 		//colorizeObject( m_nonLocalizedTargetCandidate, Color.blue );
 		//colorizeObject( m_localizedTargetCandidate, Color.green );
-		colorizeObject( m_dangerObject, Color.red );
+		//colorizeObject( m_dangerObject, Color.red );
 		
 		if( m_state != oldState )
 		{
@@ -428,11 +434,7 @@ public class HumanBehavior : MonoBehaviour {
 
 		Animator animatorComponent = GetComponent<Animator> ();
 		if (animatorComponent != null) {
-			animatorComponent.SetFloat ("human_stateTime", m_stateTime);
-			animatorComponent.SetBool ("human_walk", !reachedPosition ());
-			animatorComponent.SetBool ("human_shoot", m_state == State.StandAndShoot);
-			animatorComponent.SetBool ("human_run", !reachedPosition ());
-			animatorComponent.SetBool ("human_idle", reachedPosition ());
+			animatorComponent.SetBool ("shoot", m_state == State.StandAndShoot);
 		}
     }
 

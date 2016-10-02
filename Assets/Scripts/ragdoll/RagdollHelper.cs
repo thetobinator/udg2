@@ -60,10 +60,10 @@ public class RagdollHelper : MonoBehaviour {
 					//Initiate the get up animation
 					if (anim.GetBoneTransform(HumanBodyBones.Hips).forward.y>0) //hip hips forward vector pointing upwards, initiate the get up from back animation
 					{
-						anim.SetBool("GetUpFromBack",true);
+						anim.SetBool("getUpFromBack",true);
 					}
 					else{
-						anim.SetBool("GetUpFromBelly",true);
+						anim.SetBool("getUpFromBelly",true);
 					}
 				} //if (state==RagdollState.ragdolled)
 			}	//if value==false	
@@ -150,8 +150,10 @@ public class RagdollHelper : MonoBehaviour {
 	void LateUpdate()
 	{
 		//Clear the get up animation controls so that we don't end up repeating the animations indefinitely
-		anim.SetBool("GetUpFromBelly",false);
-		anim.SetBool("GetUpFromBack",false);
+		if (GetComponent<ZombieBehavior> () != null) {
+			anim.SetBool ("getUpFromBelly", false);
+			anim.SetBool ("getUpFromBack", false);
+		}
 
 		//Blending from ragdoll back to animated
 		if (state==RagdollState.blendToAnim)

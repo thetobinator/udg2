@@ -201,6 +201,7 @@ public bool hasPlayerTask()
 			m_targetPosition = transform.position;
 
 			// experimental: zombies go to player
+/*
 			GameObject player = GameObject.FindGameObjectWithTag ("Player");
 			if (player != null && initDelay == 0.0f ) {
 				setTargetObject (null);
@@ -208,9 +209,10 @@ public bool hasPlayerTask()
 				m_state = State.ApproachTarget;
 				m_hasPlayerTask = true;
 
-				GetComponent<Animator> ().SetBool ("zombie_attack", false);
-				GetComponent<Animator> ().SetBool ("zombie_eat", false);
+				GetComponent<Animator> ().SetBool ("attack", false);
+				GetComponent<Animator> ().SetBool ("eat", false);
 			}
+			*/
 		}
 	}
 
@@ -310,7 +312,7 @@ public bool hasPlayerTask()
 			if( turnIntoRagdoll( human ) )
 			{
 				ZombieBehavior z = human.AddComponent<ZombieBehavior>() as ZombieBehavior;
-				z.initDelay = 5.0f;
+				z.initDelay = 8.0f;
 			}
 
 		}
@@ -375,20 +377,20 @@ public bool hasPlayerTask()
 
 	void updateTargetInRangeBehaviour()
 	{
-		GetComponent<Animator> ().SetBool ("zombie_attack", true);
+		GetComponent<Animator> ().SetBool ("attack", true);
 		m_state = State.Attack;
 	}
 
 	void updateAttackBehaviour()
 	{
-		GetComponent<Animator> ().SetBool ("zombie_attack", false);
+		GetComponent<Animator> ().SetBool ("attack", false);
 		if (m_stateTime > 0.5f) {
 			if (m_targetObject != null) {
 				if (dealDamage (m_targetObject, 50.0f)) {
 					setTargetObject (null);
 					setLocalizedTargetCandidate( null );
 					setNonLocalizedTargetCandidate( null );
-					GetComponent<Animator>().SetBool ("zombie_eat", true );
+					GetComponent<Animator>().SetBool ("eat", true );
 					m_hasPlayerTask = false;
 					m_state = State.EatFlesh;
 					return;
@@ -403,8 +405,8 @@ public bool hasPlayerTask()
 		updateSenses ();
 		if (m_nonLocalizedTargetCandidate != null
 		    || m_localizedTargetCandidate != null
-		    || m_stateTime > 5.0f ) {
-			GetComponent<Animator>().SetBool ("zombie_eat", false );
+		    || m_stateTime > 2.0f ) {
+			GetComponent<Animator>().SetBool ("eat", false );
 			m_state = State.Alerted;
 		}
 	}
@@ -511,8 +513,7 @@ public bool hasPlayerTask()
       
 		Animator animatorComponent = GetComponent<Animator> ();
 		if (animatorComponent != null) {
-			animatorComponent.SetFloat ("zombie_stateTime", m_stateTime);
-			animatorComponent.SetBool ("zombie_walk", !reachedPosition ());
+			animatorComponent.SetBool ("walk", !reachedPosition ());
 		}
 
 		GetComponent<NavMeshAgent>().speed = m_hasPlayerTask ? 2.5f : 1.5f;
@@ -604,8 +605,8 @@ public bool hasPlayerTask()
 	
 		m_state = State.ApproachTarget;
 		m_hasPlayerTask = true;
-		GetComponent<Animator> ().SetBool ("zombie_attack", false);
-		GetComponent<Animator> ().SetBool ("zombie_eat", false);
+		GetComponent<Animator> ().SetBool ("attack", false);
+		GetComponent<Animator> ().SetBool ("eat", false);
 	}
 
 	// Update is called once per frame
