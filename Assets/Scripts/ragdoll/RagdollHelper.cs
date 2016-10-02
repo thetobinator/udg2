@@ -7,7 +7,7 @@ A helper component that enables blending from Mecanim animation to ragdolling an
 
 To use, do the following:
 
-Add "GetUpFromBelly" and "GetUpFromBack" bool inputs to the Animator controller
+Add "getUpFromBelly" and "getUpFromBack" bool inputs to the Animator controller
 and corresponding transitions from any state to the get up animations. When the ragdoll mode
 is turned on, Mecanim stops where it was and it needs to transition to the get up state immediately
 when it is resumed. Therefore, make sure that the blend times of the transitions to the get up animations are set to zero.

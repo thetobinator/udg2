@@ -12,6 +12,13 @@ public class RagdollCreatorTest : MonoBehaviour {
 		
 		
 	}
+
+	string[] skippedPropertyNames = 
+	{
+		"sleepVelocity",
+		"sleepAngularVelocity",
+		"useConeFriction"
+	};
 	 
 	  T GetCopyOf<T>(this Component comp, T other) where T : Component
 	 {
@@ -22,7 +29,20 @@ public class RagdollCreatorTest : MonoBehaviour {
 		 foreach (var pinfo in pinfos) {
 			 if (pinfo.CanWrite) {
 				 try {
-					 pinfo.SetValue(comp, pinfo.GetValue(other, null), null);
+					bool skipProperty = false;
+					for( int i = 0; i < skippedPropertyNames.Length; ++i )
+					{
+						if( pinfo.Name == skippedPropertyNames[i] )
+						{
+							skipProperty = true;
+							break;
+						}
+					}
+
+					if( !skipProperty )
+					{
+						pinfo.SetValue(comp, pinfo.GetValue(other, null), null);
+					}
 				 }
 				 catch { } // In case of NotImplementedException being thrown. For some reason specifying that exception didn't seem to catch it, so I didn't catch anything specific.
 			 }
