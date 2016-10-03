@@ -178,6 +178,7 @@ public bool hasPlayerTask()
 	void updateSpawnBehaviour()
 	{
 		updateSenses();
+		/*
 		if( m_localizedTargetCandidate != null )
 		{
 			setTargetObject( m_localizedTargetCandidate );
@@ -188,8 +189,10 @@ public bool hasPlayerTask()
 
 		approachPosition( m_targetPosition );
 		if( reachedPosition() )
+		*/
 		{
 			m_state = State.Idle;
+			m_targetPosition = transform.position;
 		}
 	}
 
@@ -516,7 +519,7 @@ public bool hasPlayerTask()
 			animatorComponent.SetBool ("walk", !reachedPosition ());
 		}
 
-		GetComponent<NavMeshAgent>().speed = m_hasPlayerTask ? 2.5f : 1.5f;
+		GetComponent<NavMeshAgent>().speed = m_hasPlayerTask ? 1.2f : 1.2f;
         
     }
 
@@ -596,7 +599,6 @@ public bool hasPlayerTask()
 		GameObject colliderRootObject = ProjectileBehaviour.getRootObject (hit.collider.gameObject);
 		if (colliderRootObject.tag == opposingFactionTag ()) {
 			setTargetObject (colliderRootObject);
-			//colorizeObject( hit.collider.gameObject, Color.red );
 			m_targetPosition = m_targetObject.GetComponent< Transform > ().position;
 		} else {
 			setTargetObject (null);

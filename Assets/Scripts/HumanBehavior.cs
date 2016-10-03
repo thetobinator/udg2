@@ -472,6 +472,9 @@ public class HumanBehavior : MonoBehaviour {
 		/*
 		if (m_hasPlayerTask) {
             */
+
+		GetComponent<NavMeshAgent>().speed = 1.5f;
+
 		Vector3 movement = GetComponent<Transform> ().position - m_oldPosition;
 		m_oldPosition = GetComponent<Transform> ().position;
 		Vector3 diff = GetComponent<Transform> ().position - GetComponent<NavMeshAgent> ().destination;
