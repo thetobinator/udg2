@@ -260,7 +260,7 @@ public class UMACharGen : MonoBehaviour
 
 
 		randomResult = Random.Range(0, 2);
-
+randomResult = 1; // :TO: always some trousers for women for now, add skirts etc. later
 		if (randomResult == 0)
 		{
 			tempSlotList.Add(GetSlotLibrary().InstantiateSlot("FemaleLegs", tempSlotList[bodyIndex].GetOverlayList()));
@@ -468,6 +468,7 @@ public class UMACharGen : MonoBehaviour
 
 
 		randomResult = Random.Range(0, 2);
+randomResult = 1; // :TO: always trousers for now
 		if (randomResult == 0)
 		{
 			umaData.umaRecipe.slotDataList[4] = GetSlotLibrary().InstantiateSlot("MaleLegs", umaData.umaRecipe.slotDataList[2].GetOverlayList());
