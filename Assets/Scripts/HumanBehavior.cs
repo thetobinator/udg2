@@ -252,7 +252,7 @@ public class HumanBehavior : MonoBehaviour {
 			const float runOffThresholdSmall = 25.0f;
 			const float runOffThresholdLarge = 49.0f;
 			float sqrDistance = ( transform.position - m_dangerPosition ).sqrMagnitude;
-			if( sqrDistance < runOffThresholdSmall || ( sqrDistance > runOffThresholdLarge && m_hasGun ) )
+			if( ( sqrDistance < runOffThresholdSmall && !m_hasGun ) || ( sqrDistance > runOffThresholdLarge && m_hasGun ) )
 			{
 				m_state = State.RunOff;
 			}
@@ -304,7 +304,7 @@ public class HumanBehavior : MonoBehaviour {
 			const float runOffThresholdSmall = 25.0f;
 			const float runOffThresholdLarge = 81.0f;
 			float sqrDistance = ( transform.position - m_dangerPosition ).sqrMagnitude;
-			if( ( sqrDistance < runOffThresholdSmall || sqrDistance > runOffThresholdLarge ) && m_stateTime > 1.0f )
+			if( ( /*sqrDistance < runOffThresholdSmall ||*/ sqrDistance > runOffThresholdLarge ) && m_stateTime > 1.0f )
 			{
 				m_state = State.RunOff;
 			}
