@@ -18,6 +18,7 @@ public class ZombieBehavior : MonoBehaviour {
 	};
     
 	public float initDelay = 0.0f;
+	public float speedMultiplier = 1.0f;
 	GameObject m_nonLocalizedTargetCandidate = null;
 	GameObject m_localizedTargetCandidate = null;
 	GameObject m_targetObject = null;
@@ -328,6 +329,7 @@ public bool hasPlayerTask()
 		HealthComponent health = GetComponent<HealthComponent> ();
 		health.reanimate ();
 		tag = "Zombie";
+		speedMultiplier = Random.Range (0.5f, 2.5f);
 		
 		NavMeshAgent n = GetComponent<NavMeshAgent>();
 		Animator a = GetComponent<Animator>();
@@ -517,9 +519,10 @@ public bool hasPlayerTask()
 		Animator animatorComponent = GetComponent<Animator> ();
 		if (animatorComponent != null) {
 			animatorComponent.SetBool ("walk", !reachedPosition ());
+			animatorComponent.SetFloat ("speedMultiplier", speedMultiplier);
 		}
 
-		GetComponent<NavMeshAgent>().speed = m_hasPlayerTask ? 1.2f : 1.2f;
+		GetComponent<NavMeshAgent> ().speed = 1.2f * speedMultiplier;//m_hasPlayerTask ? 1.2f : 1.2f;
         
     }
 

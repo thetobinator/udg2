@@ -67,7 +67,8 @@ public class UMACharGen : MonoBehaviour
 		umaDynamicAvatar.animationController = animationController;
 		GO.AddComponent<RagdollCreatorTest>();
 		if (name.Contains ("Zombie")) {
-			GO.AddComponent<ZombieBehavior> ();
+			ZombieBehavior zbh = GO.AddComponent<ZombieBehavior> ();
+			zbh.speedMultiplier = Random.Range (0.5f, 2.5f);
 			GO.tag = "Zombie";
 		} else {
 			HumanBehavior hb = GO.AddComponent<HumanBehavior> ();
