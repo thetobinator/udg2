@@ -167,7 +167,7 @@ public class RagdollHelper : MonoBehaviour {
 					
 				//Now cast a ray from the computed position downwards and find the highest hit that does not belong to the character 
 				RaycastHit[] hits=Physics.RaycastAll(new Ray(newRootPosition,Vector3.down)); 
-				newRootPosition.y=0;
+				newRootPosition.y=transform.position.y;
 				foreach(RaycastHit hit in hits)
 				{
 					if (!hit.transform.IsChildOf(transform))
