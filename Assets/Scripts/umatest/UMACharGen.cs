@@ -19,12 +19,28 @@ public class UMACharGen : MonoBehaviour
 
     private int numberOfSlots = 10;
 
+	public bool isMultiSpawn = false;
+
+	private GameObject m_createdObject = null;
+	private int m_spawnCount = 0;
+
     void Start()
     {
 		setupFallbackObjects ();
-		GenerateUMA(name + "( generated object )");
-		Destroy (gameObject);
+		m_createdObject = GenerateUMA(name + "( generated object " + m_spawnCount + ")");
+		++m_spawnCount;
+		if (!isMultiSpawn) {
+			Destroy (gameObject);
+		}
     }
+
+	void Update()
+	{
+		if (m_createdObject.GetComponent<HealthComponent> ().isDead ()) {
+			m_createdObject = GenerateUMA (name + "( generated object " + m_spawnCount + ")");
+			++m_spawnCount;
+		}
+	}
 
 	void setupFallbackObjects()
 	{
