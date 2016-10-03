@@ -63,6 +63,7 @@ public class UMACharGen : MonoBehaviour
     {
 		// Create a new game object and add UMA components to it
 		GameObject GO = new GameObject(name);
+		GO.transform.position = transform.position;
 		umaDynamicAvatar = GO.AddComponent<UMADynamicAvatar>();
 		umaDynamicAvatar.animationController = animationController;
 		GO.AddComponent<RagdollCreatorTest>();
@@ -77,7 +78,6 @@ public class UMACharGen : MonoBehaviour
 		}
 		GO.AddComponent<NavMeshAgent> ();
 		GO.AddComponent<HealthComponent> ();
-		GO.transform.position = transform.position;
 
         // Initialize Avatar and grab a reference to its data component
         umaDynamicAvatar.Initialize();
