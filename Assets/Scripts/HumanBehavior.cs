@@ -216,7 +216,7 @@ public class HumanBehavior : MonoBehaviour {
 			m_gun.transform.parent = handBone.transform;
 			m_gun.GetComponent<CannonBehavior> ().enabled = false; // maybe use this script later on
 			m_gun.transform.localPosition = new Vector3 (0.0f, 0.0f, 0.0f);
-			m_gun.transform.localEulerAngles = new Vector3 (270.0f, 180.0f, 0.0f);
+			m_gun.transform.localEulerAngles = new Vector3 (45.0f, 180.0f, 0.0f);
 		}	
 		else
 		{
