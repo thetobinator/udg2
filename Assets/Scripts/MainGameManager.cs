@@ -93,8 +93,9 @@ public class MainGameManager : MainGameInit
 						{
 							ZombieBehavior zb = zombie.GetComponent<ZombieBehavior>();
 							HealthComponent hc = zombie.GetComponent<HealthComponent>();
+							NavMeshAgent na = zombie.GetComponent<NavMeshAgent> ();
 							if( zb != null && zb.enabled && zb.hasPlayerTask() == acceptedTaskFlag
-						   		&& hc != null && hc.enabled && !hc.isDead() )
+								&& hc != null && hc.enabled && !hc.isDead() && na != null && na.enabled )
 							{
 								float sqrDistance = ( hit.point - zb.transform.position ).sqrMagnitude;
 								if( minSqrDistance == -1.0f || sqrDistance < minSqrDistance )

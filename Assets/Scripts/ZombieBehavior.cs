@@ -13,7 +13,7 @@ public class ZombieBehavior : MonoBehaviour {
 		TargetInRange,		// the target can be attacked
 		Attack,				// attacking the target
 		EatFlesh,			// eat dead target
-		Stunned,			// stunned, target has some time to escape
+		Hit,				// hit, target has some time to escape
 		Dead,				// dead, this time really
 	};
     
@@ -273,6 +273,18 @@ public bool hasPlayerTask()
 		}
 	}
 
+	void updateHitBehaviour()
+	{
+		if (m_stateTime > 4.0f) {
+			GetComponent<NavMeshAgent> ().enabled = true;
+			GetComponent<Animator> ().enabled = true;
+			m_state = State.Idle;
+		}
+		else if (m_stateTime > 2.0f) {
+			GetComponent<RagdollHelper> ().ragdolled = false;
+		}
+	}
+
 	static public bool turnIntoRagdoll( GameObject obj )
 	{
 		NavMeshAgent n = obj.GetComponent<NavMeshAgent>();
@@ -291,7 +303,9 @@ public bool hasPlayerTask()
 				Destroy (h);
 				result = true;
 			} else if (z != null) {
-				Destroy (z);
+				if (obj.GetComponent<HealthComponent> ().isDead ()) {
+					Destroy (z);
+				}
 				result = true;
 			}
 			n.enabled = false;
@@ -500,7 +514,8 @@ public bool hasPlayerTask()
 				updateEatFleshBehaviour();
 				break;
 
-			case State.Stunned:
+			case State.Hit:
+				updateHitBehaviour();
 				break;
 
 			case State.Dead:
@@ -517,7 +532,7 @@ public bool hasPlayerTask()
 		}
       
 		Animator animatorComponent = GetComponent<Animator> ();
-		if (animatorComponent != null) {
+		if (animatorComponent != null ) {
 			animatorComponent.SetBool ("walk", !reachedPosition ());
 			animatorComponent.SetFloat ("speedMultiplier", speedMultiplier);
 		}
@@ -557,8 +572,10 @@ public bool hasPlayerTask()
 		HealthComponent h = GetComponent<HealthComponent>();
 		if( h != null && h.enabled ){
 			h.dealDamage( 25.0f );
-			if( h.isDead() ){
-				ZombieBehavior.turnIntoRagdoll( gameObject );
+			ZombieBehavior.turnIntoRagdoll( gameObject );
+			if( !h.isDead() ) {
+				m_state = State.Hit;
+				m_stateTime = 0.0f;
 			}
 		}
 	}
