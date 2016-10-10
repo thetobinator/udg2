@@ -202,17 +202,18 @@ public class UMACharGen : MonoBehaviour
 
 		tempSlotList.Add(GetSlotLibrary().InstantiateSlot("FemaleTorso"));
 
-		if (this.gameObject.tag == "SpawnPoint_Zombie")
+        // zombiegirl slot models  broken disabled 10 - 09 - 2016 .
+        /*	if (this.gameObject.tag == "SpawnPoint_Zombie")
 		{
 			tempSlotList.Add(GetSlotLibrary().InstantiateSlot("ZombieGirl_BodyNew"));
 			tempSlotList.Add(GetSlotLibrary().InstantiateSlot("ZombieGirl_TopNew"));
 			//tempSlotList[bodyIndex].AddOverlay(GetOverlayLibrary().InstantiateOverlay("ZombieGirlTop", new Color(Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), 1)));
 
 			tempSlotList.Add(GetSlotLibrary().InstantiateSlot("ZombieGirl_PantsNew"));
-		}
+		}*/
 
 
-		int bodyIndex = tempSlotList.Count - 1;
+        int bodyIndex = tempSlotList.Count - 1;
 		randomResult = Random.Range(0, 2);
 		if (randomResult == 0)
 		{

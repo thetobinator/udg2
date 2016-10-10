@@ -9,8 +9,12 @@ using System.Collections.Generic;
 public class GetTagList : EditorWindow
 {
      private Vector2 scroll;
-     
-     public List<string> tagList = new List<string>();
+     private float myFloat = 0.0f;
+     private bool toggleSwitch = false;
+    private bool groupEnabled = false;
+    private bool toggleButton = false;
+
+    public List<string> tagList = new List<string>();
  
     [Multiline]
      public string myString;
@@ -47,31 +51,52 @@ public class GetTagList : EditorWindow
         GUILayout.Label("Example HelpBox Command", EditorStyles.miniBoldLabel);
         EditorGUILayout.HelpBox("EditorGUILayout.HelpBox('text',MessageType.Info);", MessageType.Info);
         GUILayout.Box("", GUILayout.ExpandWidth(true), GUILayout.Height(1));
-    GUILayout.Space(20);
+        GUILayout.Space(20);
         GUILayout.Label("Example GUI miniBoldLabel Script command:", EditorStyles.miniBoldLabel);
         GUILayout.Label("GUILayout.Label('string'),EditorStyles.miniBoldLabel", EditorStyles.boldLabel);
         GUILayout.Box("", GUILayout.ExpandWidth(true), GUILayout.Height(1));
         GUILayout.Space(20);
-    
-         GUILayout.Label("Example MultiLine  TextArea :", EditorStyles.boldLabel);
-         scroll = EditorGUILayout.BeginScrollView(scroll);
 
-         myString = EditorGUILayout.TextArea(string.Join("\n", tagList.ToArray()), GUILayout.Height(position.height - 30));
-         EditorGUILayout.EndScrollView();
-         GUILayout.Box("", GUILayout.ExpandWidth(true), GUILayout.Height(1));
-       
-        /*groupEnabled = EditorGUILayout.BeginToggleGroup("Optional Settings", groupEnabled);
-        myBool = EditorGUILayout.Toggle("Toggle", myBool);
+        groupEnabled = EditorGUILayout.BeginToggleGroup("Example groupEnabled.", groupEnabled);
+        toggleSwitch = EditorGUILayout.Toggle("Toggle", toggleSwitch);
         myFloat = EditorGUILayout.Slider("Slider", myFloat, -3, 3);
         EditorGUILayout.EndToggleGroup();
-   */
+        GUILayout.Space(20);
+
+        if (toggleButton == true)
+        {
+            toggleButton = GUILayout.Toggle(toggleButton, "Toggle me !", "Button");
+            GUILayout.Space(20);
+
+            GUILayout.Label("Example MultiLine  TextArea :", EditorStyles.boldLabel);
+            scroll = EditorGUILayout.BeginScrollView(scroll);
+
+            myString = EditorGUILayout.TextArea(string.Join("\n", tagList.ToArray()), GUILayout.Height(position.height - 30));
+            EditorGUILayout.EndScrollView();
+            GUILayout.Box("", GUILayout.ExpandWidth(true), GUILayout.Height(1));
+        }
+      else
+        {
+            toggleButton = GUILayout.Toggle(toggleButton, "Toggle me !", "Button");
+            GUILayout.Space(20);
+
+            GUILayout.Label("Example MultiLine  TextArea :", EditorStyles.boldLabel);
+            scroll = EditorGUILayout.BeginScrollView(scroll);
+
+            myString = EditorGUILayout.TextArea("\n", GUILayout.Height(position.height - 30));
+
+            EditorGUILayout.EndScrollView();
+            GUILayout.Box("", GUILayout.ExpandWidth(true), GUILayout.Height(1));
+
+           
+
+           
+        }
+   
     }
   //   }
 	
 	
 	
-	// Update is called once per frame
-	/*void Update () {
 	
-	}*/
 }

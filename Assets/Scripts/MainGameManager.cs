@@ -12,10 +12,9 @@ public class MainGameManager : MainGameInit
     public string currentScene;
     public string scenePath;
 
+    #region Example UDGINIT.LUA as C#
 
-    
 
-    #region UDGINIT.LUA as C#
     // UDGInit.lua to C# 07 25 2015
     // -- UDGInit with copies from RTS Init 01 03 09; 
     // 
@@ -72,7 +71,9 @@ public class MainGameManager : MainGameInit
     */
     //private char Quote = '\"';
     #endregion
-    //this is from a tutorial, it's a working example while I breakthings
+
+
+    //this is from RougeLike tutorial, it's a working example while I breakthings
     public static MainGameManager instance; //local tCurrentLevel=ig3dGetLevelNames()
 
 	class ZombieCommander
@@ -187,9 +188,11 @@ public class MainGameManager : MainGameInit
 		return m_movementObserver.getObjectSpeed (obj);
 	}
 
+    // nothing was happening with these arrays disabled 10-09-2016
+    /*
     public GameObject[] zombies;
     public GameObject[] humans;
-
+    */
 	public GameObject bullet;
 	public GameObject gun;
 	public GameObject destinationMarker;
@@ -201,44 +204,43 @@ public class MainGameManager : MainGameInit
     [Range(0, 1)]
     public int showScreenText = 0;
     [Multiline]
-    public List<string> screenText = new List<string>();
+    public List<string> screenText = new List<string>(); 
+    // "ScreenText is the word.";
 
 
-
-        //= "ScreenText is the word.";
-
-
-    // what does populationData do?
-    struct PopulationData
-    {
-        uint m_poolSize;
-        uint m_targetCount;
-        float m_spawnInterval;
-        float m_lastSpawnTime;
-        float m_time;
-        string m_factionTag;
-        string m_spawnPointTag;
-        GameObject[] m_entities;
-        GameObject[] m_prefabs;
-
-        public void setup(uint poolSize, uint targetCount, float spawnInterval, string factionTag, GameObject[] prefabs, string spawnPointTag)
+        // what does populationData do? Looks like it sets up the singleton?
+        struct PopulationData
         {
-            m_poolSize = poolSize;
-            m_targetCount = targetCount;
-            m_spawnInterval = spawnInterval;
-            m_factionTag = factionTag;
-            m_spawnPointTag = spawnPointTag;
-            m_prefabs = prefabs;
-            m_lastSpawnTime = -m_spawnInterval;
-            m_time = 0.0f;
-            if (prefabs.Length == 0)
-            {
-                print("There are no prefabs, spawning is disabled");
-                m_poolSize = 0;
-            }
-        }
+            uint m_poolSize;
+            uint m_targetCount;
+            float m_spawnInterval;
+            float m_lastSpawnTime;
+            float m_time;
+            string m_factionTag;
+            string m_spawnPointTag;
+            GameObject[] m_entities;
+            GameObject[] m_prefabs;
 
-		private void spawnOneAtEachSpawnpoint()
+            public void setup(uint poolSize, uint targetCount, float spawnInterval, string factionTag, GameObject[] prefabs, string spawnPointTag)
+            {
+                m_poolSize = poolSize;
+                m_targetCount = targetCount;
+                m_spawnInterval = spawnInterval;
+                m_factionTag = factionTag;
+                m_spawnPointTag = spawnPointTag;
+                m_prefabs = prefabs;
+                m_lastSpawnTime = -m_spawnInterval;
+                m_time = 0.0f;
+                if (prefabs.Length == 0)
+                {
+                    print("There are no prefabs, spawning is disabled");
+                    m_poolSize = 0;
+                }
+            }
+            
+
+
+    private void spawnOneAtEachSpawnpoint()
 		{
 			GameObject[] spawnPoints = GameObject.FindGameObjectsWithTag(m_spawnPointTag);
 			if (spawnPoints.Length == 0)
