@@ -539,6 +539,8 @@ public bool hasPlayerTask()
 
 		GetComponent<NavMeshAgent> ().speed = 1.2f * speedMultiplier;//m_hasPlayerTask ? 1.2f : 1.2f;
         
+
+
     }
 
 	//Transform[] hinges = GameObject.FindObjectsOfType (typeof(Transform)) as Transform[];
