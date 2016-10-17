@@ -39,22 +39,41 @@ public class ProjectileBehaviour : MonoBehaviour {
 		return root;
 	}
 
-	void OnCollisionEnter(Collision collision) {
+    //Returns the parent object discovered with the appropriate tag.
+    static public GameObject getChildRootObject(GameObject obj)
+    {
+        GameObject root = obj;
+        for (; root.transform.parent != null; root = root.transform.parent.gameObject) {
+            if (root.tag == "Zombie" || root.tag == "Human"){
+                Debug.Log("Root Name = " + root.name);
+                return root;
+            }
+        }
+        return root;
+    }
+
+
+    void OnCollisionEnter(Collision collision) {
 		if (m_impactTarget == null) {
-			GameObject rootColliderObject = getRootObject (collision.gameObject);
-			if (rootColliderObject.tag == "Human") {
-				HumanBehavior hb = rootColliderObject.GetComponent<HumanBehavior> ();
+            // :BILL: rootColliderObject doesn't play well with nesting child to runtime parents. 10 17 2018
+			//GameObject rootColliderObject = getRootObject (collision.gameObject);
+            
+            
+            GameObject childColliderObject = getChildRootObject(collision.gameObject);
+          
+			if (childColliderObject.tag == "Human") {
+				HumanBehavior hb = childColliderObject.GetComponent<HumanBehavior> ();
 				if (hb != null) {
 					hb.handleBulletImpact (collision);
 				}
-			} else if (rootColliderObject.tag == "Zombie") {
-				ZombieBehavior zb = rootColliderObject.GetComponent<ZombieBehavior> ();
+			} else if (childColliderObject.tag == "Zombie") {
+				ZombieBehavior zb = childColliderObject.GetComponent<ZombieBehavior> ();
 				if (zb != null) {
 					zb.handleBulletImpact (collision);
 				}
 			}
 
-			if (rootColliderObject.GetComponent<HealthComponent> () != null ) {
+			if (childColliderObject.GetComponent<HealthComponent> () != null ) {
 				m_impactTarget = collision.rigidbody;
 				m_lifeTime = 0.25f;
 			}

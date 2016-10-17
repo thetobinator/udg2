@@ -34,11 +34,7 @@ public class ZombieBehavior : MonoBehaviour {
 	GameObject previousObject;
 	bool m_hasPlayerTask = false;
 	Vector3 m_oldPosition;
-
-
-    
-
-public bool hasPlayerTask()
+    public bool hasPlayerTask()
 	{
 		return m_hasPlayerTask;
 	}
@@ -300,11 +296,14 @@ public bool hasPlayerTask()
 			if (h != null) {
 				h.dropWeapon();
 				a.runtimeAnimatorController = h.zombieAnimationController; // use zombie animation controller after resurrection
-				Destroy (h);
-				result = true;
+				Destroy (h);              
+                result = true;
 			} else if (z != null) {
 				if (obj.GetComponent<HealthComponent> ().isDead ()) {
-					Destroy (z);
+                    obj.tag = "Dead";
+                    obj.name = "DeadBody";
+                    obj.transform.parent = MainGameManager.instance.DeadBodies.transform;                
+                    Destroy (z);
 				}
 				result = true;
 			}
@@ -567,10 +566,12 @@ public bool hasPlayerTask()
 		} else {
 			m_state = State.WaitForComponents;
 		}
+       
     }
 
 	public void handleBulletImpact( Collision collision )
 	{
+        //Debug.Log(collision.gameObject.name);
 		HealthComponent h = GetComponent<HealthComponent>();
 		if( h != null && h.enabled ){
 			h.dealDamage( 25.0f );
@@ -618,7 +619,7 @@ public bool hasPlayerTask()
 
 	public void setTargetFromRaycastHit( RaycastHit hit )
 	{
-		GameObject colliderRootObject = ProjectileBehaviour.getRootObject (hit.collider.gameObject);
+		GameObject colliderRootObject = ProjectileBehaviour.getChildRootObject(hit.collider.gameObject);
 		if (colliderRootObject.tag == opposingFactionTag ()) {
 			setTargetObject (colliderRootObject);
 			m_targetPosition = m_targetObject.GetComponent< Transform > ().position;

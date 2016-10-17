@@ -68,14 +68,15 @@ public class UMACharGen : MonoBehaviour
 		umaDynamicAvatar.animationController = animationController;
 		GO.AddComponent<RagdollCreatorTest>();
 		if (name.Contains ("Zombie")) {
+         
 			ZombieBehavior zbh = GO.AddComponent<ZombieBehavior> ();
 			zbh.speedMultiplier = Random.Range (0.5f, 2.5f);
 			GO.tag = "Zombie";
-		} else {
+        } else {
 			HumanBehavior hb = GO.AddComponent<HumanBehavior> ();
 			hb.zombieAnimationController = secondaryAnimationController;
 			GO.tag = "Human";
-		}
+        }
 		GO.AddComponent<NavMeshAgent> ();
 		GO.AddComponent<HealthComponent> ();
 
@@ -106,8 +107,22 @@ public class UMACharGen : MonoBehaviour
         // Generate our UMA
 		setupDna (umaDna);
         umaDynamicAvatar.UpdateNewRace();
-		
-		return GO;
+
+        GameObject[] zombies = GameObject.FindGameObjectsWithTag("Zombie");
+        GameObject[] humans = GameObject.FindGameObjectsWithTag("Human");
+
+        if (name.Contains("Zombie"))
+        {
+            GO.name = "Zombie" + zombies.Length;
+            GO.transform.parent = MainGameManager.instance.ZombieParent.transform;
+        }
+        else
+        {
+            GO.name = "Human" + humans.Length;
+            GO.transform.parent = MainGameManager.instance.HumanParent.transform;
+        }
+
+        return GO;
     }
 
 	private SlotLibrary GetSlotLibrary()

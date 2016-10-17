@@ -4,13 +4,46 @@ using System.IO;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic; // so we can use List<string> tText= new List<string>(); because that's 'easy' RRRRGgh
 
+
+
+
 public class MainGameManager : MainGameInit
 {
+
+   
 
     // global score 
     private int currentScore;
     public string currentScene;
     public string scenePath;
+
+    
+    // Required game Object References
+    
+    public GameObject bullet;
+    public GameObject gun;
+    public GameObject destinationMarker;
+    public GameObject ragdollTemplatePrefab;
+    private GameObject m_ragdollTemplate;
+
+
+    // global text box update
+    [Range(0, 1)]
+    public int showScreenText = 0;
+    [Multiline]
+    public List<string> screenText = new List<string>();
+    // "ScreenText is the word.";
+
+    //
+    public GameObject[] newZombies;
+    public GameObject[] newHumans;
+
+    // containers
+    public  GameObject ZombieParent;
+    public  GameObject HumanParent;
+    public  GameObject DeadBodies;
+
+
 
     #region Example UDGINIT.LUA as C#
 
@@ -87,6 +120,7 @@ public class MainGameManager : MainGameInit
 					GameObject[] zombies = GameObject.FindGameObjectsWithTag( "Zombie" );
 					GameObject commandCandidate = null;
 					bool acceptedTaskFlag = false;
+
 					for( uint i = 0; i < 2; ++i )
 					{
 						float minSqrDistance = -1.0f;
@@ -188,24 +222,6 @@ public class MainGameManager : MainGameInit
 		return m_movementObserver.getObjectSpeed (obj);
 	}
 
-    // nothing was happening with these arrays disabled 10-09-2016
-    /*
-    public GameObject[] zombies;
-    public GameObject[] humans;
-    */
-	public GameObject bullet;
-	public GameObject gun;
-	public GameObject destinationMarker;
-	public GameObject ragdollTemplatePrefab;
-	private GameObject m_ragdollTemplate;
-
-
-    // global text box update
-    [Range(0, 1)]
-    public int showScreenText = 0;
-    [Multiline]
-    public List<string> screenText = new List<string>(); 
-    // "ScreenText is the word.";
 
 
         // what does populationData do? Looks like it sets up the singleton?
@@ -220,7 +236,7 @@ public class MainGameManager : MainGameInit
             string m_spawnPointTag;
             GameObject[] m_entities;
             GameObject[] m_prefabs;
-
+/* Unity Rougelike tutorial item spawing singleton setup?
             public void setup(uint poolSize, uint targetCount, float spawnInterval, string factionTag, GameObject[] prefabs, string spawnPointTag)
             {
                 m_poolSize = poolSize;
@@ -237,10 +253,9 @@ public class MainGameManager : MainGameInit
                     m_poolSize = 0;
                 }
             }
-            
+*/      
 
-
-    private void spawnOneAtEachSpawnpoint()
+        private void spawnOneAtEachSpawnpoint()
 		{
 			GameObject[] spawnPoints = GameObject.FindGameObjectsWithTag(m_spawnPointTag);
 			if (spawnPoints.Length == 0)
@@ -263,7 +278,8 @@ public class MainGameManager : MainGameInit
                 // prefabbed UMA self spawns.
 				//spawnOneAtEachSpawnpoint();
 			}
-			// :TO: enable below code for testing the old delayed spawning code            
+            #region Test old delayed spawning code
+            // :TO: enable below code for testing the old delayed spawning code            
             /*
             m_time += timeStep;
             m_entities = GameObject.FindGameObjectsWithTag(m_factionTag);
@@ -288,23 +304,12 @@ public class MainGameManager : MainGameInit
                 }
             }
             */
+            #endregion
         }
     }
 
     private PopulationData m_zombies;
     private PopulationData m_humans;
-
-
-    void Awake()
-    {
-       instance = this;
-        // gameroot = Application.dataPath;
-        // gameRoot = gameroot; // fix them all at once later.
-        // levelPath = Application.dataPath + "/Data/Levels/";
-        scenePath = SceneManager.GetActiveScene().path;
-        currentScene = SceneManager.GetActiveScene().name;
-
-    }
 
     // OnGUI is auto updating.
 
@@ -322,27 +327,70 @@ public class MainGameManager : MainGameInit
 
     //here there be Bill code.
 
+    //[ExecuteInEditMode]
+    void Awake()
+    {
+        instance = this;
+        // gameroot = Application.dataPath;
+        // gameRoot = gameroot; // fix them all at once later.
+        // levelPath = Application.dataPath + "/Data/Levels/";
+        scenePath = SceneManager.GetActiveScene().path;
+        currentScene = SceneManager.GetActiveScene().name;
+        
+       
+        HumanParent = new GameObject("HumanParent");
+        ZombieParent = new GameObject("ZombieParent");
+       // ZombieParent.AddComponent<MeshCollider>();
+
+        DeadBodies = new GameObject("DeadBodies");
+        DeadBodies.transform.parent = this.transform;
+        ZombieParent.transform.parent = this.transform;
+        HumanParent.transform.parent = this.transform;
+    }
+
     private void Start()
     {
+        GameObject TagList = GameObject.Find("UDG_Tag_List");
+        if (TagList) { TagList.SetActive(false); }
+
 		m_ragdollTemplate = (GameObject)Instantiate(ragdollTemplatePrefab, transform.position, transform.rotation);
       	screenText.Add("ScreenText is the word");
         showScreenText = screenText.Count-1;
-    //this looks like Unity Tutorial rouguelike spawning.
-    // m_humans.setup(10u, 10u, 3.0f, "Human", humans, "SpawnPoint_Human");
-    //m_zombies.setup(7u, 7u, 3.0f, "Zombie", zombies, "SpawnPoint_Zombie");
-	}
+       
+      
 
-	public GameObject getRagdollTemplate()
+        //Unity  rouguelike tutorial spawning.
+        //setup(uint poolSize, uint targetCount, float spawnInterval, string factionTag, GameObject[] prefabs, string spawnPointTag)
+        /*  m_humans.setup(10u, 10u, 1.0f, "Human", humans, "SpawnPoint_Human");
+           m_zombies.setup(7u, 7u, 1.0f, "Zombie", zombies, "SpawnPoint_Zombie");
+           */
+    }
+
+    public GameObject getRagdollTemplate()
 	{
 		return m_ragdollTemplate;
 	}
 
+    public int zombieCount()
+    {
+        newZombies = GameObject.FindGameObjectsWithTag("Zombie");
+        return newZombies.Length;
+    }
+
+    public int humanCount()
+    {
+        newHumans = GameObject.FindGameObjectsWithTag("Human");
+        return newHumans.Length;
+    }
+
     public void Update()
     {
-        //m_humans.update(Time.deltaTime);
+       // m_humans.update(Time.deltaTime);
         //m_zombies.update(Time.deltaTime);
 		m_movementObserver.update ();
-		m_zombieCommander.update ();       
+		m_zombieCommander.update ();
+
+        screenText[showScreenText] = zombieCount().ToString() + " Zombies" + "\n\n"+ humanCount().ToString() + " Humans";
     }
 
     //end MainGameManager
