@@ -28,7 +28,6 @@ public class MainGameManager : MainGameInit
 
 
     // global text box update
-    [Range(0, 1)]
     public int showScreenText = 0;
     [Multiline]
     public List<string> screenText = new List<string>();
@@ -38,12 +37,15 @@ public class MainGameManager : MainGameInit
     public GameObject[] newZombies;
     public GameObject[] newHumans;
 
-    // containers
+    //  Parents for Spawns and deadbodies
     public  GameObject ZombieParent;
     public  GameObject HumanParent;
     public  GameObject DeadBodies;
 
-
+    // Coloring the GUI
+    private float rr = 0.0f, gg = 0.0f, bb = 0.0f;
+    private int rv = 1, gv = 1, bv = 1;
+    private float slowColorTime = 0.0f;
 
     #region Example UDGINIT.LUA as C#
 
@@ -311,11 +313,37 @@ public class MainGameManager : MainGameInit
     private PopulationData m_zombies;
     private PopulationData m_humans;
 
-    // OnGUI is auto updating.
+    
+    // color the GUI
+    public Color slowColor()
+    {
+        Color GUITextColor = new Color(rr, gg, bb);
+        slowColorTime = (Time.deltaTime * 0.05f);
+        // this little bit here cycles through colors very very slowly
+        if (rr <= 0.0f) { rv = 1; }
+        if (gg <= 0.0f) { gv = 1; }
+        if (bb <= 0.0f) { bv = 1; }
+        if (rr >= 0.99f) { rv = -1; }
+        if (gg >= 0.99f) { gv = -1; }
+        if (bb >= 0.99f) { bv = -1; }
+        if (rr <= 1.0f && gg <= 0.9f) { rr += (slowColorTime * rv); }
+        if (gg <= 1.0f && rr >= 0.5f) { gg += (slowColorTime * gv); }
+        if (bb <= 1.0f && gg >= 0.5f) { bb += (slowColorTime * bv); }
+        return GUITextColor;
+    }
 
+    // OnGUI is auto updating.
     public void OnGUI()
     {
-        if (screenText.Count != 0) { GUI.Label(new Rect(10, 10, 700, 200), screenText[showScreenText]); }
+
+        int screenTextCount = screenText.Count;
+     
+        if (screenTextCount != 0) {
+            if (showScreenText > screenTextCount - 1) { showScreenText = screenTextCount - 1; }
+            if (showScreenText < 0) { showScreenText = 0; }
+            GUI.contentColor = slowColor();
+            GUI.Label(new Rect(10, 10, 700, 200), screenText[showScreenText]);
+        }
     }
 
     public void AdjustScore(int num)

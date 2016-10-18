@@ -1,12 +1,19 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic; // so we can use List<string> tText= new List<string>();
+using UnityEngine.UI;
 
-public class GUI_TestingMap : MonoBehaviour 
+public class GUI_TestingMap : MonoBehaviour
 {
-   // public Texture icon;
-    private float rr = 0.0f, gg =  0.0f, bb =  0.0f;
+    // public Texture icon;
+    private float rr = 0.0f, gg = 0.0f, bb = 0.0f;
     private int rv = 1, gv = 1, bv = 1;
     private float slowColorTime = 0.0f;
+
+    public int showScreenText;
+    // screentext array of multiline text
+    [Multiline]
+    public List<string> screenText = new List<string>();
 
     public Color slowColor()
     {
@@ -28,11 +35,16 @@ public class GUI_TestingMap : MonoBehaviour
 
     private void OnGUI()
     {
+
+        int screenTextCount = screenText.Count;
+        if (showScreenText > screenTextCount-1) { showScreenText = screenTextCount - 1; }
+        if (showScreenText < 0) { showScreenText = 0; }
         //GUI.Box(new Rect(10, 10, 430, 220), "Click here to start Camera");
         // GUI.DrawTexture(new Rect(20, 20, 32, 32), icon);
         GUI.contentColor = slowColor();
-		string controlsScreenText = "Currently: Click a few times to create zombies, click targets to send zombies to targets.";
-        GUI.Label(new Rect(20, 60, 500, 600), controlsScreenText);
+
+        GUI.Label(new Rect(20, 60, 500, 600), screenText[showScreenText]);
+        #region old instructions to game
         /*string oldcontrolsScreenText = "Controls\n" +
                                  " Mouse to look around\n" +
                                  " Click   To send a zombie to a location, or to attack a target\n" +
@@ -73,5 +85,8 @@ public class GUI_TestingMap : MonoBehaviour
         // Add some text to the file.
         // maybe read this from text files, this C# string stuff is hideous.
 
-    }		
+        #endregion //old instructionst to game 
+    }
+
+   
 }
