@@ -45,7 +45,7 @@ public class ProjectileBehaviour : MonoBehaviour {
         GameObject root = obj;
         for (; root.transform.parent != null; root = root.transform.parent.gameObject) {
             if (root.tag == "Zombie" || root.tag == "Human"){
-                Debug.Log("Root Name = " + root.name);
+               
                 return root;
             }
         }
