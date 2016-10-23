@@ -161,7 +161,7 @@ public class ZombieBehavior : MonoBehaviour {
 	void approachPosition( Vector3 targetPosition )
 	{
         if (this.GetComponent<NavMeshAgent>()) { 
-            GetComponent<NavMeshAgent>().SetDestination(targetPosition);
+           GetComponent<NavMeshAgent>().SetDestination(targetPosition);
         }
 
     }
@@ -376,11 +376,10 @@ public class ZombieBehavior : MonoBehaviour {
 
 		if( m_targetObject != null )
 		{
-			m_targetPosition = m_targetObject.GetComponent< Transform > ().position;
-		}
-
-		approachPosition( m_targetPosition );
-		if( reachedPosition() )
+			m_targetPosition = m_targetObject.GetComponent< Transform > ().position;           
+        }
+        approachPosition(m_targetPosition);
+        if ( reachedPosition() )
 		{
 			if( m_targetObject != null && m_targetPosition == m_targetObject.GetComponent< Transform >().position )
 			{			
@@ -624,7 +623,7 @@ public class ZombieBehavior : MonoBehaviour {
 
             if (taskObject)
             {
-                //Debug.Log(taskObject.name);
+                Debug.Log(taskObject.name);
                 setTargetObject(taskObject);
                 m_oldPosition = GetComponent<Transform>().position;
                 m_state = State.ApproachTarget;
@@ -667,12 +666,12 @@ public class ZombieBehavior : MonoBehaviour {
 		 * comment out the call to updateState and instead
 		 * uncomment everything that is commented below
 		*/
-        /*
+        
               if (Input.GetKeyDown("f")) { GoToTag("Player"); }
               if (Input.GetKeyDown("r")) { GoToTag("Human"); }
               if (Input.GetKeyDown("b")) { GoToTag("Barricade"); }
               if (Input.GetKeyDown("g")) { GoToTag("Window"); }
-      */
+      
         updateState();
 
 	
