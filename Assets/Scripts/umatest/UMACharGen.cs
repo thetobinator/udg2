@@ -114,12 +114,12 @@ public class UMACharGen : MonoBehaviour
         if (name.Contains("Zombie"))
         {
             GO.name = "Zombie" + zombies.Length;
-            GO.transform.parent = MainGameManager.instance.ZombieParent.transform;
+            GO.transform.parent = MainGameManager.ZombieParent.transform;
         }
         else
         {
             GO.name = "Human" + humans.Length;
-            GO.transform.parent = MainGameManager.instance.HumanParent.transform;
+            GO.transform.parent = MainGameManager.HumanParent.transform;
         }
 
         return GO;
