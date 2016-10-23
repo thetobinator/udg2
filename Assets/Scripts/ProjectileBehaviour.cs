@@ -42,11 +42,11 @@ public class ProjectileBehaviour : MonoBehaviour {
     //Returns the parent object discovered with the appropriate tag.
     static public GameObject getChildRootObject(GameObject obj)
     {
+        GameObject rootChild = obj;
         GameObject root = obj;
-        for (; root.transform.parent != null; root = root.transform.parent.gameObject) {
-            if (root.tag == "Zombie" || root.tag == "Human"){
-               
-                return root;
+        for (; rootChild.transform.parent != null; rootChild = rootChild.transform.parent.gameObject) {
+            if (rootChild.tag == "Zombie" || rootChild.tag == "Human"){           
+                return rootChild;
             }
         }
         return root;

@@ -300,9 +300,10 @@ public class ZombieBehavior : MonoBehaviour {
                 result = true;
 			} else if (z != null) {
 				if (obj.GetComponent<HealthComponent> ().isDead ()) {
-                    obj.tag = "Dead";
-                    obj.name = "DeadBody";
-                    obj.transform.parent = MainGameManager.instance.DeadBodies.transform;                
+                   // obj.tag = "Dead";
+                  //  obj.name = "DeadBody";
+                  //  obj.transform.parent = MainGameManager.Find("DeadBodies").transform;                
+
                     Destroy (z);
 				}
 				result = true;
@@ -544,30 +545,8 @@ public class ZombieBehavior : MonoBehaviour {
 
 	//Transform[] hinges = GameObject.FindObjectsOfType (typeof(Transform)) as Transform[];
 
-    void GoToTag(string Tag)
-    {
-        GameObject[] taggedObjects = GameObject.FindGameObjectsWithTag(Tag);
-        if (taggedObjects.Length >= 1)
-        {
-           Random.seed = (int) Time.time;
-            int RandNum = Random.Range(0, taggedObjects.Length-1);
-         
-            taskObject = taggedObjects[RandNum];
-            GetComponent<NavMeshAgent>().SetDestination(taskObject.transform.position);
-            m_oldPosition = GetComponent<Transform>().position;
-			m_hasPlayerTask = true;
-        }
-    }
 
-    void Start()
-    {
-		if (initDelay > 0.0f) {
-			m_state = State.Init;
-		} else {
-			m_state = State.WaitForComponents;
-		}
-       
-    }
+
 
 	public void handleBulletImpact( Collision collision )
 	{
@@ -634,55 +613,69 @@ public class ZombieBehavior : MonoBehaviour {
 		GetComponent<Animator> ().SetBool ("eat", false);
 	}
 
-	// Update is called once per frame
-	void Update ()
+    void GoToTag(string Tag)
+    {
+        GameObject[] taggedObjects = GameObject.FindGameObjectsWithTag(Tag);
+        if (taggedObjects.Length >= 1)
+        {
+            Random.seed = (int)Time.time;
+            int RandNum = Random.Range(0, taggedObjects.Length - 1);
+            taskObject = taggedObjects[RandNum];
+
+            if (taskObject)
+            {
+                //Debug.Log(taskObject.name);
+                setTargetObject(taskObject);
+                m_oldPosition = GetComponent<Transform>().position;
+                m_state = State.ApproachTarget;
+                m_hasPlayerTask = true;
+                // updateState();
+            }
+        }
+        else
+        {
+            // play no target sound
+            GameObject ntp = GameObject.Find("NoTarget_Player");
+            if (ntp != null)
+            {
+                NoTarget_Sound nts = ntp.GetComponent<NoTarget_Sound>();
+                if (nts)
+                {
+                    NoTarget_Sound ntsStart = GameObject.Find("NoTarget_Player").GetComponent<NoTarget_Sound>();
+                    ntsStart.StartCoroutine("PlaySound");
+                }
+            }
+        }
+    }
+
+    void Start()
+    {
+        if (initDelay > 0.0f)
+        {
+            m_state = State.Init;
+        }
+        else
+        {
+            m_state = State.WaitForComponents;
+        }
+
+    }
+
+    void Update ()
 	{
-		/* @Bill: to test the input again,
+        /* @Bill: to test the input again,
 		 * comment out the call to updateState and instead
 		 * uncomment everything that is commented below
 		*/
+        /*
+              if (Input.GetKeyDown("f")) { GoToTag("Player"); }
+              if (Input.GetKeyDown("r")) { GoToTag("Human"); }
+              if (Input.GetKeyDown("b")) { GoToTag("Barricade"); }
+              if (Input.GetKeyDown("g")) { GoToTag("Window"); }
+      */
+        updateState();
 
-		updateState();
-
-		/*
-	*if (Input.GetKeyDown ("f")){
-           // print("f key");
-				taskObject =  GameObject.FindWithTag("Player");
-                GetComponent<NavMeshAgent>().SetDestination(taskObject.transform.position);
-                m_oldPosition = GetComponent<Transform>().position;
-                m_hasPlayerTask = true;					
-		}
-
-		if (Input.GetKeyDown ("r")){
-           // print("r key");
-				GoToTag ("Human");
-                m_oldPosition = GetComponent<Transform>().position;					
-		}
-
-        if (Input.GetKeyDown("b"))
-        {
-            
-            GoToTag("Breakable");
-            m_oldPosition = GetComponent<Transform>().position;
-        }
-
-        if (Input.GetKeyDown("g"))
-        {
-           
-            GoToTag("Window");
-            m_oldPosition = GetComponent<Transform>().position;
-        }
-
-		if (taskObject) {
-           // print("ZombieBehavior:" + " Parent: " + this.transform.parent.gameObject + " This Object = " + this.gameObject + " taskObject = " + taskObject + "\n");
-            GetComponent<NavMeshAgent>().SetDestination(taskObject.transform.position);
-           
-            m_hasPlayerTask = true;
-		}
-
-
-		if (m_hasPlayerTask) {
-            */
+	
 			Vector3 movement = GetComponent<Transform> ().position - m_oldPosition;
 			m_oldPosition = GetComponent<Transform> ().position;
 			Vector3 diff = GetComponent<Transform> ().position - GetComponent<NavMeshAgent> ().destination;
