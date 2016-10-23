@@ -33,17 +33,24 @@ public class BreakableBarricades : MonoBehaviour {
 		}
 
 	void OnCollisionEnter(Collision collision) {
-		string colliderTag = collision.gameObject.tag;
-		if (colliderTag == "Human" || colliderTag == "Zombie" || colliderTag == "Player" || colliderTag == "Projectile") {
-			explodeInstantly();
-		}
+        GameObject colliderRootObject = ProjectileBehaviour.getChildRootObject(collision.collider.gameObject);
+       // Debug.Log(colliderRootObject.name);
+        string colliderTag = colliderRootObject.tag;
+        if (colliderTag == "Zombie"){ explodeInstantly();}
+
+		/*if (colliderTag == "Human" || colliderTag == "Zombie" || colliderTag == "Player" || colliderTag == "Projectile") {
+			//explodeInstantly();
+		}*/
 	}
 		
 
-	void OnTriggerEnter(Collider other) {
-       // print(other.name);
-		if (other.tag != "Barricade")
-		{
+	/*void OnTriggerEnter(Collider other) {
+        GameObject colliderRootObject = ProjectileBehaviour.getChildRootObject(other.gameObject);
+        string colliderTag = colliderRootObject.tag;
+        Debug.Log("OnTriggerEnter = " + colliderRootObject.name);
+        if (colliderTag == "Human" || colliderTag == "Zombie" || colliderTag == "Player" || colliderTag == "Projectile")
+        {
+          //  Debug.Log(other.tag);
 			hitpoints+= -2; // remove hit points
 			if (hitpoints <= 0){
 			hasRigidBody = this.GetComponent<Rigidbody>();
@@ -59,12 +66,25 @@ public class BreakableBarricades : MonoBehaviour {
 	void OnTriggerStay(Collider other) {
 		if (other.tag == "Zombie")
 		{
-			explodeInstantly();
+            hitpoints += -2; // remove hit points
+            if (hitpoints <= 0)
+            {
+                hasRigidBody = this.GetComponent<Rigidbody>();
+                //turn off the rigid body of the main object
+                if (hasRigidBody != null)
+                {
+                    DisableRagdoll();
+                  
+                    explodeInstantly();
+                }
+            }
+            
 		}		
 	}
-
-	void explodeInstantly(){
+*/
+public	void explodeInstantly(){
 		hitpoints += -100; // remove hit points
+        this.tag = "Untagged";
 		if (hitpoints <= 0) {
 			hasRigidBody = this.GetComponent<Rigidbody> ();
 			if (hasRigidBody != null) {
@@ -72,6 +92,7 @@ public class BreakableBarricades : MonoBehaviour {
 			}
 			// iterate over child objects and give them rigidbody
 			foreach (Transform child in transform) {
+                child.gameObject.tag = "Wood";
 				hasRigidBody = child.gameObject.GetComponent<Rigidbody> ();
 				// break the object apart
 				if (hasRigidBody == null) {
@@ -87,6 +108,7 @@ public class BreakableBarricades : MonoBehaviour {
 					
 					if (gameObjectsRigidBody != null) {
 						gameObjectsRigidBody.AddExplosionForce (power, child.gameObject.transform.position, radius, 3.0F);
+
 						
 					}
 				}
