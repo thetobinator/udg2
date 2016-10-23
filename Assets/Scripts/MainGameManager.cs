@@ -38,9 +38,9 @@ public class MainGameManager : MainGameInit
     public GameObject[] newHumans;
 
     //  Parents for Spawns and deadbodies
-    public  GameObject ZombieParent;
-    public  GameObject HumanParent;
-    public  GameObject DeadBodies;
+    public  static GameObject ZombieParent;
+    public static GameObject HumanParent;
+    public static GameObject DeadBodies;
 
     // Coloring the GUI
     private float rr = 0.0f, gg = 0.0f, bb = 0.0f;
@@ -74,13 +74,13 @@ public class MainGameManager : MainGameInit
     private bool trackLightEnabled = false;
     private string nextUDGLevel = null;
     private bool CAPSLOCKKEY = false;
-
+    */
     // -- this tracks the screamer with  light 5; 
     private GameObject[] screamerObject;
     private Vector3[] screamVector3;
     //ScreamX,ScreamY,gScreamZ = new Transform.position(); // nil,nil,nil; 
     private Vector3[] trackedPosition;
-
+    /*
     // -- counts how long the gun flare is on; 
     private int gunLightCount = 0;
 
@@ -359,16 +359,13 @@ public class MainGameManager : MainGameInit
     void Awake()
     {
         instance = this;
-        // gameroot = Application.dataPath;
-        // gameRoot = gameroot; // fix them all at once later.
-        // levelPath = Application.dataPath + "/Data/Levels/";
         scenePath = SceneManager.GetActiveScene().path;
         currentScene = SceneManager.GetActiveScene().name;
         
        
         HumanParent = new GameObject("HumanParent");
         ZombieParent = new GameObject("ZombieParent");
-       // ZombieParent.AddComponent<MeshCollider>();
+       
 
         DeadBodies = new GameObject("DeadBodies");
         DeadBodies.transform.parent = this.transform;
@@ -384,9 +381,6 @@ public class MainGameManager : MainGameInit
 		m_ragdollTemplate = (GameObject)Instantiate(ragdollTemplatePrefab, transform.position, transform.rotation);
       	screenText.Add("ScreenText is the word");
         showScreenText = screenText.Count-1;
-       
-      
-
         //Unity  rouguelike tutorial spawning.
         //setup(uint poolSize, uint targetCount, float spawnInterval, string factionTag, GameObject[] prefabs, string spawnPointTag)
         /*  m_humans.setup(10u, 10u, 1.0f, "Human", humans, "SpawnPoint_Human");
