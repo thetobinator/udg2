@@ -160,15 +160,16 @@ public class ZombieBehavior : MonoBehaviour {
 
 	void approachPosition( Vector3 targetPosition )
 	{
-        if (this.GetComponent<NavMeshAgent>()) { 
+        if (this.GetComponent<NavMeshAgent>().isOnNavMesh) { 
            GetComponent<NavMeshAgent>().SetDestination(targetPosition);
         }
 
     }
-    
-	bool reachedPosition()
-	{
-		NavMeshAgent nma = GetComponent<NavMeshAgent> ();
+
+    bool reachedPosition()
+    {
+        NavMeshAgent nma = GetComponent<NavMeshAgent>();
+        if (!nma) { return false; }
 		return (nma.destination - transform.position).sqrMagnitude < 1.5f || nma.enabled == false;
 	}
 
@@ -288,6 +289,7 @@ public class ZombieBehavior : MonoBehaviour {
 		HumanBehavior h = obj.GetComponent<HumanBehavior>();
 		ZombieBehavior z = obj.GetComponent<ZombieBehavior>();
 		RagdollHelper r = obj.GetComponent<RagdollHelper> ();
+        HealthComponent hc = obj.GetComponent<HealthComponent>();
 
 		bool result = false;
 		if (n != null && a != null && r != null) {
@@ -299,13 +301,10 @@ public class ZombieBehavior : MonoBehaviour {
 				Destroy (h);              
                 result = true;
 			} else if (z != null) {
-				if (obj.GetComponent<HealthComponent> ().isDead ()) {
-                   // obj.tag = "Dead";
-                  //  obj.name = "DeadBody";
-                  //  obj.transform.parent = MainGameManager.Find("DeadBodies").transform;                
-
-                    Destroy (z);
-				}
+                if (obj.GetComponent<HealthComponent>().isDead()) {
+                    
+                    Destroy(z);   
+                }
 				result = true;
 			}
 			n.enabled = false;
@@ -318,7 +317,7 @@ public class ZombieBehavior : MonoBehaviour {
 	{
 		HealthComponent health = human.GetComponent<HealthComponent> ();
 
-		if( health == null )
+		if( health == null || human.tag == "Zombie")
 		{
 			return true;
 		}
@@ -329,8 +328,24 @@ public class ZombieBehavior : MonoBehaviour {
 		{
 			if( turnIntoRagdoll( human ) )
 			{
-				ZombieBehavior z = human.AddComponent<ZombieBehavior>() as ZombieBehavior;
-				z.initDelay = 8.0f;
+                if (health.current_health >= -50.0f)
+                {
+                    human.tag = "Zombie";
+                    human.name = "Zombie" + (GameObject.FindGameObjectsWithTag("Zombie").Length).ToString();
+                    human.transform.parent = GameObject.Find("ZombieParent").transform;
+                    ZombieBehavior z = human.AddComponent<ZombieBehavior>() as ZombieBehavior;                   
+                    z.initDelay = 3.0f;
+                    human.GetComponent<ZombieBehavior>().reanimate();
+                   
+                   
+                }
+                else
+                {
+                    human.tag = "Dead";
+                    human.name = "DeadBody";
+                    human.transform.parent = GameObject.Find("DeadBodies").transform;
+                    Destroy(human.GetComponent<ZombieBehavior>());
+                }
 			}
 
 		}
@@ -404,7 +419,7 @@ public class ZombieBehavior : MonoBehaviour {
 		GetComponent<Animator> ().SetBool ("attack", false);
 		if (m_stateTime > 0.5f) {
 			if (m_targetObject != null) {
-				if (dealDamage (m_targetObject, 50.0f)) {
+				if (dealDamage (m_targetObject, 33.3f)) {
 					setTargetObject (null);
 					setLocalizedTargetCandidate( null );
 					setNonLocalizedTargetCandidate( null );
@@ -535,7 +550,8 @@ public class ZombieBehavior : MonoBehaviour {
 			animatorComponent.SetBool ("walk", !reachedPosition ());
 			animatorComponent.SetFloat ("speedMultiplier", speedMultiplier);
 		}
-
+        NavMeshAgent nma = GetComponent<NavMeshAgent>();
+        if (!nma) { return; }
 		GetComponent<NavMeshAgent> ().speed = 1.2f * speedMultiplier;//m_hasPlayerTask ? 1.2f : 1.2f;
         
 
@@ -646,7 +662,7 @@ public class ZombieBehavior : MonoBehaviour {
             }
         }
     }
-
+   
     void Start()
     {
         if (initDelay > 0.0f)
