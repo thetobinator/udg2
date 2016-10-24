@@ -302,7 +302,7 @@ public class ZombieBehavior : MonoBehaviour {
                 result = true;
 			} else if (z != null) {
                 if (obj.GetComponent<HealthComponent>().isDead()) {
-                    
+                   
                     Destroy(z);   
                 }
 				result = true;
@@ -317,7 +317,7 @@ public class ZombieBehavior : MonoBehaviour {
 	{
 		HealthComponent health = human.GetComponent<HealthComponent> ();
 
-		if( health == null || human.tag == "Zombie")
+		if( health == null )
 		{
 			return true;
 		}
@@ -328,27 +328,22 @@ public class ZombieBehavior : MonoBehaviour {
 		{
 			if( turnIntoRagdoll( human ) )
 			{
-                if (health.current_health >= -50.0f)
-                {
+               
                     human.tag = "Zombie";
                     human.name = "Zombie" + (GameObject.FindGameObjectsWithTag("Zombie").Length).ToString();
                     human.transform.parent = GameObject.Find("ZombieParent").transform;
-                    ZombieBehavior z = human.AddComponent<ZombieBehavior>() as ZombieBehavior;                   
+                    ZombieBehavior z = human.AddComponent<ZombieBehavior>() as ZombieBehavior;
+                    //human.GetComponent<HealthComponent>().current_health = 100;
+                    m_targetObject = null;
                     z.initDelay = 3.0f;
-                    human.GetComponent<ZombieBehavior>().reanimate();
-                   
-                   
-                }
-                else
-                {
-                    human.tag = "Dead";
-                    human.name = "DeadBody";
-                    human.transform.parent = GameObject.Find("DeadBodies").transform;
-                    Destroy(human.GetComponent<ZombieBehavior>());
-                }
+                return false;
+               
+               //  human.GetComponent<ZombieBehavior>().reanimate();
+            }
+               
 			}
 
-		}
+		
 
 		return health.isDead ();
 	}

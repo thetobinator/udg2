@@ -122,7 +122,7 @@ public class MainGameManager : MainGameInit
 					GameObject[] zombies = GameObject.FindGameObjectsWithTag( "Zombie" );
 					GameObject commandCandidate = null;
 					bool acceptedTaskFlag = false;
-
+               
 					for( uint i = 0; i < 2; ++i )
 					{
 						float minSqrDistance = -1.0f;
@@ -131,6 +131,8 @@ public class MainGameManager : MainGameInit
 							ZombieBehavior zb = zombie.GetComponent<ZombieBehavior>();
 							HealthComponent hc = zombie.GetComponent<HealthComponent>();
 							NavMeshAgent na = zombie.GetComponent<NavMeshAgent> ();
+                        
+                        
 							if( zb != null && zb.enabled && zb.hasPlayerTask() == acceptedTaskFlag
 								&& hc != null && hc.enabled && !hc.isDead() && na != null && na.enabled )
 							{
@@ -364,13 +366,13 @@ public class MainGameManager : MainGameInit
         
        
         HumanParent = new GameObject("HumanParent");
+        HumanParent.transform.parent = this.transform;
         ZombieParent = new GameObject("ZombieParent");
-       
-
+        ZombieParent.transform.parent = this.transform;
         DeadBodies = new GameObject("DeadBodies");
         DeadBodies.transform.parent = this.transform;
-        ZombieParent.transform.parent = this.transform;
-        HumanParent.transform.parent = this.transform;
+       
+       
     }
 
     private void Start()
@@ -379,7 +381,7 @@ public class MainGameManager : MainGameInit
         if (TagList) { TagList.SetActive(false); }
 
 		m_ragdollTemplate = (GameObject)Instantiate(ragdollTemplatePrefab, transform.position, transform.rotation);
-      	screenText.Add("ScreenText is the word");
+      	//screenText.Add("ScreenText is the word");
         showScreenText = screenText.Count-1;
         //Unity  rouguelike tutorial spawning.
         //setup(uint poolSize, uint targetCount, float spawnInterval, string factionTag, GameObject[] prefabs, string spawnPointTag)
