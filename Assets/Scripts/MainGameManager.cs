@@ -112,7 +112,7 @@ public class MainGameManager : MainGameInit
     public static MainGameManager instance; //local tCurrentLevel=ig3dGetLevelNames()
 
 	class ZombieCommander
-	{
+	{       
 		public void update()
 		{
 			if (Input.GetMouseButtonUp (0)) {
@@ -362,17 +362,15 @@ public class MainGameManager : MainGameInit
     {
         instance = this;
         scenePath = SceneManager.GetActiveScene().path;
-        currentScene = SceneManager.GetActiveScene().name;
-        
-       
+        currentScene = SceneManager.GetActiveScene().name;      
+
+        // create parent objects
         HumanParent = new GameObject("HumanParent");
         HumanParent.transform.parent = this.transform;
         ZombieParent = new GameObject("ZombieParent");
         ZombieParent.transform.parent = this.transform;
         DeadBodies = new GameObject("DeadBodies");
-        DeadBodies.transform.parent = this.transform;
-       
-       
+        DeadBodies.transform.parent = this.transform;    
     }
 
     private void Start()
@@ -382,7 +380,10 @@ public class MainGameManager : MainGameInit
 
 		m_ragdollTemplate = (GameObject)Instantiate(ragdollTemplatePrefab, transform.position, transform.rotation);
       	//screenText.Add("ScreenText is the word");
+        
         showScreenText = screenText.Count-1;
+        if (showScreenText < 0) { showScreenText = 0; }
+
         //Unity  rouguelike tutorial spawning.
         //setup(uint poolSize, uint targetCount, float spawnInterval, string factionTag, GameObject[] prefabs, string spawnPointTag)
         /*  m_humans.setup(10u, 10u, 1.0f, "Human", humans, "SpawnPoint_Human");
@@ -413,8 +414,11 @@ public class MainGameManager : MainGameInit
         //m_zombies.update(Time.deltaTime);
 		m_movementObserver.update ();
 		m_zombieCommander.update ();
+        string score  = zombieCount().ToString() + " Zombies" + "\n" + humanCount().ToString() + " Humans";
+        string keyhelp = "KEYS:\nW A S D to move\nB = Barricades\nG = Glass\nF = Follow";
+        string keyhelp2 = "\nR to RUSH\nClick with mouse to give direct commands\nOne Click.One Zombie.\nClick Often.";
 
-        screenText[showScreenText] = zombieCount().ToString() + " Zombies" + "\n\n"+ humanCount().ToString() + " Humans";
+        screenText[showScreenText] = score + "\n\n\n" + keyhelp  + keyhelp2;
     }
 
     //end MainGameManager

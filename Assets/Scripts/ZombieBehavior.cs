@@ -302,7 +302,9 @@ public class ZombieBehavior : MonoBehaviour {
                 result = true;
 			} else if (z != null) {
                 if (obj.GetComponent<HealthComponent>().isDead()) {
-                   
+                    obj.tag = "Dead";
+                        obj.name = "Dead";
+                    obj.transform.parent = GameObject.Find("DeadBodies").transform;
                     Destroy(z);   
                 }
 				result = true;
@@ -333,12 +335,11 @@ public class ZombieBehavior : MonoBehaviour {
                     human.name = "Zombie" + (GameObject.FindGameObjectsWithTag("Zombie").Length).ToString();
                     human.transform.parent = GameObject.Find("ZombieParent").transform;
                     ZombieBehavior z = human.AddComponent<ZombieBehavior>() as ZombieBehavior;
-                    //human.GetComponent<HealthComponent>().current_health = 100;
+                  //  human.GetComponent<HealthComponent>().current_health = 100;
                     m_targetObject = null;
                     z.initDelay = 3.0f;
+                
                 return false;
-               
-               //  human.GetComponent<ZombieBehavior>().reanimate();
             }
                
 			}
@@ -546,21 +547,33 @@ public class ZombieBehavior : MonoBehaviour {
 			animatorComponent.SetFloat ("speedMultiplier", speedMultiplier);
 		}
         NavMeshAgent nma = GetComponent<NavMeshAgent>();
-        if (!nma) { return; }
+        if (!nma.isActiveAndEnabled) { return; }
 		GetComponent<NavMeshAgent> ().speed = 1.2f * speedMultiplier;//m_hasPlayerTask ? 1.2f : 1.2f;
         
 
 
     }
 
-	//Transform[] hinges = GameObject.FindObjectsOfType (typeof(Transform)) as Transform[];
+    //Transform[] hinges = GameObject.FindObjectsOfType (typeof(Transform)) as Transform[];
 
 
+    //Returns the parent object discovered with the appropriate tag.
+    static public GameObject getChildRootObject(GameObject obj)
+    {
+        GameObject rootChild = obj;
+        GameObject root = obj;
+        for (; rootChild.transform.parent != null; rootChild = rootChild.transform.parent.gameObject)
+        {
+            if (rootChild.tag == "Zombie" || rootChild.tag == "Human")
+            {
+                return rootChild;
+            }
+        }
+        return root;
+    }
 
-
-	public void handleBulletImpact( Collision collision )
+    public void handleBulletImpact( Collision collision )
 	{
-        //Debug.Log(collision.gameObject.name);
 		HealthComponent h = GetComponent<HealthComponent>();
 		if( h != null && h.enabled ){
 			h.dealDamage( 25.0f );
@@ -628,13 +641,12 @@ public class ZombieBehavior : MonoBehaviour {
         GameObject[] taggedObjects = GameObject.FindGameObjectsWithTag(Tag);
         if (taggedObjects.Length >= 1)
         {
-            Random.seed = (int)Time.time;
+            Random.InitState((int)Time.time);
             int RandNum = Random.Range(0, taggedObjects.Length - 1);
             taskObject = taggedObjects[RandNum];
 
             if (taskObject)
-            {
-                Debug.Log(taskObject.name);
+            {               
                 setTargetObject(taskObject);
                 m_oldPosition = GetComponent<Transform>().position;
                 m_state = State.ApproachTarget;
@@ -671,24 +683,29 @@ public class ZombieBehavior : MonoBehaviour {
 
     }
 
-    void Update ()
-	{
+    void Update()
+    {
         /* @Bill: to test the input again,
 		 * comment out the call to updateState and instead
 		 * uncomment everything that is commented below
 		*/
-        
-              if (Input.GetKeyDown("f")) { GoToTag("Player"); }
-              if (Input.GetKeyDown("r")) { GoToTag("Human"); }
-              if (Input.GetKeyDown("b")) { GoToTag("Barricade"); }
-              if (Input.GetKeyDown("g")) { GoToTag("Window"); }
+        if (GetComponent<NavMeshAgent>().enabled)
+        { 
+        if (Input.GetKeyDown("f")) { GoToTag("Player"); }
+        if (Input.GetKeyDown("r")) { GoToTag("Human"); }
+        if (Input.GetKeyDown("b")) { GoToTag("Barricade"); }
+        if (Input.GetKeyDown("g")) { GoToTag("Window"); }
+        }
       
         updateState();
 
-	
-			Vector3 movement = GetComponent<Transform> ().position - m_oldPosition;
-			m_oldPosition = GetComponent<Transform> ().position;
-			Vector3 diff = GetComponent<Transform> ().position - GetComponent<NavMeshAgent> ().destination;
+        if (GetComponent<NavMeshAgent>().enabled)
+        {
+
+            Vector3 movement = GetComponent<Transform>().position - m_oldPosition;
+            m_oldPosition = GetComponent<Transform>().position;
+            Vector3 diff = GetComponent<Transform>().position - GetComponent<NavMeshAgent>().destination;
+    
 			if (GetComponent<Animator> ()) {
 				if (diff.magnitude > 0.7f) {
 					GetComponent<Animator> ().SetFloat ("speed", movement.magnitude / Time.deltaTime);
@@ -702,13 +719,8 @@ public class ZombieBehavior : MonoBehaviour {
 			} else {
 				this.transform.Translate (Vector3.forward * Time.deltaTime);
 			}
+        }
 
-    //}
-
-
-
-
-}// end update
-	
+    }// end update
 
 }//endzombiebehavior

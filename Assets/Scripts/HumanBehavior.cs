@@ -450,7 +450,7 @@ public class HumanBehavior : MonoBehaviour {
 
 	public void handleBulletImpact( Collision collision )
 	{
-        Debug.Log(collision.gameObject.name);
+        //Debug.Log(collision.gameObject.name);
 
         HealthComponent h = GetComponent<HealthComponent>();
 		if( h != null && h.enabled ){
