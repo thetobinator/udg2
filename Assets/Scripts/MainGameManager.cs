@@ -398,6 +398,17 @@ public class MainGameManager : MainGameInit
 
     public int zombieCount()
     {
+       // newZombies = GameObject.FindGameObjectsWithTag("Zombie");
+        foreach(GameObject z in GameObject.FindGameObjectsWithTag("Zombie"))
+        {
+
+            if (z.GetComponent<HealthComponent>().current_health <= 0.0f)
+            {
+                z.tag = "Dead";
+                z.name = "Dead";
+                z.transform.parent = GameObject.Find("DeadBodies").transform;
+            }
+        }
         newZombies = GameObject.FindGameObjectsWithTag("Zombie");
         return newZombies.Length;
     }

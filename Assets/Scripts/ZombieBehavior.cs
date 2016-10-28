@@ -200,7 +200,7 @@ public class ZombieBehavior : MonoBehaviour {
 		{
 			m_state = State.Idle;
 			m_targetPosition = transform.position;
-
+           
 			// experimental: zombies go to player
 /*
 			GameObject player = GameObject.FindGameObjectWithTag ("Player");
@@ -301,17 +301,13 @@ public class ZombieBehavior : MonoBehaviour {
 				Destroy (h);              
                 result = true;
 			} else if (z != null) {
-                if (obj.GetComponent<HealthComponent>().isDead()) {
-                    obj.tag = "Dead";
-                        obj.name = "Dead";
-                    obj.transform.parent = GameObject.Find("DeadBodies").transform;
+                if (obj.GetComponent<HealthComponent>().isDead()) {                    
                     Destroy(z);   
                 }
 				result = true;
 			}
 			n.enabled = false;
 		}
-
 		return result;
 	}
 
@@ -330,18 +326,17 @@ public class ZombieBehavior : MonoBehaviour {
 		{
 			if( turnIntoRagdoll( human ) )
 			{
-               
-                    human.tag = "Zombie";
+                m_state = State.EatFlesh;
+                //updateEatFleshBehaviour();
+                  /*  human.tag = "Zombie";
                     human.name = "Zombie" + (GameObject.FindGameObjectsWithTag("Zombie").Length).ToString();
-                    human.transform.parent = GameObject.Find("ZombieParent").transform;
-                    ZombieBehavior z = human.AddComponent<ZombieBehavior>() as ZombieBehavior;
-                  //  human.GetComponent<HealthComponent>().current_health = 100;
+                    human.transform.parent = GameObject.Find("ZombieParent").transform; */
+                    //ZombieBehavior z = human.AddComponent<ZombieBehavior>() as ZombieBehavior;
+                   // human.GetComponent<HealthComponent>().current_health = 100;
                     m_targetObject = null;
-                    z.initDelay = 3.0f;
-                
-                return false;
-            }
-               
+                    //z.initDelay = 8.0f;             
+                //return false;
+            }              
 			}
 
 		
@@ -354,7 +349,10 @@ public class ZombieBehavior : MonoBehaviour {
 		HealthComponent health = GetComponent<HealthComponent> ();
 		health.reanimate ();
 		tag = "Zombie";
-		speedMultiplier = Random.Range (0.5f, 2.5f);
+      
+        this.gameObject.name = "Zombie" + (GameObject.FindGameObjectsWithTag("Zombie").Length).ToString();
+        this.gameObject.transform.parent = GameObject.Find("ZombieParent").transform;
+        speedMultiplier = Random.Range (0.5f, 2.5f);
 		
 		NavMeshAgent n = GetComponent<NavMeshAgent>();
 		Animator a = GetComponent<Animator>();
@@ -363,7 +361,7 @@ public class ZombieBehavior : MonoBehaviour {
 		if (n != null && a != null && r != null) {			
 			n.enabled = true;
 			a.enabled = true;
-			n.SetDestination (transform.position);
+			n.SetDestination (this.transform.position);
 		}
 	}
 
@@ -413,7 +411,7 @@ public class ZombieBehavior : MonoBehaviour {
 	void updateAttackBehaviour()
 	{
 		GetComponent<Animator> ().SetBool ("attack", false);
-		if (m_stateTime > 0.5f) {
+		if (m_stateTime > 0.1f) {
 			if (m_targetObject != null) {
 				if (dealDamage (m_targetObject, 33.3f)) {
 					setTargetObject (null);
@@ -547,7 +545,7 @@ public class ZombieBehavior : MonoBehaviour {
 			animatorComponent.SetFloat ("speedMultiplier", speedMultiplier);
 		}
         NavMeshAgent nma = GetComponent<NavMeshAgent>();
-        if (!nma.isActiveAndEnabled) { return; }
+        if (!nma) { return; }
 		GetComponent<NavMeshAgent> ().speed = 1.2f * speedMultiplier;//m_hasPlayerTask ? 1.2f : 1.2f;
         
 

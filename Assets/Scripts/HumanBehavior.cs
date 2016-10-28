@@ -192,7 +192,7 @@ public class HumanBehavior : MonoBehaviour {
 		{
 			return;
 		}
-		m_hasGun = Random.Range (0, 2) == 0 && handBone != null;
+		m_hasGun = Random.Range (0, 10) == 0 && handBone != null;
 		m_state = State.Init;
 		m_targetPosition = transform.position;
 		m_dangerPosition = transform.position;
