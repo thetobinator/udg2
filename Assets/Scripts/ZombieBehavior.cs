@@ -634,13 +634,15 @@ public class ZombieBehavior : MonoBehaviour {
 		GetComponent<Animator> ().SetBool ("eat", false);
 	}
 
+
+
     void GoToTag(string Tag)
     {
         GameObject[] taggedObjects = GameObject.FindGameObjectsWithTag(Tag);
         if (taggedObjects.Length >= 1)
         {
-            Random.InitState((int)Time.time);
-            int RandNum = Random.Range(0, taggedObjects.Length - 1);
+            Random.InitState(Random.Range(0,(int)Time.time));
+            int RandNum = Random.Range(0, taggedObjects.Length);
             taskObject = taggedObjects[RandNum];
 
             if (taskObject)

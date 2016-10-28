@@ -14,7 +14,18 @@ public class ProjectileBehaviour : MonoBehaviour {
 	void Start () {
 		m_lifeTime = maxLifetime;
 		m_spawnPosition = transform.position;
-	}
+        // play shot sound
+        GameObject go = GameObject.Find("Colt45_Player");
+        if (go != null)
+        {
+            PlayAudioSource sndscript = go.GetComponent<PlayAudioSource>();
+            if (sndscript)
+            {
+                PlayAudioSource mshStart = GameObject.Find("Colt45_Player").GetComponent<PlayAudioSource>();
+                mshStart.StartCoroutine("PlaySound");
+            }
+        }
+    }
 	
 	// Update is called once per frame
 	void Update () {
