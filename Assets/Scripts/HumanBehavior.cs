@@ -493,7 +493,8 @@ public class HumanBehavior : MonoBehaviour {
 		} else {
 			this.transform.Translate (Vector3.forward * Time.deltaTime);
 		}
-		
+       
+        
 		//}
 	}// end update
 	

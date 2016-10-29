@@ -311,7 +311,13 @@ public class ZombieBehavior : MonoBehaviour {
 		return result;
 	}
 
-	bool dealDamage( GameObject human, float damage )
+
+
+    
+
+
+
+bool dealDamage( GameObject human, float damage )
 	{
 		HealthComponent health = human.GetComponent<HealthComponent> ();
 
@@ -326,16 +332,30 @@ public class ZombieBehavior : MonoBehaviour {
 		{
 			if( turnIntoRagdoll( human ) )
 			{
-                m_state = State.EatFlesh;
+               // m_state = State.EatFlesh;
                 //updateEatFleshBehaviour();
-                  /*  human.tag = "Zombie";
-                    human.name = "Zombie" + (GameObject.FindGameObjectsWithTag("Zombie").Length).ToString();
-                    human.transform.parent = GameObject.Find("ZombieParent").transform; */
-                    //ZombieBehavior z = human.AddComponent<ZombieBehavior>() as ZombieBehavior;
-                   // human.GetComponent<HealthComponent>().current_health = 100;
+             
+                bool hasHead = false;
+                GameObject eatTarget = null;
+                foreach (Transform child in GetComponentsInChildren<Transform>())
+                {
+                    
+                    if (child.name == "Head")
+                    {
+                        hasHead = true;
+                        eatTarget = child.gameObject;               
+                    }
+                }
+
+                if (hasHead)
+                {
+                    m_targetObject = eatTarget;
+                    m_state = State.ApproachTarget;
+                  
+                }
                     m_targetObject = null;
                     //z.initDelay = 8.0f;             
-                //return false;
+                return false;
             }              
 			}
 
@@ -434,7 +454,7 @@ public class ZombieBehavior : MonoBehaviour {
 		    || m_localizedTargetCandidate != null
 		    || m_stateTime > 2.0f ) {
 			GetComponent<Animator>().SetBool ("eat", false );
-			m_state = State.Alerted;
+			m_state = State.ApproachTarget;
 		}
 	}
 
@@ -683,21 +703,25 @@ public class ZombieBehavior : MonoBehaviour {
 
     }
 
-    void Update()
+
+    void zombieKeyboardInput()
     {
-        /* @Bill: to test the input again,
-		 * comment out the call to updateState and instead
-		 * uncomment everything that is commented below
-		*/
-        if (GetComponent<NavMeshAgent>().enabled)
-        { 
         if (Input.GetKeyDown("f")) { GoToTag("Player"); }
         if (Input.GetKeyDown("r")) { GoToTag("Human"); }
         if (Input.GetKeyDown("b")) { GoToTag("Barricade"); }
         if (Input.GetKeyDown("g")) { GoToTag("Window"); }
+    }
+
+    void Update()
+    {
+     
+        if (GetComponent<NavMeshAgent>().enabled)
+        {
+           zombieKeyboardInput();
         }
-      
+
         updateState();
+     
 
         if (GetComponent<NavMeshAgent>().enabled)
         {

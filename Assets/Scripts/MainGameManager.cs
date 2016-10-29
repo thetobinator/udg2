@@ -10,7 +10,8 @@ using System.Collections.Generic; // so we can use List<string> tText= new List<
 public class MainGameManager : MainGameInit
 {
 
-   
+
+    public static MainGameManager instance; //local tCurrentLevel=ig3dGetLevelNames()
 
     // global score 
     private int currentScore;
@@ -47,6 +48,12 @@ public class MainGameManager : MainGameInit
     private int rv = 1, gv = 1, bv = 1;
     private float slowColorTime = 0.0f;
 
+    
+    //startled humans alert the zombies
+    private GameObject[] screamerObject;
+    private Vector3[] screamVector3;
+    private Vector3[] trackedPosition;
+
     #region Example UDGINIT.LUA as C#
 
 
@@ -75,12 +82,7 @@ public class MainGameManager : MainGameInit
     private string nextUDGLevel = null;
     private bool CAPSLOCKKEY = false;
     */
-    // -- this tracks the screamer with  light 5; 
-    private GameObject[] screamerObject;
-    private Vector3[] screamVector3;
-    //ScreamX,ScreamY,gScreamZ = new Transform.position(); // nil,nil,nil; 
-    private Vector3[] trackedPosition;
-    /*
+   
     // -- counts how long the gun flare is on; 
     private int gunLightCount = 0;
 
@@ -90,7 +92,6 @@ public class MainGameManager : MainGameInit
     // -- added 02 26 2009 keyboard teleport; 
     private bool teleportTimerActive = false;
     private float teleportTime = 0.0f;
-
     private int trackedObject = 3; //TrackedPosition.x,TrackedPosition.y,TrackedPosition.z = 0,0,0; 
     private bool displayLoading = false;
     private bool restartLevel = false;
@@ -103,66 +104,97 @@ public class MainGameManager : MainGameInit
     private bool wonThisLevel = false;
     //public string CurrentLevel = Application.loadedLevelName; //local tCurrentLevel=ig3dGetLevels()
     //--write currentlevel.lua to UDG folder
-    */
+
     //private char Quote = '\"';
     #endregion
 
+    
 
-    //this is from RougeLike tutorial, it's a working example while I breakthings
-    public static MainGameManager instance; //local tCurrentLevel=ig3dGetLevelNames()
+    class ZombieCommander
+	{
+        private int zombieGroupSize = 1;
+        void zombieTargetUpdate(RaycastHit hit)
+        {
+            GameObject[] zombies = GameObject.FindGameObjectsWithTag("Zombie");
+            GameObject commandCandidate = null;
+            bool acceptedTaskFlag = false;
 
-	class ZombieCommander
-	{       
-		public void update()
+            for (uint i = 0; i < 2; ++i)
+            {
+                float minSqrDistance = -1.0f;
+                foreach (GameObject zombie in zombies)
+                {
+                    ZombieBehavior zb = zombie.GetComponent<ZombieBehavior>();
+                    HealthComponent hc = zombie.GetComponent<HealthComponent>();
+                    NavMeshAgent na = zombie.GetComponent<NavMeshAgent>();
+
+
+                    if (zb != null && zb.enabled && zb.hasPlayerTask() == acceptedTaskFlag
+                        && hc != null && hc.enabled && !hc.isDead() && na != null && na.enabled)
+                    {
+                        float sqrDistance = (hit.point - zb.transform.position).sqrMagnitude;
+                        if (minSqrDistance == -1.0f || sqrDistance < minSqrDistance)
+                        {
+                            commandCandidate = zombie;
+                            minSqrDistance = sqrDistance;
+                        }
+                    }
+                }
+
+                if (commandCandidate != null)
+                {
+                    // add dummy destination marker:
+                    NavMeshPath path = new NavMeshPath();
+                    NavMesh.CalculatePath(commandCandidate.transform.position, hit.point, NavMesh.AllAreas, path);
+                    if (path.corners.Length > 0)
+                    {
+                        Vector3 destinationPosition = path.corners[path.corners.Length - 1];
+                        GameObject destinationMarker = (GameObject)Instantiate(MainGameManager.instance.destinationMarker);
+                        destinationMarker.transform.position = new Vector3(destinationPosition.x, destinationPosition.y + 0.01f, destinationPosition.z);
+                        destinationMarker.transform.eulerAngles = new Vector3(90.0f, 0.0f, 0.0f);
+                        commandCandidate.GetComponent<ZombieBehavior>().setTargetFromRaycastHit(hit);
+                    }
+                    break;
+                }
+                else
+                {
+                    acceptedTaskFlag = !acceptedTaskFlag;
+                }
+            }
+        }
+
+        int multipleZombieCommand()
+        {
+            int i = zombieGroupSize;
+            if (Input.GetKeyDown(KeyCode.Alpha0)) { i = 10; }
+            if (Input.GetKeyDown(KeyCode.Alpha1)) { i = 1; }
+            if (Input.GetKeyDown(KeyCode.Alpha2)) { i = 2; }
+            if (Input.GetKeyDown(KeyCode.Alpha3)) { i = 3; }
+            if (Input.GetKeyDown(KeyCode.Alpha4)) { i = 4; }
+            if (Input.GetKeyDown(KeyCode.Alpha5)) { i = 5; }
+            if (Input.GetKeyDown(KeyCode.Alpha6)) { i = 6; }
+            if (Input.GetKeyDown(KeyCode.Alpha7)) { i = 7; }
+            if (Input.GetKeyDown(KeyCode.Alpha8)) { i = 8; }
+            if (Input.GetKeyDown(KeyCode.Alpha9)) { i = 9; }
+            GameObject[] zombies = GameObject.FindGameObjectsWithTag("Zombie");       
+            if (i >= zombies.Length) { i = zombies.Length - 1; }
+            return i;
+        }
+
+        public void update()
 		{
-			if (Input.GetMouseButtonUp (0)) {
+            GameObject[] zombies = GameObject.FindGameObjectsWithTag("Zombie");
+            zombieGroupSize = multipleZombieCommand();
+
+            if (Input.GetMouseButtonUp (0)) {
 				Ray ray = Camera.main.GetComponent<Camera> ().ScreenPointToRay (Input.mousePosition);
 				RaycastHit hit = new RaycastHit ();
 				if (Physics.Raycast (ray, out hit)) {
-					GameObject[] zombies = GameObject.FindGameObjectsWithTag( "Zombie" );
-					GameObject commandCandidate = null;
-					bool acceptedTaskFlag = false;
-               
-					for( uint i = 0; i < 2; ++i )
-					{
-						float minSqrDistance = -1.0f;
-						foreach( GameObject zombie in zombies )
-						{
-							ZombieBehavior zb = zombie.GetComponent<ZombieBehavior>();
-							HealthComponent hc = zombie.GetComponent<HealthComponent>();
-							NavMeshAgent na = zombie.GetComponent<NavMeshAgent> ();
-                        
-                        
-							if( zb != null && zb.enabled && zb.hasPlayerTask() == acceptedTaskFlag
-								&& hc != null && hc.enabled && !hc.isDead() && na != null && na.enabled )
-							{
-								float sqrDistance = ( hit.point - zb.transform.position ).sqrMagnitude;
-								if( minSqrDistance == -1.0f || sqrDistance < minSqrDistance )
-								{
-									commandCandidate = zombie;
-									minSqrDistance = sqrDistance;
-								}
-							}
-						}
-						if( commandCandidate != null )
-						{
-							// add dummy destination marker:
-							NavMeshPath path = new NavMeshPath();
-							NavMesh.CalculatePath(commandCandidate.transform.position, hit.point, NavMesh.AllAreas, path);
-							if( path.corners.Length > 0 ){
-								Vector3 destinationPosition = path.corners[ path.corners.Length - 1 ];
-								GameObject destinationMarker = (GameObject)Instantiate (MainGameManager.instance.destinationMarker);
-								destinationMarker.transform.position = new Vector3( destinationPosition.x, destinationPosition.y + 0.01f, destinationPosition.z );
-								destinationMarker.transform.eulerAngles = new Vector3( 90.0f, 0.0f, 0.0f );
-								commandCandidate.GetComponent<ZombieBehavior>().setTargetFromRaycastHit( hit );
-							}
-							break;
-						}
-						else
-						{
-							acceptedTaskFlag = !acceptedTaskFlag;
-						}
-					}
+                        //multi zombie command   
+                    for (int i = 1; i < zombieGroupSize; i++)
+                    {                     
+                        zombieTargetUpdate(hit);
+                    }
 				}
 			}
 		}
@@ -352,12 +384,8 @@ public class MainGameManager : MainGameInit
     {
         currentScore += num;
     }
-    // end working tutorial
 
 
-    //here there be Bill code.
-
-    //[ExecuteInEditMode]
     void Awake()
     {
         instance = this;
@@ -402,7 +430,7 @@ public class MainGameManager : MainGameInit
         foreach(GameObject z in GameObject.FindGameObjectsWithTag("Zombie"))
         {
 
-            if (z.GetComponent<HealthComponent>().current_health <= 0.0f)
+            if (z.GetComponent<HealthComponent>().current_health <= 0.0f && !z.GetComponent<NavMeshAgent>().enabled)
             {
                 z.tag = "Dead";
                 z.name = "Dead";
@@ -415,6 +443,19 @@ public class MainGameManager : MainGameInit
 
     public int humanCount()
     {
+        foreach (GameObject h in GameObject.FindGameObjectsWithTag("Human"))
+        {
+            HealthComponent hc = h.GetComponent<HealthComponent>();
+            if (hc != null && hc.current_health <= 0.0f)
+            {
+                h.tag = "Zombie";
+                h.name = "Zombie" + GameObject.FindGameObjectsWithTag("Zombie").Length;
+                ZombieBehavior z =  h.AddComponent<ZombieBehavior>();
+                hc.current_health = 100.0f;
+                HumanBehavior hb = GetComponent<HumanBehavior>();
+                Destroy(hb);
+            }
+        }
         newHumans = GameObject.FindGameObjectsWithTag("Human");
         return newHumans.Length;
     }
