@@ -468,7 +468,7 @@ public class MainGameManager : MainGameInit
 		m_zombieCommander.update ();
         string score  = zombieCount().ToString() + " Zombies" + "\n" + humanCount().ToString() + " Humans";
         string keyhelp = "KEYS:\nW A S D to move\nB = Barricades\nG = Glass\nF = Follow";
-        string keyhelp2 = "\nR to RUSH\nClick with mouse to give direct commands\nOne Click.One Zombie.\nClick Often.";
+        string keyhelp2 = "\nR to Rush\nClick with mouse to give direct commands\nOne Click.One Zombie.\nClick Often.";
 
         screenText[showScreenText] = score + "\n\n\n" + keyhelp  + keyhelp2;
     }

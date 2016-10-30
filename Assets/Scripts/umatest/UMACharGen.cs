@@ -30,16 +30,19 @@ public class UMACharGen : MonoBehaviour
 		setupFallbackObjects ();
 		m_createdObject = GenerateUMA(name + "( generated object " + m_spawnCount + ")");
 		++m_spawnCount;
+        m_createdObject.transform.position = this.gameObject.transform.position;
 		if (!isMultiSpawn) {
 			Destroy (gameObject);
 		}
     }
 
+    // is this spawning new ones when they die? -bill I'll see.
 	void Update()
 	{
 		if (m_createdObject.GetComponent<HealthComponent> ().isDead ()) {
 			m_createdObject = GenerateUMA (name + "( generated object " + m_spawnCount + ")");
-			++m_spawnCount;
+            m_createdObject.transform.position = this.gameObject.transform.position;
+            ++m_spawnCount;
 		}
 	}
 
@@ -59,11 +62,17 @@ public class UMACharGen : MonoBehaviour
 		}
 	}
 
+ 
+
+
+       
+
     GameObject GenerateUMA(string name)
     {
-		// Create a new game object and add UMA components to it
+        // Create a new game object and add UMA components to it
+     
 		GameObject GO = new GameObject(name);
-		GO.transform.position = transform.position;
+		GO.transform.position = this.gameObject.transform.position;
 		umaDynamicAvatar = GO.AddComponent<UMADynamicAvatar>();
 		umaDynamicAvatar.animationController = animationController;
 		GO.AddComponent<RagdollCreatorTest>();
@@ -72,11 +81,18 @@ public class UMACharGen : MonoBehaviour
 			ZombieBehavior zbh = GO.AddComponent<ZombieBehavior> ();
 			zbh.speedMultiplier = Random.Range (0.5f, 2.5f);
 			GO.tag = "Zombie";
+            GameObject[] zombies = GameObject.FindGameObjectsWithTag("Zombie");
+            GO.name = "Zombie" + zombies.Length;
+          //  GO.transform.SetParent(MainGameManager.ZombieParent.transform, false);
         } else {
 			HumanBehavior hb = GO.AddComponent<HumanBehavior> ();
 			hb.zombieAnimationController = secondaryAnimationController;
 			GO.tag = "Human";
-        }
+            GameObject[] humans = GameObject.FindGameObjectsWithTag("Human");
+            GO.name = "Human" + humans.Length;
+           // GO.transform.SetParent(MainGameManager.HumanParent.transform, false);
+    }
+        
 		GO.AddComponent<NavMeshAgent> ();
 		GO.AddComponent<HealthComponent> ();
 
@@ -107,21 +123,7 @@ public class UMACharGen : MonoBehaviour
         // Generate our UMA
 		setupDna (umaDna);
         umaDynamicAvatar.UpdateNewRace();
-
-        GameObject[] zombies = GameObject.FindGameObjectsWithTag("Zombie");
-        GameObject[] humans = GameObject.FindGameObjectsWithTag("Human");
-
-        if (name.Contains("Zombie"))
-        {
-            GO.name = "Zombie" + zombies.Length;
-            GO.transform.parent = MainGameManager.ZombieParent.transform;
-        }
-        else
-        {
-            GO.name = "Human" + humans.Length;
-            GO.transform.parent = MainGameManager.HumanParent.transform;
-        }
-
+   
         return GO;
     }
 
