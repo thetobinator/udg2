@@ -112,9 +112,10 @@ public class MainGameManager : MainGameInit
 
     class ZombieCommander
 	{
-        private int zombieGroupSize = 1;
+         int zombieGroupSize = 1;
         void zombieTargetUpdate(RaycastHit hit)
         {
+            
             GameObject[] zombies = GameObject.FindGameObjectsWithTag("Zombie");
             GameObject commandCandidate = null;
             bool acceptedTaskFlag = false;
@@ -187,11 +188,12 @@ public class MainGameManager : MainGameInit
             zombieGroupSize = multipleZombieCommand();
 
             if (Input.GetMouseButtonUp (0)) {
+              
 				Ray ray = Camera.main.GetComponent<Camera> ().ScreenPointToRay (Input.mousePosition);
 				RaycastHit hit = new RaycastHit ();
 				if (Physics.Raycast (ray, out hit)) {
                         //multi zombie command   
-                    for (int i = 1; i < zombieGroupSize; i++)
+                    for (int i = 0; i < zombieGroupSize; i++)
                     {                     
                         zombieTargetUpdate(hit);
                     }
