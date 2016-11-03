@@ -178,7 +178,7 @@ public class MainGameManager : MainGameInit
             if (Input.GetKeyDown(KeyCode.Alpha8)) { i = 8; }
             if (Input.GetKeyDown(KeyCode.Alpha9)) { i = 9; }
             GameObject[] zombies = GameObject.FindGameObjectsWithTag("Zombie");       
-            if (i >= zombies.Length) { i = zombies.Length - 1; }
+            if (i > zombies.Length) { i = zombies.Length; }
             return i;
         }
 
