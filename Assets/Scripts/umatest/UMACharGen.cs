@@ -30,7 +30,7 @@ public class UMACharGen : MonoBehaviour
 		setupFallbackObjects ();
 		m_createdObject = GenerateUMA(name + "( generated object " + m_spawnCount + ")");
 		++m_spawnCount;
-        m_createdObject.transform.position = this.gameObject.transform.position;
+      
 		if (!isMultiSpawn) {
 			Destroy (gameObject);
 		}
@@ -41,7 +41,7 @@ public class UMACharGen : MonoBehaviour
 	{
 		if (m_createdObject.GetComponent<HealthComponent> ().isDead ()) {
 			m_createdObject = GenerateUMA (name + "( generated object " + m_spawnCount + ")");
-            m_createdObject.transform.position = this.gameObject.transform.position;
+       
             ++m_spawnCount;
 		}
 	}
@@ -64,16 +64,29 @@ public class UMACharGen : MonoBehaviour
 
  
 
-
-       
+    // this is totally not working as expected 10/6/2016
+       void parentAtPosition(GameObject obj)
+    {
+        Vector3 currentPos = obj.transform.position;
+        Vector3 mainPos = GameObject.Find("MainGameManager").transform.position;
+        float x = currentPos.x - mainPos.x;
+        float y = currentPos.y - mainPos.y;
+        float z = currentPos.z - mainPos.z;
+        obj.transform.SetParent(GameObject.Find("MainGameManager").transform);
+        Vector3 newpos = new Vector3(x, y, z);
+        obj.transform.localPosition = newpos;
+    }
 
     GameObject GenerateUMA(string name)
     {
         // Create a new game object and add UMA components to it
      
 		GameObject GO = new GameObject(name);
-		GO.transform.position = this.gameObject.transform.position;
-		umaDynamicAvatar = GO.AddComponent<UMADynamicAvatar>();
+        GO.transform.position = this.transform.position;
+        //parentAtPosition(GO);
+       
+
+        umaDynamicAvatar = GO.AddComponent<UMADynamicAvatar>();
 		umaDynamicAvatar.animationController = animationController;
 		GO.AddComponent<RagdollCreatorTest>();
 		if (name.Contains ("Zombie")) {
@@ -83,14 +96,13 @@ public class UMACharGen : MonoBehaviour
 			GO.tag = "Zombie";
             GameObject[] zombies = GameObject.FindGameObjectsWithTag("Zombie");
             GO.name = "Zombie" + zombies.Length;
-          //  GO.transform.SetParent(MainGameManager.ZombieParent.transform, false);
+          
         } else {
 			HumanBehavior hb = GO.AddComponent<HumanBehavior> ();
 			hb.zombieAnimationController = secondaryAnimationController;
 			GO.tag = "Human";
             GameObject[] humans = GameObject.FindGameObjectsWithTag("Human");
-            GO.name = "Human" + humans.Length;
-           // GO.transform.SetParent(MainGameManager.HumanParent.transform, false);
+            GO.name = "Human" + humans.Length;        
     }
         
 		GO.AddComponent<NavMeshAgent> ();
@@ -123,7 +135,7 @@ public class UMACharGen : MonoBehaviour
         // Generate our UMA
 		setupDna (umaDna);
         umaDynamicAvatar.UpdateNewRace();
-   
+        
         return GO;
     }
 

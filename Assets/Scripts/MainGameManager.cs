@@ -113,13 +113,12 @@ public class MainGameManager : MainGameInit
     class ZombieCommander
 	{
          int zombieGroupSize = 1;
-        void zombieTargetUpdate(RaycastHit hit)
-        {
-            
+
+    void zombieTargetUpdate(RaycastHit hit)
+        {          
             GameObject[] zombies = GameObject.FindGameObjectsWithTag("Zombie");
             GameObject commandCandidate = null;
             bool acceptedTaskFlag = false;
-
             for (uint i = 0; i < 2; ++i)
             {
                 float minSqrDistance = -1.0f;
@@ -128,8 +127,6 @@ public class MainGameManager : MainGameInit
                     ZombieBehavior zb = zombie.GetComponent<ZombieBehavior>();
                     HealthComponent hc = zombie.GetComponent<HealthComponent>();
                     NavMeshAgent na = zombie.GetComponent<NavMeshAgent>();
-
-
                     if (zb != null && zb.enabled && zb.hasPlayerTask() == acceptedTaskFlag
                         && hc != null && hc.enabled && !hc.isDead() && na != null && na.enabled)
                     {
@@ -141,7 +138,7 @@ public class MainGameManager : MainGameInit
                         }
                     }
                 }
-
+             
                 if (commandCandidate != null)
                 {
                     // add dummy destination marker:
@@ -164,7 +161,7 @@ public class MainGameManager : MainGameInit
             }
         }
 
-        int multipleZombieCommand()
+       public int multipleZombieCommand()
         {
             int i = zombieGroupSize;
             if (Input.GetKeyDown(KeyCode.Alpha0)) { i = 10; }
@@ -186,13 +183,13 @@ public class MainGameManager : MainGameInit
 		{
             GameObject[] zombies = GameObject.FindGameObjectsWithTag("Zombie");
             zombieGroupSize = multipleZombieCommand();
-
-            if (Input.GetMouseButtonUp (0)) {
-              
+            if (Input.GetMouseButtonUp (0)) {            
 				Ray ray = Camera.main.GetComponent<Camera> ().ScreenPointToRay (Input.mousePosition);
 				RaycastHit hit = new RaycastHit ();
 				if (Physics.Raycast (ray, out hit)) {
-                        //multi zombie command   
+                    //multi zombie command   
+                    //seems to have broken the actual tagged target marking,
+                    //gets position, doesn't attack when there. -- ok this works again, 10/6/16 might have been the childRootObject  issue.
                     for (int i = 0; i < zombieGroupSize; i++)
                     {                     
                         zombieTargetUpdate(hit);
@@ -371,14 +368,12 @@ public class MainGameManager : MainGameInit
     // OnGUI is auto updating.
     public void OnGUI()
     {
-
-        int screenTextCount = screenText.Count;
-     
+        int screenTextCount = screenText.Count;   
         if (screenTextCount != 0) {
             if (showScreenText > screenTextCount - 1) { showScreenText = screenTextCount - 1; }
             if (showScreenText < 0) { showScreenText = 0; }
             GUI.contentColor = slowColor();
-            GUI.Label(new Rect(10, 10, 700, 200), screenText[showScreenText]);
+            GUI.Label(new Rect(10, 10, 700, 400), screenText[showScreenText]);
         }
     }
 
@@ -426,18 +421,37 @@ public class MainGameManager : MainGameInit
 		return m_ragdollTemplate;
 	}
 
+    static public GameObject getRootObject(GameObject obj)
+    {
+        GameObject root = obj;
+        for (; root.transform.parent != null; root = root.transform.parent.gameObject) { }
+        return root;
+    }
+
     public int zombieCount()
     {
        // newZombies = GameObject.FindGameObjectsWithTag("Zombie");
         foreach(GameObject z in GameObject.FindGameObjectsWithTag("Zombie"))
         {
-
             if (z.GetComponent<HealthComponent>().current_health <= 0.0f && !z.GetComponent<NavMeshAgent>().enabled)
             {
                 z.tag = "Dead";
                 z.name = "Dead";
                 z.transform.parent = GameObject.Find("DeadBodies").transform;
             }
+           /* else
+            {
+              Vector3 ztrans = z.transform.localPosition;
+                GameObject p = GameObject.Find("ZombieParent");
+                p.transform.localPosition = ztrans;
+                if (getRootObject(z).name != "ZombieParent")
+                {
+                   
+                    z.transform.SetParent(GameObject.Find("ZombieParent").transform,false);
+                   
+                }
+                z.transform.localPosition = ztrans;
+            }*/
         }
         newZombies = GameObject.FindGameObjectsWithTag("Zombie");
         return newZombies.Length;
@@ -457,6 +471,8 @@ public class MainGameManager : MainGameInit
                 HumanBehavior hb = GetComponent<HumanBehavior>();
                 Destroy(hb);
             }
+          //parenting disabled because of position shift.
+            //h.transform.SetParent(GameObject.Find("HumanParent").transform, false);
         }
         newHumans = GameObject.FindGameObjectsWithTag("Human");
         return newHumans.Length;
@@ -468,11 +484,11 @@ public class MainGameManager : MainGameInit
         //m_zombies.update(Time.deltaTime);
 		m_movementObserver.update ();
 		m_zombieCommander.update ();
-        string score  = zombieCount().ToString() + " Zombies" + "\n" + humanCount().ToString() + " Humans";
-        string keyhelp = "KEYS:\nW A S D to move\nB = Barricades\nG = Glass\nF = Follow";
-        string keyhelp2 = "\nR to Rush\nClick with mouse to give direct commands\nOne Click.One Zombie.\nClick Often.";
-
-        screenText[showScreenText] = score + "\n\n\n" + keyhelp  + keyhelp2;
+        string score  = zombieCount().ToString() + " of The Undead" + "\n" + humanCount().ToString() + " of The Living";
+       // string keyhelp = "KEYS:\nW A S D to move\nB = Barricades\nG = Glass\nF = Follow";
+      //  string keyhelp2 = "\nR to Rush\nClick with mouse to give direct commands\nOne Click.One Zombie.\nClick Often.";
+            
+        screenText[showScreenText] = score + "\n\n\nCommanding " + m_zombieCommander.multipleZombieCommand() +  " Undead\n\n\n"  + Resources.Load("TextAssets/udg2_help_controls");
     }
 
     //end MainGameManager

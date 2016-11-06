@@ -1,0 +1,11 @@
+ KEYS:
+ W A S D to move
+ 
+ B = Barricades
+ G = Glass
+ F = Follow Player
+ R = Rush
+ 
+Mouse Click will set a target 
+Number keys 1 through 9 commands
+1 to 9 zombies at a time.

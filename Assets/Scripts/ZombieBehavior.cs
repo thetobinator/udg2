@@ -371,7 +371,7 @@ bool dealDamage( GameObject human, float damage )
 		tag = "Zombie";
       
         this.gameObject.name = "Zombie" + (GameObject.FindGameObjectsWithTag("Zombie").Length).ToString();
-        this.gameObject.transform.parent = GameObject.Find("ZombieParent").transform;
+        //this.gameObject.transform.parent = GameObject.Find("ZombieParent").transform;
         speedMultiplier = Random.Range (0.5f, 2.5f);
 		
 		NavMeshAgent n = GetComponent<NavMeshAgent>();
@@ -575,21 +575,7 @@ bool dealDamage( GameObject human, float damage )
     //Transform[] hinges = GameObject.FindObjectsOfType (typeof(Transform)) as Transform[];
 
 
-    //Returns the parent object discovered with the appropriate tag.
-    static public GameObject getChildRootObject(GameObject obj)
-    {
-        GameObject rootChild = obj;
-        GameObject root = obj;
-        for (; rootChild.transform.parent != null; rootChild = rootChild.transform.parent.gameObject)
-        {
-            if (rootChild.tag == "Zombie" || rootChild.tag == "Human")
-            {
-                return rootChild;
-            }
-        }
-        return root;
-    }
-
+    
     public void handleBulletImpact( Collision collision )
 	{
 		HealthComponent h = GetComponent<HealthComponent>();
@@ -603,7 +589,7 @@ bool dealDamage( GameObject human, float damage )
 		}
 	}
 
-	/*
+    /*
 	// stop the character at a barricade
 	void OnCollisionEnter(Collision collision) {
     
@@ -637,31 +623,55 @@ bool dealDamage( GameObject human, float damage )
 	}
 */
 
-	public void setTargetFromRaycastHit( RaycastHit hit )
+    static public GameObject getRootObject(GameObject obj)
+    {
+        GameObject root = obj;
+        for (; root.transform.parent != null; root = root.transform.parent.gameObject) { }
+        return root;
+    }
+    //Returns the parent object discovered with the appropriate tag.
+   static public GameObject getChildRootObject(GameObject obj)
+    {
+        GameObject rootChild = obj;
+        GameObject root = obj;
+        string names = obj.name;
+        for (; rootChild.transform.parent != null; rootChild = rootChild.transform.parent.gameObject)
+        {
+            names = rootChild.name;
+            if (rootChild.tag == "Zombie" || rootChild.tag == "Human")
+            {
+               // Debug.Log(names);
+                return rootChild;
+            }
+        }
+        return root;
+    }
+
+    public void setTargetFromRaycastHit( RaycastHit hit )
 	{
-		GameObject colliderRootObject = ProjectileBehaviour.getChildRootObject(hit.collider.gameObject);
-		if (colliderRootObject.tag == opposingFactionTag ()) {
+        // getChildRootObject for Humans/Zombies contained in the HumanParent/ZombieParent
+        //GameObject colliderRootObject = getChildRootObject(hit.collider.gameObject.transform.parent.gameObject);
+        GameObject colliderRootObject = getRootObject(hit.collider.gameObject.transform.parent.gameObject);
+        if (colliderRootObject.tag == opposingFactionTag ()) {
 			setTargetObject (colliderRootObject);
 			m_targetPosition = m_targetObject.GetComponent< Transform > ().position;
 		} else {
 			setTargetObject (null);
 			m_targetPosition = hit.point;
 		}
-	
+        	
 		m_state = State.ApproachTarget;
 		m_hasPlayerTask = true;
 		GetComponent<Animator> ().SetBool ("attack", false);
 		GetComponent<Animator> ().SetBool ("eat", false);
 	}
 
-
-
     void GoToTag(string Tag)
     {
         GameObject[] taggedObjects = GameObject.FindGameObjectsWithTag(Tag);
         if (taggedObjects.Length >= 1)
         {
-            Random.InitState(Random.Range(0,(int)Time.time));
+            Random.InitState(Random.Range(0,(int)Time.time)+(int)Time.time);
             int RandNum = Random.Range(0, taggedObjects.Length);
             taskObject = taggedObjects[RandNum];
 
@@ -703,7 +713,6 @@ bool dealDamage( GameObject human, float damage )
 
     }
 
-
     void zombieKeyboardInput()
     {
         if (Input.GetKeyDown("f")) { GoToTag("Player"); }
@@ -715,17 +724,11 @@ bool dealDamage( GameObject human, float damage )
     void Update()
     {
      
-        if (GetComponent<NavMeshAgent>().enabled)
-        {
-           zombieKeyboardInput();
-        }
-
         updateState();
-     
-
+    
         if (GetComponent<NavMeshAgent>().enabled)
         {
-
+            zombieKeyboardInput();
             Vector3 movement = GetComponent<Transform>().position - m_oldPosition;
             m_oldPosition = GetComponent<Transform>().position;
             Vector3 diff = GetComponent<Transform>().position - GetComponent<NavMeshAgent>().destination;
