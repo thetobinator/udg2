@@ -9,3 +9,6 @@
 Mouse Click will set a target 
 Number keys 1 through 9 commands
 1 to 9 zombies at a time.
+
+"Alles hat ein Ende, nur die Wurst hat zwei"
+All has an end, but the sausage has two.

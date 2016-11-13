@@ -298,7 +298,9 @@ public class ZombieBehavior : MonoBehaviour {
 			if (h != null) {
 				h.dropWeapon();
 				a.runtimeAnimatorController = h.zombieAnimationController; // use zombie animation controller after resurrection
-				Destroy (h);              
+				Destroy (h);
+                obj.AddComponent<ZombieBehavior>();
+                obj.GetComponent<ZombieBehavior>().initDelay = 8.0f;
                 result = true;
 			} else if (z != null) {
                 if (obj.GetComponent<HealthComponent>().isDead()) {                    
@@ -332,8 +334,8 @@ bool dealDamage( GameObject human, float damage )
 		{
 			if( turnIntoRagdoll( human ) )
 			{
-               // m_state = State.EatFlesh;
-                //updateEatFleshBehaviour();
+                m_state = State.EatFlesh;
+                updateEatFleshBehaviour();
              
                 bool hasHead = false;
                 GameObject eatTarget = null;
@@ -343,7 +345,7 @@ bool dealDamage( GameObject human, float damage )
                     if (child.name == "Head")
                     {
                         hasHead = true;
-                        eatTarget = child.gameObject;               
+                        eatTarget = child.gameObject;                         
                     }
                 }
 
@@ -353,8 +355,9 @@ bool dealDamage( GameObject human, float damage )
                     m_state = State.ApproachTarget;
                   
                 }
-                    m_targetObject = null;
-                    //z.initDelay = 8.0f;             
+
+              //  m_targetObject = null;
+
                 return false;
             }              
 			}
@@ -666,7 +669,7 @@ bool dealDamage( GameObject human, float damage )
 		GetComponent<Animator> ().SetBool ("eat", false);
 	}
 
-    void GoToTag(string Tag)
+   public void GoToTag(string Tag)
     {
         GameObject[] taggedObjects = GameObject.FindGameObjectsWithTag(Tag);
         if (taggedObjects.Length >= 1)
@@ -681,7 +684,7 @@ bool dealDamage( GameObject human, float damage )
                 m_oldPosition = GetComponent<Transform>().position;
                 m_state = State.ApproachTarget;
                 m_hasPlayerTask = true;
-                // updateState();
+                 
             }
         }
         else
@@ -713,14 +716,6 @@ bool dealDamage( GameObject human, float damage )
 
     }
 
-    void zombieKeyboardInput()
-    {
-        if (Input.GetKeyDown("f")) { GoToTag("Player"); }
-        if (Input.GetKeyDown("r")) { GoToTag("Human"); }
-        if (Input.GetKeyDown("b")) { GoToTag("Barricade"); }
-        if (Input.GetKeyDown("g")) { GoToTag("Window"); }
-    }
-
     void Update()
     {
      
@@ -728,7 +723,7 @@ bool dealDamage( GameObject human, float damage )
     
         if (GetComponent<NavMeshAgent>().enabled)
         {
-            zombieKeyboardInput();
+           // zombieKeyboardInput(); // passed control to a keyboard script? Probably A good idea
             Vector3 movement = GetComponent<Transform>().position - m_oldPosition;
             m_oldPosition = GetComponent<Transform>().position;
             Vector3 diff = GetComponent<Transform>().position - GetComponent<NavMeshAgent>().destination;
@@ -739,9 +734,9 @@ bool dealDamage( GameObject human, float damage )
 				} else {
 					GetComponent<Animator> ().SetFloat ("speed", 0.0f);
 					//print ( "REACHED" );
-					//m_hasPlayerTask = false;
-					//previousObject = taskObject;
-					//taskObject = null;
+					m_hasPlayerTask = false;
+					previousObject = taskObject;
+					taskObject = null;
 				}
 			} else {
 				this.transform.Translate (Vector3.forward * Time.deltaTime);

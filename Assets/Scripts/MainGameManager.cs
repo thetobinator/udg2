@@ -6,6 +6,8 @@ using System.Collections.Generic; // so we can use List<string> tText= new List<
 
 
 
+//[ExecuteInEditMode]
+
 
 public class MainGameManager : MainGameInit
 {
@@ -54,6 +56,7 @@ public class MainGameManager : MainGameInit
     private Vector3[] screamVector3;
     private Vector3[] trackedPosition;
 
+
     #region Example UDGINIT.LUA as C#
 
 
@@ -82,7 +85,7 @@ public class MainGameManager : MainGameInit
     private string nextUDGLevel = null;
     private bool CAPSLOCKKEY = false;
     */
-   
+
     // -- counts how long the gun flare is on; 
     private int gunLightCount = 0;
 
@@ -104,17 +107,18 @@ public class MainGameManager : MainGameInit
     private bool wonThisLevel = false;
     //public string CurrentLevel = Application.loadedLevelName; //local tCurrentLevel=ig3dGetLevels()
     //--write currentlevel.lua to UDG folder
-
+    public TextAsset udg2helpcontrolstext;
+   public int zombieGroupSize = 1;
     //private char Quote = '\"';
     #endregion
 
-    
+
 
     class ZombieCommander
 	{
-         int zombieGroupSize = 1;
-
-    void zombieTargetUpdate(RaycastHit hit)
+       
+       
+        void zombieTargetUpdate(RaycastHit hit)
         {          
             GameObject[] zombies = GameObject.FindGameObjectsWithTag("Zombie");
             GameObject commandCandidate = null;
@@ -161,36 +165,26 @@ public class MainGameManager : MainGameInit
             }
         }
 
-       public int multipleZombieCommand()
-        {
-            int i = zombieGroupSize;
-            if (Input.GetKeyDown(KeyCode.Alpha0)) { i = 10; }
-            if (Input.GetKeyDown(KeyCode.Alpha1)) { i = 1; }
-            if (Input.GetKeyDown(KeyCode.Alpha2)) { i = 2; }
-            if (Input.GetKeyDown(KeyCode.Alpha3)) { i = 3; }
-            if (Input.GetKeyDown(KeyCode.Alpha4)) { i = 4; }
-            if (Input.GetKeyDown(KeyCode.Alpha5)) { i = 5; }
-            if (Input.GetKeyDown(KeyCode.Alpha6)) { i = 6; }
-            if (Input.GetKeyDown(KeyCode.Alpha7)) { i = 7; }
-            if (Input.GetKeyDown(KeyCode.Alpha8)) { i = 8; }
-            if (Input.GetKeyDown(KeyCode.Alpha9)) { i = 9; }
-            GameObject[] zombies = GameObject.FindGameObjectsWithTag("Zombie");       
-            if (i > zombies.Length) { i = zombies.Length; }
-            return i;
-        }
+       
 
         public void update()
 		{
+            var kb = instance.GetComponent<UDG_KeyboardInput>();
+            instance.zombieGroupSize = kb.multipleZombieCommand(instance.zombieGroupSize);
+
             GameObject[] zombies = GameObject.FindGameObjectsWithTag("Zombie");
-            zombieGroupSize = multipleZombieCommand();
+           
+            for (int i = 0; i < instance.zombieGroupSize; i++)
+            {
+                kb.zombieKeyboardInput(zombies[i]);
+            }
+               
             if (Input.GetMouseButtonUp (0)) {            
 				Ray ray = Camera.main.GetComponent<Camera> ().ScreenPointToRay (Input.mousePosition);
 				RaycastHit hit = new RaycastHit ();
 				if (Physics.Raycast (ray, out hit)) {
-                    //multi zombie command   
-                    //seems to have broken the actual tagged target marking,
-                    //gets position, doesn't attack when there. -- ok this works again, 10/6/16 might have been the childRootObject  issue.
-                    for (int i = 0; i < zombieGroupSize; i++)
+                                      
+                    for (int i = 0; i < instance.zombieGroupSize; i++)
                     {                     
                         zombieTargetUpdate(hit);
                     }
@@ -257,8 +251,6 @@ public class MainGameManager : MainGameInit
 		return m_movementObserver.getObjectSpeed (obj);
 	}
 
-
-
         // what does populationData do? Looks like it sets up the singleton?
         struct PopulationData
         {
@@ -271,7 +263,9 @@ public class MainGameManager : MainGameInit
             string m_spawnPointTag;
             GameObject[] m_entities;
             GameObject[] m_prefabs;
+
 /* Unity Rougelike tutorial item spawing singleton setup?
+
             public void setup(uint poolSize, uint targetCount, float spawnInterval, string factionTag, GameObject[] prefabs, string spawnPointTag)
             {
                 m_poolSize = poolSize;
@@ -365,16 +359,44 @@ public class MainGameManager : MainGameInit
         return GUITextColor;
     }
 
+    public void updateScreenText(int itemNumber)
+    {
+       
+        screenText.Clear();
+        screenText.Add(zombieCount().ToString() + " Flesheaters");
+        screenText.Add(humanCount().ToString() + " Meals");
+       
+        screenText.Add("Commanding " + instance.zombieGroupSize + " Per Click");
+        string groupsText = "";
+        foreach (GameObject z in GameObject.FindGameObjectsWithTag("Zombie"))
+        {
+            ZombieBehavior zb = z.GetComponent<ZombieBehavior>();
+            if (zb != null && zb.taskObject != null)
+            {
+                string n = zb.taskObject.name;
+                if (!groupsText.Contains(n))
+                {
+                    groupsText = groupsText + "Approaching  " + n +" \n";
+                }
+            }
+        }
+        screenText.Add(groupsText );
+        screenText.Add("\n\n\n" + udg2helpcontrolstext.text);
+        string screenTextOut = "";
+        for (int i = 0; i < screenText.Count; i++)
+        {
+            screenTextOut = screenTextOut + "\n" + screenText[i];
+        }
+        screenText.Add(screenTextOut);
+            GUI.contentColor = slowColor();
+            GUI.Label(new Rect(10, 10, 700, 400), screenText[screenText.Count-1]);     
+    }
+
     // OnGUI is auto updating.
     public void OnGUI()
     {
-        int screenTextCount = screenText.Count;   
-        if (screenTextCount != 0) {
-            if (showScreenText > screenTextCount - 1) { showScreenText = screenTextCount - 1; }
-            if (showScreenText < 0) { showScreenText = 0; }
-            GUI.contentColor = slowColor();
-            GUI.Label(new Rect(10, 10, 700, 400), screenText[showScreenText]);
-        }
+         updateScreenText(0);
+   
     }
 
     public void AdjustScore(int num)
@@ -398,24 +420,7 @@ public class MainGameManager : MainGameInit
         DeadBodies.transform.parent = this.transform;    
     }
 
-    private void Start()
-    {
-        GameObject TagList = GameObject.Find("UDG_Tag_List");
-        if (TagList) { TagList.SetActive(false); }
-
-		m_ragdollTemplate = (GameObject)Instantiate(ragdollTemplatePrefab, transform.position, transform.rotation);
-      	//screenText.Add("ScreenText is the word");
-        
-        showScreenText = screenText.Count-1;
-        if (showScreenText < 0) { showScreenText = 0; }
-
-        //Unity  rouguelike tutorial spawning.
-        //setup(uint poolSize, uint targetCount, float spawnInterval, string factionTag, GameObject[] prefabs, string spawnPointTag)
-        /*  m_humans.setup(10u, 10u, 1.0f, "Human", humans, "SpawnPoint_Human");
-           m_zombies.setup(7u, 7u, 1.0f, "Zombie", zombies, "SpawnPoint_Zombie");
-           */
-    }
-
+  
     public GameObject getRagdollTemplate()
 	{
 		return m_ragdollTemplate;
@@ -484,11 +489,27 @@ public class MainGameManager : MainGameInit
         //m_zombies.update(Time.deltaTime);
 		m_movementObserver.update ();
 		m_zombieCommander.update ();
-        string score  = zombieCount().ToString() + " of The Undead" + "\n" + humanCount().ToString() + " of The Living";
-       // string keyhelp = "KEYS:\nW A S D to move\nB = Barricades\nG = Glass\nF = Follow";
-      //  string keyhelp2 = "\nR to Rush\nClick with mouse to give direct commands\nOne Click.One Zombie.\nClick Often.";
-            
-        screenText[showScreenText] = score + "\n\n\nCommanding " + m_zombieCommander.multipleZombieCommand() +  " Undead\n\n\n"  + Resources.Load("TextAssets/udg2_help_controls");
+
+    }
+
+    private void Start()
+    {
+        // keyboard input script
+        this.gameObject.AddComponent<UDG_KeyboardInput>();
+
+        // help text file 
+        udg2helpcontrolstext = (TextAsset)Resources.Load("TextAssets/udg2_help_controls");
+        GameObject TagList = GameObject.Find("UDG_Tag_List");
+
+        // don't confuse the game mode with the taglist
+        if (TagList) { TagList.SetActive(false); }
+        
+        m_ragdollTemplate = (GameObject)Instantiate(ragdollTemplatePrefab, transform.position, transform.rotation);
+        //Unity  rouguelike tutorial spawning.
+        //setup(uint poolSize, uint targetCount, float spawnInterval, string factionTag, GameObject[] prefabs, string spawnPointTag)
+        /*  m_humans.setup(10u, 10u, 1.0f, "Human", humans, "SpawnPoint_Human");
+           m_zombies.setup(7u, 7u, 1.0f, "Zombie", zombies, "SpawnPoint_Zombie");
+           */
     }
 
     //end MainGameManager
