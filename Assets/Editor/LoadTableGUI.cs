@@ -8,7 +8,7 @@ using UnityEditor;
 [CustomEditor(typeof(LoadTableText_ObjectNameIsFolderName))]
 
 [CanEditMultipleObjects]
-public class LoadTableNote : Editor {
+public class LoadTableGUI : Editor {
 
      public override void OnInspectorGUI()
     {

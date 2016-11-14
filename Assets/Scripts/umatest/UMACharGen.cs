@@ -77,6 +77,7 @@ public class UMACharGen : MonoBehaviour
         obj.transform.localPosition = newpos;
     }
 
+    
     GameObject GenerateUMA(string name)
     {
         // Create a new game object and add UMA components to it
@@ -101,8 +102,9 @@ public class UMACharGen : MonoBehaviour
 			HumanBehavior hb = GO.AddComponent<HumanBehavior> ();
 			hb.zombieAnimationController = secondaryAnimationController;
 			GO.tag = "Human";
-            GameObject[] humans = GameObject.FindGameObjectsWithTag("Human");
-            GO.name = "Human" + humans.Length;        
+          //  GameObject[] humans = GameObject.FindGameObjectsWithTag("Human");
+            //GO.name = "Human" + humans.Length;
+                    
     }
         
 		GO.AddComponent<NavMeshAgent> ();
@@ -130,12 +132,25 @@ public class UMACharGen : MonoBehaviour
 			CreateFemale ();
 		} else {
 			CreateMale ();
-		}
+        
+        }
 
         // Generate our UMA
 		setupDna (umaDna);
         umaDynamicAvatar.UpdateNewRace();
-        
+
+        if (name.Contains("Human"))
+        {
+            if (name.Contains("Female"))
+            {
+                GO.name = createName("Female");
+            }
+            else
+            {
+              GO.name = createName("Male");
+            }
+        }
+
         return GO;
     }
 
@@ -148,6 +163,24 @@ public class UMACharGen : MonoBehaviour
 	{
 		return overlayLibrary;
 	}
+
+    string createName(string sex)
+    {   string newName = "";
+        string firstName = "";
+        HumanNameLists humanNameList = GameObject.Find("HumanNamesList").GetComponent<HumanNameLists>();
+        string lastName = humanNameList.lastNames[Random.Range(0, humanNameList.lastNames.Count - 1)];
+        if (sex == "Female")
+        {        
+             firstName = humanNameList.femaleNames[Random.Range(0, humanNameList.femaleNames.Count - 1)];        
+        }
+        else
+        {
+             firstName = humanNameList.maleNames[Random.Range(0, humanNameList.maleNames.Count - 1)];
+        }
+        newName = firstName + " " + lastName;
+        return newName;
+    }
+
 
     void CreateFemale()
     {
@@ -227,8 +260,6 @@ public class UMACharGen : MonoBehaviour
 		tempSlotList.Add(GetSlotLibrary().InstantiateSlot("FemaleEyelash"));
 		tempSlotList[tempSlotList.Count - 1].AddOverlay(GetOverlayLibrary().InstantiateOverlay("FemaleEyelash", Color.black));
 
-
-
 		tempSlotList.Add(GetSlotLibrary().InstantiateSlot("FemaleTorso"));
 
         // zombiegirl slot models  broken disabled 10 - 09 - 2016 .
@@ -253,8 +284,6 @@ public class UMACharGen : MonoBehaviour
 			tempSlotList[bodyIndex].AddOverlay(GetOverlayLibrary().InstantiateOverlay("FemaleBody02", skinColor));
 		}
 
-
-
 		tempSlotList[bodyIndex].AddOverlay(GetOverlayLibrary().InstantiateOverlay("FemaleUnderwear01", new Color(Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), 1)));
 
 		randomResult = Random.Range(0, 4);
@@ -278,16 +307,12 @@ public class UMACharGen : MonoBehaviour
 
 		}
 
-
-
-
 		tempSlotList.Add(GetSlotLibrary().InstantiateSlot("FemaleHands", tempSlotList[bodyIndex].GetOverlayList()));
 
-		//tempSlotList.Add(GetSlotLibrary().InstantiateSlot("FemaleInnerMouth"));
-		//tempSlotList[tempSlotList.Count - 1].AddOverlay(GetOverlayLibrary().InstantiateOverlay("InnerMouth"));
+		tempSlotList.Add(GetSlotLibrary().InstantiateSlot("FemaleInnerMouth"));
+		tempSlotList[tempSlotList.Count - 1].AddOverlay(GetOverlayLibrary().InstantiateOverlay("InnerMouth"));
 
 		tempSlotList.Add(GetSlotLibrary().InstantiateSlot("FemaleFeet", tempSlotList[bodyIndex].GetOverlayList()));
-
 
 		randomResult = Random.Range(0, 2);
 randomResult = 1; // :TO: always some trousers for women for now, add skirts etc. later
@@ -441,8 +466,6 @@ randomResult = 1; // :TO: always some trousers for women for now, add skirts etc
 
 		}
 
-
-
 		//Extra beard composition
 		randomResult = Random.Range(0, 4);
 		if (randomResult == 0)
@@ -493,8 +516,8 @@ randomResult = 1; // :TO: always some trousers for women for now, add skirts etc
 
 		umaData.umaRecipe.slotDataList[3] = GetSlotLibrary().InstantiateSlot("MaleHands", umaData.umaRecipe.slotDataList[2].GetOverlayList());
 
-		//umaData.umaRecipe.slotDataList[4] = GetSlotLibrary().InstantiateSlot("MaleInnerMouth");
-		//umaData.umaRecipe.slotDataList[4].AddOverlay(GetOverlayLibrary().InstantiateOverlay("InnerMouth"));
+		umaData.umaRecipe.slotDataList[4] = GetSlotLibrary().InstantiateSlot("MaleInnerMouth");
+		umaData.umaRecipe.slotDataList[4].AddOverlay(GetOverlayLibrary().InstantiateOverlay("InnerMouth"));
 
 
 		randomResult = Random.Range(0, 2);
