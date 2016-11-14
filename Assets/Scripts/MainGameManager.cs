@@ -116,8 +116,7 @@ public class MainGameManager : MainGameInit
 
     class ZombieCommander
 	{
-       
-       
+ 
         void zombieTargetUpdate(RaycastHit hit)
         {          
             GameObject[] zombies = GameObject.FindGameObjectsWithTag("Zombie");
@@ -170,15 +169,15 @@ public class MainGameManager : MainGameInit
         public void update()
 		{
             var kb = instance.GetComponent<UDG_KeyboardInput>();
-            instance.zombieGroupSize = kb.multipleZombieCommand(instance.zombieGroupSize);
+         
 
             GameObject[] zombies = GameObject.FindGameObjectsWithTag("Zombie");
            
-            for (int i = 0; i < instance.zombieGroupSize; i++)
+            for (int i = 0; i < zombies.Length; i++)
             {
                 kb.zombieKeyboardInput(zombies[i]);
             }
-               
+            instance.zombieGroupSize = kb.multipleZombieCommand(instance.zombieGroupSize);
             if (Input.GetMouseButtonUp (0)) {            
 				Ray ray = Camera.main.GetComponent<Camera> ().ScreenPointToRay (Input.mousePosition);
 				RaycastHit hit = new RaycastHit ();
@@ -366,7 +365,7 @@ public class MainGameManager : MainGameInit
         screenText.Add(zombieCount().ToString() + " Flesheaters");
         screenText.Add(humanCount().ToString() + " Meals");
        
-        screenText.Add("Commanding " + instance.zombieGroupSize + " Per Click");
+        screenText.Add("\nCommanding: " + instance.zombieGroupSize + "\nStalking:");
         string groupsText = "";
         foreach (GameObject z in GameObject.FindGameObjectsWithTag("Zombie"))
         {
@@ -376,7 +375,7 @@ public class MainGameManager : MainGameInit
                 string n = zb.taskObject.name;
                 if (!groupsText.Contains(n))
                 {
-                    groupsText = groupsText + "Approaching  " + n +" \n";
+                    groupsText = groupsText + "    " + n +" \n";
                 }
             }
         }

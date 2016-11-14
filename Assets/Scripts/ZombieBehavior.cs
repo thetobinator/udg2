@@ -313,12 +313,6 @@ public class ZombieBehavior : MonoBehaviour {
 		return result;
 	}
 
-
-
-    
-
-
-
 bool dealDamage( GameObject human, float damage )
 	{
 		HealthComponent health = human.GetComponent<HealthComponent> ();
@@ -671,6 +665,8 @@ bool dealDamage( GameObject human, float damage )
 
    public void GoToTag(string Tag)
     {
+        m_hasPlayerTask = false;
+        m_state = State.Idle;
         GameObject[] taggedObjects = GameObject.FindGameObjectsWithTag(Tag);
         if (taggedObjects.Length >= 1)
         {
@@ -683,8 +679,7 @@ bool dealDamage( GameObject human, float damage )
                 setTargetObject(taskObject);
                 m_oldPosition = GetComponent<Transform>().position;
                 m_state = State.ApproachTarget;
-                m_hasPlayerTask = true;
-                 
+                m_hasPlayerTask = true;             
             }
         }
         else

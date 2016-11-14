@@ -7,12 +7,28 @@ public class UDG_KeyboardInput : MonoBehaviour {
  public   void zombieKeyboardInput(GameObject obj)
     {
         ZombieBehavior z = obj.GetComponent<ZombieBehavior>();
+        MainGameManager instance = (MainGameManager) this.GetComponent<MainGameManager>();
         if (z != null)
         {
-            if (Input.GetKeyDown("f")) { z.GoToTag("Player"); }
-            if (Input.GetKeyDown("r")) { z.GoToTag("Human"); }
-            if (Input.GetKeyDown("b")) { z.GoToTag("Barricade"); }
-            if (Input.GetKeyDown("g")) { z.GoToTag("Window"); }
+            if (Input.GetKeyDown("f")) {
+                z.GoToTag("Player");
+                instance.zombieGroupSize =  GameObject.FindGameObjectsWithTag("Zombie").Length;
+            }
+
+            if (Input.GetKeyDown("r")) {
+                z.GoToTag("Human");
+               instance.zombieGroupSize = GameObject.FindGameObjectsWithTag("Zombie").Length;
+            }
+
+            if (Input.GetKeyDown("b")) {
+                z.GoToTag("Barricade");
+              instance.zombieGroupSize = GameObject.FindGameObjectsWithTag("Zombie").Length;
+            }
+
+            if (Input.GetKeyDown("g")) {
+                z.GoToTag("Window");
+                instance.zombieGroupSize = GameObject.FindGameObjectsWithTag("Zombie").Length;
+            }
         }
     }
 

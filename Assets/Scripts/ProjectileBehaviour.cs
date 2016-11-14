@@ -67,9 +67,31 @@ public class ProjectileBehaviour : MonoBehaviour {
     void OnCollisionEnter(Collision collision) {
 		if (m_impactTarget == null) {
             // :BILL: rootColliderObject doesn't play well with nesting child to runtime parents. 10 17 2018
-			//GameObject rootColliderObject = getRootObject (collision.gameObject);
-            
-            
+            //note we aren't nested in a parent now, betcause SetParent position error.
+            GameObject rootColliderObject = getRootObject (collision.gameObject);
+            if (rootColliderObject.tag == "Human")
+            {
+                HumanBehavior hb = rootColliderObject.GetComponent<HumanBehavior>();
+                if (hb != null)
+                {
+                    hb.handleBulletImpact(collision);
+                }
+            }
+            else if (rootColliderObject.tag == "Zombie")
+            {
+                ZombieBehavior zb = rootColliderObject.GetComponent<ZombieBehavior>();
+                if (zb != null)
+                {
+                    zb.handleBulletImpact(collision);
+                }
+            }
+
+            if (rootColliderObject.GetComponent<HealthComponent>() != null)
+            {
+                m_impactTarget = collision.rigidbody;
+                m_lifeTime = 0.25f;
+            }
+/*
             GameObject childColliderObject = getChildRootObject(collision.gameObject);
           
 			if (childColliderObject.tag == "Human") {
@@ -88,6 +110,7 @@ public class ProjectileBehaviour : MonoBehaviour {
 				m_impactTarget = collision.rigidbody;
 				m_lifeTime = 0.25f;
 			}
+ */
 		}
 
 		if (m_impactTarget == null) {
