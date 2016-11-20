@@ -56,6 +56,7 @@ public class MainGameManager : MainGameInit
     private Vector3[] screamVector3;
     private Vector3[] trackedPosition;
 
+    public bool showTextToggle = true;
 
     #region Example UDGINIT.LUA as C#
 
@@ -394,7 +395,7 @@ public class MainGameManager : MainGameInit
     // OnGUI is auto updating.
     public void OnGUI()
     {
-         updateScreenText(0);
+        if (showTextToggle) { updateScreenText(0); }
    
     }
 
@@ -410,13 +411,15 @@ public class MainGameManager : MainGameInit
         scenePath = SceneManager.GetActiveScene().path;
         currentScene = SceneManager.GetActiveScene().name;      
 
+        /* parents disabled 11/14/2016
         // create parent objects
         HumanParent = new GameObject("HumanParent");
         HumanParent.transform.parent = this.transform;
         ZombieParent = new GameObject("ZombieParent");
         ZombieParent.transform.parent = this.transform;
         DeadBodies = new GameObject("DeadBodies");
-        DeadBodies.transform.parent = this.transform;    
+        DeadBodies.transform.parent = this.transform;  
+        */  
     }
 
   
@@ -441,7 +444,7 @@ public class MainGameManager : MainGameInit
             {
                 z.tag = "Dead";
                 z.name = "Dead";
-                z.transform.parent = GameObject.Find("DeadBodies").transform;
+               // z.transform.parent = GameObject.Find("DeadBodies").transform;
             }
            /* else
             {
@@ -449,10 +452,8 @@ public class MainGameManager : MainGameInit
                 GameObject p = GameObject.Find("ZombieParent");
                 p.transform.localPosition = ztrans;
                 if (getRootObject(z).name != "ZombieParent")
-                {
-                   
-                    z.transform.SetParent(GameObject.Find("ZombieParent").transform,false);
-                   
+                {                
+                    z.transform.SetParent(GameObject.Find("ZombieParent").transform,false);                
                 }
                 z.transform.localPosition = ztrans;
             }*/
@@ -484,12 +485,22 @@ public class MainGameManager : MainGameInit
 
     public void Update()
     {
-       // m_humans.update(Time.deltaTime);
+        // m_humans.update(Time.deltaTime);
         //m_zombies.update(Time.deltaTime);
-		m_movementObserver.update ();
-		m_zombieCommander.update ();
+        m_movementObserver.update();
+        m_zombieCommander.update();
+        if (Input.GetKeyDown(KeyCode.Escape)) {
+            if (showTextToggle == true)
+            {
+                showTextToggle = false;
+            }
+            else
+            {
+                showTextToggle = true;
+            }
+        }
 
-    }
+        }
 
     private void Start()
     {
