@@ -5,7 +5,7 @@ public class DestinationMarkerBehaviour : MonoBehaviour {
 	private float m_lifeTime = 1.0f;
 	// Use this for initialization
 	void Start () {
-	
+		transform.localScale = new Vector3( 0.0f, 0.0f, 0.0f );
 	}
 	
 	// Update is called once per frame
