@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class HumanBehavior : MonoBehaviour {
+public class HumanBehavior : SensingEntity {
 	enum State
 	{
 		WaitForComponents,	// wait until other components have been created (such as Animator by UMA)
@@ -15,143 +15,18 @@ public class HumanBehavior : MonoBehaviour {
 	};
 	
 	public float initDelay = 2.0f;
-	GameObject m_nonLocalizedTargetCandidate = null;
-	GameObject m_localizedTargetCandidate = null;
-	GameObject m_dangerObject = null;
 	Vector3 m_targetPosition;
-	Vector3 m_dangerPosition;
 	State m_state;
-	float m_earQueryInterval = 0.5f;
-	float m_eyeQueryInterval = 0.5f;
+
 	float m_time = 0.0f;
 	float m_stateTime = 0.0f;
-	float m_runnerAlertSqrDistanceThreshold = 256.0f;
-	float m_runnerDetectSqrDistanceThreshold = 64.0f;
+
 	Vector3 m_oldPosition;
 	bool m_hasGun;
 	GameObject m_gun;
 	public Transform handBone = null;
 	public RuntimeAnimatorController zombieAnimationController = null;
-	
-	string opposingFactionTag()
-	{
-		return gameObject.tag == "Zombie" ? "Human" : "Zombie";
-	}
-	
-	void updateSenses()
-	{
-		float oldTime = m_time - Time.deltaTime;
-		bool updateEars = (int)( oldTime / m_earQueryInterval ) != (int)( m_time / m_earQueryInterval );
-		bool updateEyes = (int)( oldTime / m_eyeQueryInterval ) != (int)( m_time / m_eyeQueryInterval );
-		
-		if( updateEars || updateEyes )
-		{
-			GameObject[] zombies = GameObject.FindGameObjectsWithTag( opposingFactionTag() );
-			GameObject closestHeardZombie = null;
-			GameObject closestSeenZombie = null;
-			bool targetIsHeardOrSeen = false;
-			float closestHeardZombieSqrDistance = float.MaxValue;
-			float closestSeenZombieSqrDistance = float.MaxValue;
-			
-			setLocalizedTargetCandidate( null );
-			setNonLocalizedTargetCandidate( null );
-			if( m_dangerObject != null && ( m_dangerObject.GetComponent<HealthComponent>() == null || m_dangerObject.GetComponent<HealthComponent>().isDead() ) )
-			{
-				// target was killed by something else
-				setTargetObject( null );
-				m_dangerPosition = GetComponent< Transform > ().position;
-			}
-            //Debug.Log(string.Format("Zombies = {0}", zombies));
-            foreach (GameObject zombie in zombies)
-                {
-                //Debug.Log(string.Format("Zombie= {0}", zombie));
-                if (zombie.GetComponent<HealthComponent>() == null || zombie.GetComponent<HealthComponent>().isDead())
-                    {
-                        // ignore dead zombies for now
-                        continue;
-                    }
-                    Vector3 zombieHeadPosition = GetComponent<Transform>().position;
-                    Vector3 zombieViewDirection = GetComponent<Transform>().forward;
-                    zombieHeadPosition.y += 1.5f;
-                    Vector3 zombieCenter = zombie.GetComponent<Transform>().position;
-                    zombieCenter.y += 0.8f;
-                    Vector3 direction = zombieCenter - zombieHeadPosition;
-                    float sqrDistanceToZombie = direction.sqrMagnitude;
 
-                // Why this bugging out? instance doesn't exist?
-               // Debug.Log(String.Format("getObjectSpeed = {0}",MainGameManager.instance.getObjectSpeed(zombie)));
-               
-                if (updateEars && MainGameManager.instance.getObjectSpeed(zombie) > 1.0f)
-                        {
-                            // human is running
-                            if (zombie == m_dangerObject)
-                            {
-                                targetIsHeardOrSeen = true;
-                            }
-
-                            if (sqrDistanceToZombie < closestHeardZombieSqrDistance)
-                            {
-                                closestHeardZombie = zombie;
-                                closestHeardZombieSqrDistance = sqrDistanceToZombie;
-                            }
-                        }
-
-                        if (updateEyes)
-                        {
-                            direction.Normalize();
-                            Vector3 direction2D = direction;
-                            direction2D.y = 0.0f;
-                            direction2D.Normalize();
-                            if (Vector3.Dot(direction2D, zombieViewDirection) > 0.707f)
-                            {
-                                // in azimuth
-                                Vector3 rayStart = zombieHeadPosition + 0.5f * direction;
-                                Ray ray = new Ray(rayStart, direction);
-                                RaycastHit hit = new RaycastHit();
-                                if (Physics.Raycast(ray, out hit))
-                                {
-                                    if ((hit.point - zombieCenter).sqrMagnitude < 0.5f)
-                                    {
-                                        // ray hit is near zombie -> no obstacle in between
-                                        if (zombie == m_dangerObject)
-                                        {
-                                            targetIsHeardOrSeen = true;
-                                        }
-                                        if (sqrDistanceToZombie < closestSeenZombieSqrDistance)
-                                        {
-                                            closestSeenZombie = zombie;
-                                            closestSeenZombieSqrDistance = sqrDistanceToZombie;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-            
-			}
-			
-			/*
-			if( targetIsHeardOrSeen )
-			{
-				setLocalizedTargetCandidate( m_dangerObject );
-			}
-			else*/ if( closestSeenZombie != null )
-			{
-				setLocalizedTargetCandidate( closestSeenZombie );
-			}
-			else if( closestHeardZombie != null )
-			{
-				if( closestHeardZombieSqrDistance < m_runnerDetectSqrDistanceThreshold )
-				{
-					setLocalizedTargetCandidate( closestHeardZombie );
-				}
-				else if( closestHeardZombieSqrDistance < m_runnerAlertSqrDistanceThreshold )
-				{
-					setNonLocalizedTargetCandidate( closestHeardZombie );
-				}
-			}
-		}
-	}
-	
 	void approachPosition( Vector3 targetPosition )
 	{
         NavMeshHit hit;
@@ -169,15 +44,15 @@ public class HumanBehavior : MonoBehaviour {
 	{
 		/*
 		updateSenses();
-		if( m_localizedTargetCandidate != null )
+		if( m_localizedObjectOfInterestCandidate != null )
 		{
-			setTargetObject( m_localizedTargetCandidate );
-			m_dangerPosition = m_dangerObject.GetComponent< Transform >().position;
+			setObjectOfInterest( m_localizedObjectOfInterestCandidate );
+			m_positionOfInterest = m_objectOfInterest.GetComponent< Transform >().position;
 			m_state = State.RunOff;
 			return;
 		}
 
-		m_targetPosition = getTargetPositionForDangerPosition (m_dangerPosition);
+		m_targetPosition = getTargetPositionForDangerPosition (m_positionOfInterest);
 		approachPosition( m_targetPosition );
 		if( reachedPosition() )
 		*/
@@ -195,7 +70,7 @@ public class HumanBehavior : MonoBehaviour {
 		m_hasGun = Random.Range (0, 3) == 0 && handBone != null;
 		m_state = State.Init;
 		m_targetPosition = transform.position;
-		m_dangerPosition = transform.position;
+		m_positionOfInterest = transform.position;
 
 		// for now, let each human walk to a differnt spawn point after spawning
 		GameObject[] spawnPoints = GameObject.FindGameObjectsWithTag("SpawnPoint_Human");
@@ -205,7 +80,7 @@ public class HumanBehavior : MonoBehaviour {
 			Vector3 diff = spawnPoints[ i ].transform.position - transform.position;
 			if( diff.sqrMagnitude > maxDiffSqr )
 			{
-				m_dangerPosition = spawnPoints[ i ].transform.position;
+				m_positionOfInterest = spawnPoints[ i ].transform.position;
 				maxDiffSqr = diff.sqrMagnitude;
 			}
 		}		
@@ -228,13 +103,13 @@ public class HumanBehavior : MonoBehaviour {
 	{
 		GetComponent<Animator>().SetBool ("walk", false );
 		updateSenses ();
-		if( m_localizedTargetCandidate != null )
+		if( m_localizedObjectOfInterestCandidate != null )
 		{
-			setTargetObject( m_localizedTargetCandidate );
-			m_dangerPosition = m_dangerObject.GetComponent< Transform >().position;
+			setObjectOfInterest( m_localizedObjectOfInterestCandidate );
+			m_positionOfInterest = m_objectOfInterest.GetComponent< Transform >().position;
 			m_state = State.RunOff;
 		}
-		else if( m_nonLocalizedTargetCandidate != null )
+		else if( m_nonLocalizedObjectOfInterestCandidate != null )
 		{
 			m_state = State.Alerted;
 		}
@@ -244,14 +119,14 @@ public class HumanBehavior : MonoBehaviour {
 	{
 		GetComponent<Animator>().SetBool ("walk", false );
 		updateSenses();
-		if( m_localizedTargetCandidate != null )
+		if( m_localizedObjectOfInterestCandidate != null )
 		{
-			setTargetObject( m_localizedTargetCandidate );
-			m_dangerPosition = m_dangerObject.GetComponent< Transform >().position;
+			setObjectOfInterest( m_localizedObjectOfInterestCandidate );
+			m_positionOfInterest = m_objectOfInterest.GetComponent< Transform >().position;
 
 			const float runOffThresholdSmall = 25.0f;
 			const float runOffThresholdLarge = 49.0f;
-			float sqrDistance = ( transform.position - m_dangerPosition ).sqrMagnitude;
+			float sqrDistance = ( transform.position - m_positionOfInterest ).sqrMagnitude;
 			if( ( sqrDistance < runOffThresholdSmall && !m_hasGun ) || ( sqrDistance > runOffThresholdLarge && m_hasGun ) )
 			{
 				m_state = State.RunOff;
@@ -261,7 +136,7 @@ public class HumanBehavior : MonoBehaviour {
 				m_state = State.StandAndShoot;
 			}
 			return;
-		} else if (m_nonLocalizedTargetCandidate != null || m_stateTime < 4.0f ) {
+		} else if (m_nonLocalizedObjectOfInterestCandidate != null || m_stateTime < 4.0f ) {
 		// glance left and right (need anim later)
 			transform.Rotate( 0.0f, 90.0f * Time.deltaTime * (m_stateTime > 1.0f && m_stateTime <= 3.0f ? 1.0f : -1.0f), 0.0f );
 		} else {
@@ -273,17 +148,17 @@ public class HumanBehavior : MonoBehaviour {
 	{
 		updateSenses ();
 		
-		if( m_localizedTargetCandidate != null )
+		if( m_localizedObjectOfInterestCandidate != null )
 		{
-			setTargetObject( m_localizedTargetCandidate );
+			setObjectOfInterest( m_localizedObjectOfInterestCandidate );
 		}
 		
-		if( m_dangerObject != null )
+		if( m_objectOfInterest != null )
 		{
-			m_dangerPosition = m_dangerObject.GetComponent< Transform > ().position;
+			m_positionOfInterest = m_objectOfInterest.GetComponent< Transform > ().position;
 		}
 
-		m_targetPosition = getTargetPositionForDangerPosition (m_dangerPosition);
+		m_targetPosition = getTargetPositionForDangerPosition (m_positionOfInterest);
 		approachPosition( m_targetPosition );
 		if (reachedPosition () && m_stateTime > 0.5f ) {
 			m_state = State.Alerted;
@@ -296,14 +171,14 @@ public class HumanBehavior : MonoBehaviour {
 	{
 		GetComponent<Animator>().SetBool ("walk", false );
 		updateSenses ();
-		if( m_localizedTargetCandidate != null )
+		if( m_localizedObjectOfInterestCandidate != null )
 		{
-			setTargetObject( m_localizedTargetCandidate );
-			m_dangerPosition = m_dangerObject.GetComponent< Transform >().position;
+			setObjectOfInterest( m_localizedObjectOfInterestCandidate );
+			m_positionOfInterest = m_objectOfInterest.GetComponent< Transform >().position;
 			
 			const float runOffThresholdSmall = 25.0f;
 			const float runOffThresholdLarge = 81.0f;
-			float sqrDistance = ( transform.position - m_dangerPosition ).sqrMagnitude;
+			float sqrDistance = ( transform.position - m_positionOfInterest ).sqrMagnitude;
 			if( ( /*sqrDistance < runOffThresholdSmall ||*/ sqrDistance > runOffThresholdLarge ) && m_stateTime > 1.0f )
 			{
 				m_state = State.RunOff;
@@ -317,7 +192,7 @@ public class HumanBehavior : MonoBehaviour {
 				Instantiate( MainGameManager.instance.bullet, transform.position + transform.forward + transform.up * 1.1f, bulletRotation);
 			}
 
-			Vector3 look = m_dangerPosition - transform.position;
+			Vector3 look = m_positionOfInterest - transform.position;
 			look.Normalize();
 			Quaternion newRotation = new Quaternion();
 			newRotation.SetLookRotation( look, transform.up );
@@ -345,24 +220,6 @@ public class HumanBehavior : MonoBehaviour {
 			debugTint.tintColor = color;
 		}
 		*/
-	}
-	
-	void setNonLocalizedTargetCandidate( GameObject obj )
-	{
-		colorizeObject( m_nonLocalizedTargetCandidate, Color.white );
-		m_nonLocalizedTargetCandidate = obj;
-	}
-	
-	void setLocalizedTargetCandidate( GameObject obj )
-	{
-		colorizeObject( m_localizedTargetCandidate, Color.white );
-		m_localizedTargetCandidate = obj;
-	}
-	
-	void setTargetObject( GameObject obj )
-	{
-		colorizeObject( m_dangerObject, Color.white );
-		m_dangerObject = obj;
 	}
 
 	Vector3 getTargetPositionForDangerPosition( Vector3 dangerPosition )
@@ -423,9 +280,9 @@ public class HumanBehavior : MonoBehaviour {
 
 
 		
-		//colorizeObject( m_nonLocalizedTargetCandidate, Color.blue );
-		//colorizeObject( m_localizedTargetCandidate, Color.green );
-		//colorizeObject( m_dangerObject, Color.red );
+		//colorizeObject( m_nonLocalizedObjectOfInterestCandidate, Color.blue );
+		//colorizeObject( m_localizedObjectOfInterestCandidate, Color.green );
+		//colorizeObject( m_objectOfInterest, Color.red );
 		
 		if( m_state != oldState )
 		{
