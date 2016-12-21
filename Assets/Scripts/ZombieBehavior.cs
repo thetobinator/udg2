@@ -181,7 +181,6 @@ public class ZombieBehavior : SensingEntity {
 	{
 		if (m_stateTime > 4.0f) {
 			GetComponent<NavMeshAgent> ().enabled = true;
-			GetComponent<Animator> ().enabled = true;
 			m_state = State.Idle;
 		}
 		else if (m_stateTime > 2.0f) {
@@ -199,7 +198,7 @@ public class ZombieBehavior : SensingEntity {
         HealthComponent hc = obj.GetComponent<HealthComponent>();
 
 		bool result = false;
-		if (n != null && a != null && r != null) {
+		if (n != null && a != null && r != null && a.enabled) {
 			r.ragdolled=true;
 			
 			if (h != null) {
@@ -210,8 +209,8 @@ public class ZombieBehavior : SensingEntity {
                 obj.GetComponent<ZombieBehavior>().initDelay = 8.0f;
                 result = true;
 			} else if (z != null) {
-                if (obj.GetComponent<HealthComponent>().isDead()) {                    
-                    Destroy(z);   
+                if (hc.isDead()) {
+                    Destroy(z);
                 }
 				result = true;
 			}
@@ -220,7 +219,7 @@ public class ZombieBehavior : SensingEntity {
 		return result;
 	}
 
-bool dealDamage( GameObject human, float damage )
+	bool dealDamage( GameObject human, float damage )
 	{
 		HealthComponent health = human.GetComponent<HealthComponent> ();
 
@@ -261,9 +260,7 @@ bool dealDamage( GameObject human, float damage )
 
                 return false;
             }              
-			}
-
-		
+		}
 
 		return health.isDead ();
 	}
@@ -436,10 +433,6 @@ bool dealDamage( GameObject human, float damage )
 				break;
 		}
 
-		//colorizeObject( m_nonLocalizedObjectOfInterestCandidate, Color.blue );
-		//colorizeObject( m_localizedObjectOfInterestCandidate, Color.green );
-		//colorizeObject( m_objectOfInterest, Color.red );
-
 		if( m_state != oldState )
 		{
 			m_stateTime = 0.0f;
@@ -449,21 +442,14 @@ bool dealDamage( GameObject human, float damage )
 			m_stateTime += Time.deltaTime;
 		}
 
-		float animationSpeedMultiplier = speedMultiplier * 0.6f;
 
-		if( !reachedPosition() )
+		if( !reachedPosition() && m_animationFlags == 0u )
 		{
 			m_animationFlags |= (uint)AnimationFlags.Run;
 		}
-      
-		Animator animatorComponent = GetComponent<Animator> ();
-		if (animatorComponent != null ) {
-			animatorComponent.SetBool ("walk", (m_animationFlags & (uint)AnimationFlags.Walk) != 0u );
-			animatorComponent.SetBool ("run", (m_animationFlags & (uint)AnimationFlags.Run) != 0u );
-			animatorComponent.SetBool ("attack", (m_animationFlags & (uint)AnimationFlags.Attack) != 0u);
-			animatorComponent.SetBool ("turn", (m_animationFlags & (uint)AnimationFlags.Turn) != 0u);
-			animatorComponent.SetFloat ("speedMultiplier", animationSpeedMultiplier);
-		}
+
+		updateAnimationState ();
+		
         NavMeshAgent nma = GetComponent<NavMeshAgent>();
         if (!nma) { return; }
 		GetComponent<NavMeshAgent> ().speed = 1.2f * speedMultiplier;//m_hasPlayerTask ? 1.2f : 1.2f;
@@ -471,6 +457,19 @@ bool dealDamage( GameObject human, float damage )
 
 
     }
+
+	void updateAnimationState()
+	{
+		float animationSpeedMultiplier = speedMultiplier * 0.6f;
+		Animator animatorComponent = GetComponent<Animator> ();
+		if (animatorComponent != null && animatorComponent.enabled) {
+			animatorComponent.SetBool ("walk", (m_animationFlags & (uint)AnimationFlags.Walk) != 0u );
+			animatorComponent.SetBool ("run", (m_animationFlags & (uint)AnimationFlags.Run) != 0u );
+			animatorComponent.SetBool ("attack", (m_animationFlags & (uint)AnimationFlags.Attack) != 0u);
+			animatorComponent.SetBool ("turn", (m_animationFlags & (uint)AnimationFlags.Turn) != 0u);
+			animatorComponent.SetFloat ("speedMultiplier", animationSpeedMultiplier);
+		}
+	}
     
     public void handleBulletImpact( Collision collision )
 	{
@@ -558,8 +557,6 @@ bool dealDamage( GameObject human, float damage )
         	
 		m_state = State.ApproachTarget;
 		m_hasPlayerTask = true;
-		GetComponent<Animator> ().SetBool ("attack", false);
-		GetComponent<Animator> ().SetBool ("eat", false);
 	}
 
    public void GoToTag(string Tag)
