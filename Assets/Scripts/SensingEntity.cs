@@ -38,6 +38,44 @@ public class SensingEntity : MonoBehaviour {
 		m_objectOfInterest = obj;
 	}
 
+	protected void approachPosition( Vector3 targetPosition )
+	{
+		NavMeshAgent nma = GetComponent<NavMeshAgent>();
+		if( nma == null || !nma.enabled || !nma.isOnNavMesh )
+		{
+			return;
+		}
+		NavMeshHit hit;
+		if( NavMesh.SamplePosition( transform.position, out hit, 3, NavMesh.AllAreas ) )
+		{
+			nma.SetDestination( targetPosition );
+		}
+	}
+
+	protected bool reachedPosition()
+	{
+		NavMeshAgent nma = GetComponent<NavMeshAgent>();
+		if( nma == null )
+		{
+			return false;
+		}
+		return (nma.destination - transform.position).sqrMagnitude < 1.5f || nma.enabled == false;
+	}
+
+	protected void colorizeObject( GameObject obj, Color color )
+	{
+		if( obj == null )
+		{
+			return;
+		}
+
+		DebugTint debugTint = obj.GetComponent<DebugTint> ();
+		if( debugTint != null )
+		{
+			debugTint.tintColor = color;
+		}
+	}
+
 	protected void updateSenses()
 	{
 		float oldTime = m_time - Time.deltaTime;
@@ -127,12 +165,7 @@ public class SensingEntity : MonoBehaviour {
 
 			}
 
-			/*
-			if( objectOfInterestIsHeardOrSeen )
-			{
-				setLocalizedObjectOfInterestCandidate( m_objectOfInterest );
-			}
-			else*/ if( closestSeenObjectOfOpposingFaction != null )
+			if( closestSeenObjectOfOpposingFaction != null )
 			{
 				setLocalizedObjectOfInterestCandidate( closestSeenObjectOfOpposingFaction );
 			}

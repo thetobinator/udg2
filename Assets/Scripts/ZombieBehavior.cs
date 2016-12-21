@@ -16,33 +16,30 @@ public class ZombieBehavior : SensingEntity {
 		Hit,				// hit, target has some time to escape
 		Dead,				// dead, this time really
 	};
+
+	enum AnimationFlags
+	{
+		Walk = 1 << 0,
+		Run = 1 << 1,
+		Attack = 1 << 2,
+		Turn = 1 << 3,
+	}
     
 	public float initDelay = 0.0f;
 	public float speedMultiplier = 1.0f;
 	State m_state;
 	float m_stateTime = 0.0f;
+	Vector3 m_forwardDirectionBeforeLookingAround;
+	Vector3 m_rightDirectionBeforeLookingAround;
 	public GameObject taskObject;
 	GameObject previousObject;
 	bool m_hasPlayerTask = false;
 	Vector3 m_oldPosition;
+	uint m_animationFlags;
+
     public bool hasPlayerTask()
 	{
 		return m_hasPlayerTask;
-	}
-
-	void approachPosition( Vector3 targetPosition )
-	{
-        if (this.GetComponent<NavMeshAgent>().isOnNavMesh) { 
-           GetComponent<NavMeshAgent>().SetDestination(targetPosition);
-        }
-
-    }
-
-    bool reachedPosition()
-    {
-        NavMeshAgent nma = GetComponent<NavMeshAgent>();
-        if (!nma) { return false; }
-		return (nma.destination - transform.position).sqrMagnitude < 1.5f || nma.enabled == false;
 	}
 
 	void updateSpawnBehaviour()
@@ -128,15 +125,52 @@ public class ZombieBehavior : SensingEntity {
 
 	void updateAlertBehaviour()
 	{
-		updateSenses();
+		updateSenses();/*
 		if (m_localizedObjectOfInterestCandidate != null) {
 			setObjectOfInterest (m_localizedObjectOfInterestCandidate);
 			m_positionOfInterest = m_objectOfInterest.GetComponent< Transform > ().position;
 			m_state = State.ApproachTarget;
 			return;
-		} else if (m_nonLocalizedObjectOfInterestCandidate != null || m_stateTime < 4.0f ) {
+		} else*/ if (m_nonLocalizedObjectOfInterestCandidate != null || m_stateTime < 3.5f ) {
 			// glance left and right (need anim later)
-			transform.Rotate( 0.0f, 90.0f * Time.deltaTime * (m_stateTime > 1.0f && m_stateTime <= 3.0f ? 1.0f : -1.0f), 0.0f );
+			//transform.Rotate( 0.0f, 90.0f * Time.deltaTime * (m_stateTime > 1.0f && m_stateTime <= 3.0f ? 1.0f : -1.0f), 0.0f );
+			if( m_stateTime == 0.0f )
+			{
+				m_forwardDirectionBeforeLookingAround = transform.forward;
+				m_rightDirectionBeforeLookingAround = transform.right;
+			}
+			else
+			{
+				Quaternion originalRotation = Quaternion.FromToRotation (Vector3.forward, m_forwardDirectionBeforeLookingAround);
+				Quaternion glanceRightRotation = Quaternion.FromToRotation (Vector3.forward, m_rightDirectionBeforeLookingAround);
+				Quaternion glanceLeftRotation = Quaternion.FromToRotation (-Vector3.forward, m_rightDirectionBeforeLookingAround);
+				float lerpFactor = 2.0f;
+				if( m_stateTime >= 0.5f && m_stateTime < 1.5f )
+				{
+					lerpFactor = (m_stateTime - 0.5f ) * 4.0f;
+					transform.rotation = Quaternion.Lerp (originalRotation, glanceRightRotation, Mathf.Sin(Mathf.Clamp01(lerpFactor)*Mathf.PI*0.5f));
+				}
+				else if( m_stateTime >= 1.5f && m_stateTime < 2.0f )
+				{
+					lerpFactor = (m_stateTime - 1.5f ) * 2.0f;
+					transform.rotation = Quaternion.Lerp (glanceRightRotation, originalRotation, Mathf.Sin(Mathf.Clamp01(lerpFactor)*Mathf.PI*0.5f));
+				}
+				else if( m_stateTime >= 2.0f && m_stateTime < 3.0f )
+				{
+					lerpFactor = (m_stateTime - 2.0f ) * 2.0f;
+					transform.rotation = Quaternion.Lerp (originalRotation, glanceLeftRotation, Mathf.Sin(Mathf.Clamp01(lerpFactor)*Mathf.PI*0.5f));
+				}
+				else if( m_stateTime >= 3.0f )
+				{
+					lerpFactor = (m_stateTime - 3.0f ) * 4.0f;
+					transform.rotation = Quaternion.Lerp (glanceLeftRotation, originalRotation, Mathf.Sin(Mathf.Clamp01(lerpFactor)*Mathf.PI*0.5f));
+				}
+
+				if( lerpFactor < 0.5f )
+				{
+					m_animationFlags |= (uint)AnimationFlags.Turn;					
+				}
+			}			
 		} else {
 			m_state = State.Idle;
 		}
@@ -293,13 +327,12 @@ bool dealDamage( GameObject human, float damage )
 
 	void updateTargetInRangeBehaviour()
 	{
-		GetComponent<Animator> ().SetBool ("attack", true);
+		m_animationFlags |= (uint)AnimationFlags.Attack;
 		m_state = State.Attack;
 	}
 
 	void updateAttackBehaviour()
 	{
-		GetComponent<Animator> ().SetBool ("attack", false);
 		if (m_stateTime > 0.1f) {
 			if (m_objectOfInterest != null) {
 				if (dealDamage (m_objectOfInterest, 33.3f)) {
@@ -327,20 +360,8 @@ bool dealDamage( GameObject human, float damage )
 		}
 	}
 
-	void colorizeObject( GameObject obj, Color color )
-	{
-		if( obj == null )
-		{
-			return;
-		}
 
-		DebugTint debugTint = obj.GetComponent<DebugTint> ();
-		if( debugTint != null )
-		{
-			debugTint.tintColor = color;
-		}
-	}
-
+	/*
 	bool isInViewFrustum()
 	{
 		Bounds bounds = GetComponent<Collider> ().bounds;
@@ -348,10 +369,12 @@ bool dealDamage( GameObject human, float damage )
 		Plane[] planes = GeometryUtility.CalculateFrustumPlanes( Camera.main );
 		return GeometryUtility.TestPlanesAABB( planes, bounds );
 	}
+	*/
 		
 	void updateState()
 	{
-		m_stateTime += Time.deltaTime;
+		m_animationFlags = 0u;
+
 		State oldState = m_state;
 
 		switch( m_state )
@@ -408,11 +431,25 @@ bool dealDamage( GameObject human, float damage )
 		{
 			m_stateTime = 0.0f;
 		}
+		else
+		{
+			m_stateTime += Time.deltaTime;
+		}
+
+		float animationSpeedMultiplier = speedMultiplier * 0.6f;
+
+		if( !reachedPosition() )
+		{
+			m_animationFlags |= (uint)AnimationFlags.Run;
+		}
       
 		Animator animatorComponent = GetComponent<Animator> ();
 		if (animatorComponent != null ) {
-			animatorComponent.SetBool ("walk", !reachedPosition ());
-			animatorComponent.SetFloat ("speedMultiplier", speedMultiplier);
+			animatorComponent.SetBool ("walk", (m_animationFlags & (uint)AnimationFlags.Walk) != 0u );
+			animatorComponent.SetBool ("run", (m_animationFlags & (uint)AnimationFlags.Run) != 0u );
+			animatorComponent.SetBool ("attack", (m_animationFlags & (uint)AnimationFlags.Attack) != 0u);
+			animatorComponent.SetBool ("turn", (m_animationFlags & (uint)AnimationFlags.Turn) != 0u);
+			animatorComponent.SetFloat ("speedMultiplier", animationSpeedMultiplier);
 		}
         NavMeshAgent nma = GetComponent<NavMeshAgent>();
         if (!nma) { return; }
@@ -421,10 +458,6 @@ bool dealDamage( GameObject human, float damage )
 
 
     }
-
-    //Transform[] hinges = GameObject.FindObjectsOfType (typeof(Transform)) as Transform[];
-
-
     
     public void handleBulletImpact( Collision collision )
 	{

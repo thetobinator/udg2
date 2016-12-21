@@ -25,19 +25,6 @@ public class HumanBehavior : SensingEntity {
 	GameObject m_gun;
 	public Transform handBone = null;
 	public RuntimeAnimatorController zombieAnimationController = null;
-
-	void approachPosition( Vector3 targetPosition )
-	{
-        NavMeshHit hit;
-        if (NavMesh.SamplePosition(this.transform.position, out hit, 3, NavMesh.AllAreas)){
-            GetComponent<NavMeshAgent>().SetDestination(targetPosition);
-        }
-        }
-	
-	bool reachedPosition()
-	{
-		return (GetComponent< NavMeshAgent > ().destination - transform.position).sqrMagnitude < 1.5f;
-	}
 	
 	void updateSpawnBehaviour()
 	{
@@ -203,23 +190,6 @@ public class HumanBehavior : SensingEntity {
 			m_state = State.Alerted;
 		}		
 	}
-	
-	void colorizeObject( GameObject obj, Color color )
-	{
-		// commented out for now to test zombie target colorization
-		/*
-		if( obj == null )
-		{
-			return;
-		}
-		
-		DebugTint debugTint = obj.GetComponent<DebugTint> ();
-		if( debugTint != null )
-		{
-			debugTint.tintColor = color;
-		}
-		*/
-	}
 
 	Vector3 getTargetPositionForDangerPosition( Vector3 dangerPosition )
 	{
@@ -239,7 +209,6 @@ public class HumanBehavior : SensingEntity {
 	
 	void updateState()
 	{
-		m_stateTime += Time.deltaTime;
 		State oldState = m_state;
 
 		switch( m_state )
@@ -275,16 +244,14 @@ public class HumanBehavior : SensingEntity {
 		case State.Dead:
 			break;
 		}
-
-
-		
-		//colorizeObject( m_nonLocalizedObjectOfInterestCandidate, Color.blue );
-		//colorizeObject( m_localizedObjectOfInterestCandidate, Color.green );
-		//colorizeObject( m_objectOfInterest, Color.red );
 		
 		if( m_state != oldState )
 		{
 			m_stateTime = 0.0f;
+		}
+		else
+		{
+			m_stateTime += Time.deltaTime;	
 		}
 
 		Animator animatorComponent = GetComponent<Animator> ();
@@ -305,8 +272,6 @@ public class HumanBehavior : SensingEntity {
 
 	public void handleBulletImpact( Collision collision )
 	{
-        //Debug.Log(collision.gameObject.name);
-
         HealthComponent h = GetComponent<HealthComponent>();
 		if( h != null && h.enabled ){
 			h.dealDamage( 25.0f );
@@ -321,14 +286,11 @@ public class HumanBehavior : SensingEntity {
 		m_state = State.WaitForComponents;
 	}
 
-	// Update is called once per frame
 	void Update ()
 	{
 		updateState();
 
-		/*
-		if (m_hasPlayerTask) {
-            */
+
 
 		GetComponent<NavMeshAgent>().speed = 1.5f;
 
@@ -348,10 +310,7 @@ public class HumanBehavior : SensingEntity {
 		} else {
 			this.transform.Translate (Vector3.forward * Time.deltaTime);
 		}
-       
-        
-		//}
-	}// end update
+	}
 	
 	
 }
