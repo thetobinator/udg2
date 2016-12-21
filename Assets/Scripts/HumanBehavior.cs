@@ -18,7 +18,6 @@ public class HumanBehavior : SensingEntity {
 	Vector3 m_targetPosition;
 	State m_state;
 
-	float m_time = 0.0f;
 	float m_stateTime = 0.0f;
 
 	Vector3 m_oldPosition;
@@ -240,7 +239,6 @@ public class HumanBehavior : SensingEntity {
 	
 	void updateState()
 	{
-		m_time += Time.deltaTime;
 		m_stateTime += Time.deltaTime;
 		State oldState = m_state;
 

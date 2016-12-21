@@ -3,7 +3,6 @@ using System.Collections;
 
 public class SensingEntity : MonoBehaviour {
 	
-	protected float m_time = 0.0f;
 	protected float m_earQueryInterval = 0.5f;
 	protected float m_eyeQueryInterval = 0.5f;
 	protected GameObject m_nonLocalizedObjectOfInterestCandidate = null;
@@ -12,6 +11,12 @@ public class SensingEntity : MonoBehaviour {
 	protected Vector3 m_positionOfInterest;
 	private float m_runnerAlertSqrDistanceThreshold = 256.0f;
 	private float m_runnerDetectSqrDistanceThreshold = 64.0f;
+	private float m_time = 0.0f;
+
+	public void Init()
+	{
+		m_time = Random.value; // avoid triggering the senses of all objects at the same time
+	}
 
 	protected string getOpposingFactionTag()
 	{
@@ -38,6 +43,8 @@ public class SensingEntity : MonoBehaviour {
 		float oldTime = m_time - Time.deltaTime;
 		bool updateEars = (int)( oldTime / m_earQueryInterval ) != (int)( m_time / m_earQueryInterval );
 		bool updateEyes = (int)( oldTime / m_eyeQueryInterval ) != (int)( m_time / m_eyeQueryInterval );
+
+		m_time += Time.deltaTime;
 
 		if( updateEars || updateEyes )
 		{

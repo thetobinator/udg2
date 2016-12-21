@@ -20,9 +20,6 @@ public class ZombieBehavior : SensingEntity {
 	public float initDelay = 0.0f;
 	public float speedMultiplier = 1.0f;
 	State m_state;
-	float m_earQueryInterval = 0.5f;
-	float m_eyeQueryInterval = 0.5f;
-	float m_time = 0.0f;
 	float m_stateTime = 0.0f;
 	public GameObject taskObject;
 	GameObject previousObject;
@@ -354,7 +351,6 @@ bool dealDamage( GameObject human, float damage )
 		
 	void updateState()
 	{
-		m_time += Time.deltaTime;
 		m_stateTime += Time.deltaTime;
 		State oldState = m_state;
 
