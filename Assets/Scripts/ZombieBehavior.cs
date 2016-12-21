@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class ZombieBehavior : MonoBehaviour {
+public class ZombieBehavior : SensingEntity {
 	enum State
 	{
 		WaitForComponents,	// wait until other components have been created (such as Animator by UMA)
@@ -19,17 +19,8 @@ public class ZombieBehavior : MonoBehaviour {
     
 	public float initDelay = 0.0f;
 	public float speedMultiplier = 1.0f;
-	GameObject m_nonLocalizedTargetCandidate = null;
-	GameObject m_localizedTargetCandidate = null;
-	GameObject m_targetObject = null;
-	Vector3 m_targetPosition;
 	State m_state;
-	float m_earQueryInterval = 0.5f;
-	float m_eyeQueryInterval = 0.5f;
-	float m_time = 0.0f;
 	float m_stateTime = 0.0f;
-	float m_runnerAlertSqrDistanceThreshold = 256.0f;
-	float m_runnerDetectSqrDistanceThreshold = 64.0f;
 	public GameObject taskObject;
 	GameObject previousObject;
 	bool m_hasPlayerTask = false;
@@ -38,125 +29,6 @@ public class ZombieBehavior : MonoBehaviour {
 	{
 		return m_hasPlayerTask;
 	}
-
-	string opposingFactionTag()
-	{
-		return gameObject.tag == "Zombie" ? "Human" : "Zombie";
-	}
-
-    
-	void updateSenses()
-	{
-		float oldTime = m_time - Time.deltaTime;
-		bool updateEars = (int)( oldTime / m_earQueryInterval ) != (int)( m_time / m_earQueryInterval );
-		bool updateEyes = (int)( oldTime / m_eyeQueryInterval ) != (int)( m_time / m_eyeQueryInterval );
-
-		if( updateEars || updateEyes )
-		{
-			GameObject[] humans = GameObject.FindGameObjectsWithTag( opposingFactionTag() );
-
-			GameObject closestHeardHuman = null;
-			GameObject closestSeenHuman = null;
-			bool targetIsHeardOrSeen = false;
-			float closestHeardHumanSqrDistance = float.MaxValue;
-			float closestSeenHumanSqrDistance = float.MaxValue;
-
-			setLocalizedTargetCandidate( null );
-			setNonLocalizedTargetCandidate( null );
-			if( m_targetObject != null && ( m_targetObject.GetComponent<HealthComponent>() == null || m_targetObject.GetComponent<HealthComponent>().isDead() ) )
-			{
-				// target was killed by something else
-				setTargetObject( null );
-				m_targetPosition = GetComponent< Transform > ().position;
-			}
-           // Debug.Log(string.Format("Humans = {0}", humans));
-            if (humans != null)
-            {
-                foreach (GameObject human in humans)
-                {
-                    if (human.GetComponent<HealthComponent>() == null || human.GetComponent<HealthComponent>().isDead())
-                    {
-                        // ignore dead humans for now
-                        continue;
-                    }
-                    Vector3 zombieHeadPosition = GetComponent<Transform>().position;
-                    Vector3 zombieViewDirection = GetComponent<Transform>().forward;
-                    zombieHeadPosition.y += 1.5f;
-                    Vector3 humanCenter = human.GetComponent<Transform>().position;
-                    humanCenter.y += 0.8f;
-                    Vector3 direction = humanCenter - zombieHeadPosition;
-                    float sqrDistanceToHuman = direction.sqrMagnitude;
-
-                    if (updateEars && MainGameManager.instance.getObjectSpeed(human) > 1.0f)
-                    {
-                        // human is running
-                        if (human == m_targetObject)
-                        {
-                            targetIsHeardOrSeen = true;
-                        }
-
-                        if (sqrDistanceToHuman < closestHeardHumanSqrDistance)
-                        {
-                            closestHeardHuman = human;
-                            closestHeardHumanSqrDistance = sqrDistanceToHuman;
-                        }
-                    }
-
-                    if (updateEyes)
-                    {
-                        direction.Normalize();
-                        Vector3 direction2D = direction;
-                        direction2D.y = 0.0f;
-                        direction2D.Normalize();
-                        if (Vector3.Dot(direction2D, zombieViewDirection) > 0.707f)
-                        {
-                            // in azimuth
-                            Vector3 rayStart = zombieHeadPosition + 0.5f * direction;
-                            Ray ray = new Ray(rayStart, direction);
-                            RaycastHit hit = new RaycastHit();
-                            if (Physics.Raycast(ray, out hit))
-                            {
-                                if ((hit.point - humanCenter).sqrMagnitude < 0.5f)
-                                {
-                                    // ray hit is near human -> no obstacle in between
-                                    if (human == m_targetObject)
-                                    {
-                                        targetIsHeardOrSeen = true;
-                                    }
-                                    if (sqrDistanceToHuman < closestSeenHumanSqrDistance)
-                                    {
-                                        closestSeenHuman = human;
-                                        closestSeenHumanSqrDistance = sqrDistanceToHuman;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-           
-			/*
-			if( targetIsHeardOrSeen )
-			{
-				setLocalizedTargetCandidate( m_targetObject );
-			}
-			else*/ if( closestSeenHuman != null )
-			{
-				setLocalizedTargetCandidate( closestSeenHuman );
-			}
-			else if( closestHeardHuman != null )
-			{
-				if( closestHeardHumanSqrDistance < m_runnerDetectSqrDistanceThreshold )
-				{
-					setLocalizedTargetCandidate( closestHeardHuman );
-				}
-				else if( closestHeardHumanSqrDistance < m_runnerAlertSqrDistanceThreshold )
-				{
-					setNonLocalizedTargetCandidate( closestHeardHuman );
-				}
-			}
-		}
-        }// end if humans not null
-    }
 
 	void approachPosition( Vector3 targetPosition )
 	{
@@ -177,20 +49,20 @@ public class ZombieBehavior : MonoBehaviour {
 	{
 		updateSenses();
 		/*
-		if( m_localizedTargetCandidate != null )
+		if( m_localizedObjectOfInterestCandidate != null )
 		{
-			setTargetObject( m_localizedTargetCandidate );
-			m_targetPosition = m_targetObject.GetComponent< Transform >().position;
+			setObjectOfInterest( m_localizedObjectOfInterestCandidate );
+			m_positionOfInterest = m_objectOfInterest.GetComponent< Transform >().position;
 			m_state = State.ApproachTarget;
 			return;
 		}
 
-		approachPosition( m_targetPosition );
+		approachPosition( m_positionOfInterest );
 		if( reachedPosition() )
 		*/
 		{
 			m_state = State.Idle;
-			m_targetPosition = transform.position;
+			m_positionOfInterest = transform.position;
 		}
 	}
 
@@ -199,14 +71,14 @@ public class ZombieBehavior : MonoBehaviour {
 		if( GetComponent<Animator>() != null )
 		{
 			m_state = State.Idle;
-			m_targetPosition = transform.position;
+			m_positionOfInterest = transform.position;
            
 			// experimental: zombies go to player
 /*
 			GameObject player = GameObject.FindGameObjectWithTag ("Player");
 			if (player != null && initDelay == 0.0f ) {
-				setTargetObject (null);
-				m_targetPosition = player.transform.position;		
+				setObjectOfInterest (null);
+				m_positionOfInterest = player.transform.position;		
 				m_state = State.ApproachTarget;
 				m_hasPlayerTask = true;
 
@@ -242,13 +114,13 @@ public class ZombieBehavior : MonoBehaviour {
 	void updateIdleBehaviour()
 	{
 		updateSenses ();
-		if( m_localizedTargetCandidate != null )
+		if( m_localizedObjectOfInterestCandidate != null )
 		{
-			setTargetObject( m_localizedTargetCandidate );
-			m_targetPosition = m_targetObject.GetComponent< Transform >().position;
+			setObjectOfInterest( m_localizedObjectOfInterestCandidate );
+			m_positionOfInterest = m_objectOfInterest.GetComponent< Transform >().position;
 			m_state = State.ApproachTarget;
 		}
-		else if( m_nonLocalizedTargetCandidate != null )
+		else if( m_nonLocalizedObjectOfInterestCandidate != null )
 		{
 			m_state = State.Alerted;
 		}
@@ -257,12 +129,12 @@ public class ZombieBehavior : MonoBehaviour {
 	void updateAlertBehaviour()
 	{
 		updateSenses();
-		if (m_localizedTargetCandidate != null) {
-			setTargetObject (m_localizedTargetCandidate);
-			m_targetPosition = m_targetObject.GetComponent< Transform > ().position;
+		if (m_localizedObjectOfInterestCandidate != null) {
+			setObjectOfInterest (m_localizedObjectOfInterestCandidate);
+			m_positionOfInterest = m_objectOfInterest.GetComponent< Transform > ().position;
 			m_state = State.ApproachTarget;
 			return;
-		} else if (m_nonLocalizedTargetCandidate != null || m_stateTime < 4.0f ) {
+		} else if (m_nonLocalizedObjectOfInterestCandidate != null || m_stateTime < 4.0f ) {
 			// glance left and right (need anim later)
 			transform.Rotate( 0.0f, 90.0f * Time.deltaTime * (m_stateTime > 1.0f && m_stateTime <= 3.0f ? 1.0f : -1.0f), 0.0f );
 		} else {
@@ -345,12 +217,12 @@ bool dealDamage( GameObject human, float damage )
 
                 if (hasHead)
                 {
-                    m_targetObject = eatTarget;
+                    m_objectOfInterest = eatTarget;
                     m_state = State.ApproachTarget;
                   
                 }
 
-              //  m_targetObject = null;
+              //  m_objectOfInterest = null;
 
                 return false;
             }              
@@ -386,8 +258,8 @@ bool dealDamage( GameObject human, float damage )
 	{
 		if( m_hasPlayerTask )
 		{
-			setLocalizedTargetCandidate (null);
-			setNonLocalizedTargetCandidate (null);
+			setLocalizedObjectOfInterestCandidate (null);
+			setNonLocalizedObjectOfInterestCandidate (null);
 		}
 		else
 		{
@@ -395,19 +267,19 @@ bool dealDamage( GameObject human, float damage )
 			return;// do not approach anybody if not given a command
 		}
 
-		if( m_localizedTargetCandidate != null && !m_hasPlayerTask )
+		if( m_localizedObjectOfInterestCandidate != null && !m_hasPlayerTask )
 		{
-			setTargetObject( m_localizedTargetCandidate );
+			setObjectOfInterest( m_localizedObjectOfInterestCandidate );
 		}
 
-		if( m_targetObject != null )
+		if( m_objectOfInterest != null )
 		{
-			m_targetPosition = m_targetObject.GetComponent< Transform > ().position;           
+			m_positionOfInterest = m_objectOfInterest.GetComponent< Transform > ().position;           
         }
-        approachPosition(m_targetPosition);
+        approachPosition(m_positionOfInterest);
         if ( reachedPosition() )
 		{
-			if( m_targetObject != null && m_targetPosition == m_targetObject.GetComponent< Transform >().position )
+			if( m_objectOfInterest != null && m_positionOfInterest == m_objectOfInterest.GetComponent< Transform >().position )
 			{			
 				m_state = State.TargetInRange;
 			}
@@ -429,11 +301,11 @@ bool dealDamage( GameObject human, float damage )
 	{
 		GetComponent<Animator> ().SetBool ("attack", false);
 		if (m_stateTime > 0.1f) {
-			if (m_targetObject != null) {
-				if (dealDamage (m_targetObject, 33.3f)) {
-					setTargetObject (null);
-					setLocalizedTargetCandidate( null );
-					setNonLocalizedTargetCandidate( null );
+			if (m_objectOfInterest != null) {
+				if (dealDamage (m_objectOfInterest, 33.3f)) {
+					setObjectOfInterest (null);
+					setLocalizedObjectOfInterestCandidate( null );
+					setNonLocalizedObjectOfInterestCandidate( null );
 					GetComponent<Animator>().SetBool ("eat", true );
 					m_hasPlayerTask = false;
 					m_state = State.EatFlesh;
@@ -447,8 +319,8 @@ bool dealDamage( GameObject human, float damage )
 	void updateEatFleshBehaviour()
 	{
 		updateSenses ();
-		if (m_nonLocalizedTargetCandidate != null
-		    || m_localizedTargetCandidate != null
+		if (m_nonLocalizedObjectOfInterestCandidate != null
+		    || m_localizedObjectOfInterestCandidate != null
 		    || m_stateTime > 2.0f ) {
 			GetComponent<Animator>().SetBool ("eat", false );
 			m_state = State.ApproachTarget;
@@ -469,24 +341,6 @@ bool dealDamage( GameObject human, float damage )
 		}
 	}
 
-	void setNonLocalizedTargetCandidate( GameObject obj )
-	{
-		//colorizeObject( m_nonLocalizedTargetCandidate, Color.white );
-		m_nonLocalizedTargetCandidate = obj;
-	}
-
-	void setLocalizedTargetCandidate( GameObject obj )
-	{
-		//colorizeObject( m_localizedTargetCandidate, Color.white );
-		m_localizedTargetCandidate = obj;
-	}
-
-	void setTargetObject( GameObject obj )
-	{
-		//colorizeObject( m_targetObject, Color.white );
-		m_targetObject = obj;
-	}
-
 	bool isInViewFrustum()
 	{
 		Bounds bounds = GetComponent<Collider> ().bounds;
@@ -497,7 +351,6 @@ bool dealDamage( GameObject human, float damage )
 		
 	void updateState()
 	{
-		m_time += Time.deltaTime;
 		m_stateTime += Time.deltaTime;
 		State oldState = m_state;
 
@@ -547,9 +400,9 @@ bool dealDamage( GameObject human, float damage )
 				break;
 		}
 
-		//colorizeObject( m_nonLocalizedTargetCandidate, Color.blue );
-		//colorizeObject( m_localizedTargetCandidate, Color.green );
-		//colorizeObject( m_targetObject, Color.red );
+		//colorizeObject( m_nonLocalizedObjectOfInterestCandidate, Color.blue );
+		//colorizeObject( m_localizedObjectOfInterestCandidate, Color.green );
+		//colorizeObject( m_objectOfInterest, Color.red );
 
 		if( m_state != oldState )
 		{
@@ -649,12 +502,12 @@ bool dealDamage( GameObject human, float damage )
         // getChildRootObject for Humans/Zombies contained in the HumanParent/ZombieParent
         //GameObject colliderRootObject = getChildRootObject(hit.collider.gameObject.transform.parent.gameObject);
         GameObject colliderRootObject = getRootObject(hit.collider.gameObject.transform.parent.gameObject);
-        if (colliderRootObject.tag == opposingFactionTag ()) {
-			setTargetObject (colliderRootObject);
-			m_targetPosition = m_targetObject.GetComponent< Transform > ().position;
+        if (colliderRootObject.tag == getOpposingFactionTag ()) {
+			setObjectOfInterest (colliderRootObject);
+			m_positionOfInterest = m_objectOfInterest.GetComponent< Transform > ().position;
 		} else {
-			setTargetObject (null);
-			m_targetPosition = hit.point;
+			setObjectOfInterest (null);
+			m_positionOfInterest = hit.point;
 		}
         	
 		m_state = State.ApproachTarget;
@@ -676,7 +529,7 @@ bool dealDamage( GameObject human, float damage )
 
             if (taskObject)
             {               
-                setTargetObject(taskObject);
+                setObjectOfInterest(taskObject);
                 m_oldPosition = GetComponent<Transform>().position;
                 m_state = State.ApproachTarget;
                 m_hasPlayerTask = true;             
