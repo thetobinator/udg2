@@ -12,6 +12,7 @@ public class ZombieBehavior : SensingEntity {
 		ApproachTarget,		// a human is localized, approach target
 		TargetInRange,		// the target can be attacked
 		Attack,				// attacking the target
+		DealDamage,			// dealing damage to target
 		EatFlesh,			// eat dead target
 		Hit,				// hit, target has some time to escape
 		Dead,				// dead, this time really
@@ -333,20 +334,28 @@ bool dealDamage( GameObject human, float damage )
 
 	void updateAttackBehaviour()
 	{
-		if (m_stateTime > 0.1f) {
-			if (m_objectOfInterest != null) {
-				if (dealDamage (m_objectOfInterest, 33.3f)) {
-					setObjectOfInterest (null);
-					setLocalizedObjectOfInterestCandidate( null );
-					setNonLocalizedObjectOfInterestCandidate( null );
-					GetComponent<Animator>().SetBool ("eat", true );
-					m_hasPlayerTask = false;
-					m_state = State.EatFlesh;
-					return;
-				}
-			}
-			m_state = State.ApproachTarget;
+		if( m_stateTime >= 0.5f )
+		{
+			m_state = State.DealDamage;
 		}
+	}
+
+	void updateDealDamageBehaviour()
+	{
+		if (m_objectOfInterest != null)
+		{
+			if (dealDamage (m_objectOfInterest, 33.3f))
+			{
+				setObjectOfInterest (null);
+				setLocalizedObjectOfInterestCandidate( null );
+				setNonLocalizedObjectOfInterestCandidate( null );
+				GetComponent<Animator>().SetBool ("eat", true );
+				m_hasPlayerTask = false;
+				m_state = State.EatFlesh;
+				return;
+			}
+		}
+		m_state = State.ApproachTarget;
 	}
 
 	void updateEatFleshBehaviour()
@@ -409,6 +418,10 @@ bool dealDamage( GameObject human, float damage )
 
 			case State.Attack:
 				updateAttackBehaviour();
+				break;
+
+			case State.DealDamage:
+				updateDealDamageBehaviour();
 				break;
 
 			case State.EatFlesh:
