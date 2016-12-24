@@ -3,32 +3,24 @@ using System.Collections;
 using System.Reflection;
 using System;
 
-public class RagdollCreatorTest : MonoBehaviour {
-	private bool m_initializedRagdoll = false;
-	private GameObject m_ragdoll = null;
-	
-	// Use this for initialization
-	void Start () {
-		
-		
-	}
-
-	string[] skippedPropertyNames = 
+static public class ComponentCopyHelper
+{
+	static string[] skippedPropertyNames = 
 	{
 		"sleepVelocity",
 		"sleepAngularVelocity",
 		"useConeFriction"
 	};
-	 
-	  T GetCopyOf<T>(this Component comp, T other) where T : Component
-	 {
-		 Type type = comp.GetType();
-		 if (type != other.GetType()) return null; // type mis-match
-		 BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Default | BindingFlags.DeclaredOnly;
-		 PropertyInfo[] pinfos = type.GetProperties(flags);
-		 foreach (var pinfo in pinfos) {
-			 if (pinfo.CanWrite) {
-				 try {
+
+	public static T GetCopyOf<T>(this Component comp, T other) where T : Component
+	{
+		Type type = comp.GetType();
+		if (type != other.GetType()) return null; // type mis-match
+		BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Default | BindingFlags.DeclaredOnly;
+		PropertyInfo[] pinfos = type.GetProperties(flags);
+		foreach (var pinfo in pinfos) {
+			if (pinfo.CanWrite) {
+				try {
 					bool skipProperty = false;
 					for( int i = 0; i < skippedPropertyNames.Length; ++i )
 					{
@@ -43,16 +35,27 @@ public class RagdollCreatorTest : MonoBehaviour {
 					{
 						pinfo.SetValue(comp, pinfo.GetValue(other, null), null);
 					}
-				 }
-				 catch { } // In case of NotImplementedException being thrown. For some reason specifying that exception didn't seem to catch it, so I didn't catch anything specific.
-			 }
-		 }
-		 FieldInfo[] finfos = type.GetFields(flags);
-		 foreach (var finfo in finfos) {
-			 finfo.SetValue(comp, finfo.GetValue(other));
-		 }
-		 return comp as T;
-	 }
+				}
+				catch { } // In case of NotImplementedException being thrown. For some reason specifying that exception didn't seem to catch it, so I didn't catch anything specific.
+			}
+		}
+		FieldInfo[] finfos = type.GetFields(flags);
+		foreach (var finfo in finfos) {
+			finfo.SetValue(comp, finfo.GetValue(other));
+		}
+		return comp as T;
+	}
+}
+
+public class RagdollCreatorTest : MonoBehaviour {
+	private bool m_initializedRagdoll = false;
+	private GameObject m_ragdoll = null;
+	
+	// Use this for initialization
+	void Start () {
+		
+		
+	}
 	 
 	 enum Bone
 	 {
@@ -123,33 +126,33 @@ public class RagdollCreatorTest : MonoBehaviour {
 				// copy different collider components
 				foreach (SphereCollider c in sphereCollidersInRagdollTemplate ) {
 					if( t.gameObject.name == c.gameObject.name ) {
-						GetCopyOf<SphereCollider>(t.gameObject.AddComponent<SphereCollider>(),c);
+						ComponentCopyHelper.GetCopyOf<SphereCollider>(t.gameObject.AddComponent<SphereCollider>(),c);
 						break;
 					}
 				}
 				foreach (BoxCollider c in boxCollidersInRagdollTemplate ) {
 					if( t.gameObject.name == c.gameObject.name ) {
-						GetCopyOf<BoxCollider>(t.gameObject.AddComponent<BoxCollider>(),c);
+						ComponentCopyHelper.GetCopyOf<BoxCollider>(t.gameObject.AddComponent<BoxCollider>(),c);
 						break;
 					}
 				}
 				foreach (CapsuleCollider c in capsuleCollidersInRagdollTemplate ) {
 					if( t.gameObject.name == c.gameObject.name ) {
-						GetCopyOf<CapsuleCollider>(t.gameObject.AddComponent<CapsuleCollider>(),c);
+						ComponentCopyHelper.GetCopyOf<CapsuleCollider>(t.gameObject.AddComponent<CapsuleCollider>(),c);
 						break;
 					}
 				}
 				// copy rigid bodies
 				foreach (Rigidbody c in rigidBodiesInRagdollTemplate ) {
 					if( t.gameObject.name == c.gameObject.name ) {
-						GetCopyOf<Rigidbody>(t.gameObject.AddComponent<Rigidbody>(),c);
+						ComponentCopyHelper.GetCopyOf<Rigidbody>(t.gameObject.AddComponent<Rigidbody>(),c);
 						break;
 					}
 				}
 				// copy joints
 				foreach (CharacterJoint c in characterJointsInRagdollTemplate ) {
 					if( t.gameObject.name == c.gameObject.name ) {
-						CharacterJoint joint = GetCopyOf<CharacterJoint>(t.gameObject.AddComponent<CharacterJoint>(),c);
+						CharacterJoint joint = ComponentCopyHelper.GetCopyOf<CharacterJoint>(t.gameObject.AddComponent<CharacterJoint>(),c);
 						joint.connectedBody = null;
 						for ( int i = 0; i < boneNames.Length; ++i ) {
 							if( t.gameObject.name == boneNames[ i ] ) {
