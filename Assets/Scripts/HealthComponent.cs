@@ -13,6 +13,7 @@ public class HealthComponent : MonoBehaviour {
     public float power = 110.0F;
 	private Rigidbody hasRigidBody;
 	private Vector3 childscale;
+	private GameObject m_killer = null;
 	
         void Awake()
         {
@@ -37,16 +38,25 @@ public class HealthComponent : MonoBehaviour {
         reanimate();
     }
 
-    public void dealDamage( float damage ) {
+	public void dealDamage( float damage, GameObject damageDealer ) {
         current_health -= damage;
+		if (isDead ()) {
+			m_killer = damageDealer;
+		}
 	}
 
 	public bool isDead() {
 		return current_health <= 0.0f;
 	}
 
+	public bool wasKilledBy( GameObject obj )
+	{
+		return isDead () && m_killer == obj;
+	}
+
 	public void reanimate() {
         current_health = initialHealth;
+		m_killer = null;
 	}
 
     public void explodeInstantly()

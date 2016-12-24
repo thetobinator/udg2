@@ -274,9 +274,9 @@ public class HumanBehavior : SensingEntity {
 	{
         HealthComponent h = GetComponent<HealthComponent>();
 		if( h != null && h.enabled ){
-			h.dealDamage( 25.0f );
+			h.dealDamage( 25.0f, null );
 			if( h.isDead() ){
-				ZombieBehavior.turnIntoRagdoll( gameObject );
+				turnIntoRagdoll();
 			}
 		}
 	}

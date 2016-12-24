@@ -182,4 +182,50 @@ public class SensingEntity : MonoBehaviour {
 			}
 		}
 	}
+
+	protected void verifyObjectOfInterest()
+	{
+		if (m_objectOfInterest != null ) {
+			HealthComponent h = m_objectOfInterest.GetComponent<HealthComponent> ();
+			if( h == null || h.wasKilledBy( gameObject ) )
+			{
+				return;
+			}
+			if (m_objectOfInterest.tag != getOpposingFactionTag () || h.isDead()) {
+				m_objectOfInterest = null;
+				m_positionOfInterest = transform.position;
+			}
+		}
+	}
+
+	public bool turnIntoRagdoll()
+	{
+		NavMeshAgent n = GetComponent<NavMeshAgent>();
+		Animator a = GetComponent<Animator>();
+		HumanBehavior h = GetComponent<HumanBehavior>();
+		ZombieBehavior z = GetComponent<ZombieBehavior>();
+		RagdollHelper r = GetComponent<RagdollHelper> ();
+		HealthComponent hc = GetComponent<HealthComponent>();
+
+		bool result = false;
+		if (n != null && a != null && r != null && a.enabled) {
+			r.ragdolled=true;
+
+			if (h != null) {
+				h.dropWeapon();
+				a.runtimeAnimatorController = h.zombieAnimationController; // use zombie animation controller after resurrection
+				Destroy (h);
+				gameObject.AddComponent<ZombieBehavior>();
+				gameObject.GetComponent<ZombieBehavior>().initDelay = 8.0f;
+				result = true;
+			} else if (z != null) {
+				if (hc.isDead()) {
+					Destroy(z);
+				}
+				result = true;
+			}
+			n.enabled = false;
+		}
+		return result;
+	}
 }

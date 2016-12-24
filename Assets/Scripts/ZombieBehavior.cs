@@ -24,6 +24,7 @@ public class ZombieBehavior : SensingEntity {
 		Run = 1 << 1,
 		Attack = 1 << 2,
 		Turn = 1 << 3,
+		Eat = 1 << 4,
 	}
     
 	public float initDelay = 0.0f;
@@ -188,37 +189,6 @@ public class ZombieBehavior : SensingEntity {
 		}
 	}
 
-	static public bool turnIntoRagdoll( GameObject obj )
-	{
-		NavMeshAgent n = obj.GetComponent<NavMeshAgent>();
-		Animator a = obj.GetComponent<Animator>();
-		HumanBehavior h = obj.GetComponent<HumanBehavior>();
-		ZombieBehavior z = obj.GetComponent<ZombieBehavior>();
-		RagdollHelper r = obj.GetComponent<RagdollHelper> ();
-        HealthComponent hc = obj.GetComponent<HealthComponent>();
-
-		bool result = false;
-		if (n != null && a != null && r != null && a.enabled) {
-			r.ragdolled=true;
-			
-			if (h != null) {
-				h.dropWeapon();
-				a.runtimeAnimatorController = h.zombieAnimationController; // use zombie animation controller after resurrection
-				Destroy (h);
-                obj.AddComponent<ZombieBehavior>();
-                obj.GetComponent<ZombieBehavior>().initDelay = 8.0f;
-                result = true;
-			} else if (z != null) {
-                if (hc.isDead()) {
-                    Destroy(z);
-                }
-				result = true;
-			}
-			n.enabled = false;
-		}
-		return result;
-	}
-
 	bool dealDamage( GameObject human, float damage )
 	{
 		HealthComponent health = human.GetComponent<HealthComponent> ();
@@ -228,11 +198,11 @@ public class ZombieBehavior : SensingEntity {
 			return true;
 		}
 
-		health.dealDamage( damage );
+		health.dealDamage( damage, gameObject );
 
 		if( health.isDead() )
 		{
-			if( turnIntoRagdoll( human ) )
+			if( human.GetComponent<HumanBehavior>().turnIntoRagdoll() )
 			{
                 m_state = State.EatFlesh;
                 updateEatFleshBehaviour();
@@ -288,6 +258,7 @@ public class ZombieBehavior : SensingEntity {
 
 	void updateApproachBehaviour()
 	{
+		verifyObjectOfInterest ();
 		if( m_hasPlayerTask )
 		{
 			setLocalizedObjectOfInterestCandidate (null);
@@ -306,7 +277,7 @@ public class ZombieBehavior : SensingEntity {
 
 		if( m_objectOfInterest != null )
 		{
-			m_positionOfInterest = m_objectOfInterest.GetComponent< Transform > ().position;           
+			m_positionOfInterest = m_objectOfInterest.GetComponent< Transform > ().position;
         }
         approachPosition(m_positionOfInterest);
         if ( reachedPosition() )
@@ -346,7 +317,7 @@ public class ZombieBehavior : SensingEntity {
 				setObjectOfInterest (null);
 				setLocalizedObjectOfInterestCandidate( null );
 				setNonLocalizedObjectOfInterestCandidate( null );
-				GetComponent<Animator>().SetBool ("eat", true );
+				m_animationFlags |= (uint)AnimationFlags.Eat;
 				m_hasPlayerTask = false;
 				m_state = State.EatFlesh;
 				return;
@@ -361,7 +332,6 @@ public class ZombieBehavior : SensingEntity {
 		if (m_nonLocalizedObjectOfInterestCandidate != null
 		    || m_localizedObjectOfInterestCandidate != null
 		    || m_stateTime > 2.0f ) {
-			GetComponent<Animator>().SetBool ("eat", false );
 			m_state = State.ApproachTarget;
 		}
 	}
@@ -467,6 +437,7 @@ public class ZombieBehavior : SensingEntity {
 			animatorComponent.SetBool ("run", (m_animationFlags & (uint)AnimationFlags.Run) != 0u );
 			animatorComponent.SetBool ("attack", (m_animationFlags & (uint)AnimationFlags.Attack) != 0u);
 			animatorComponent.SetBool ("turn", (m_animationFlags & (uint)AnimationFlags.Turn) != 0u);
+			animatorComponent.SetBool ("eat", (m_animationFlags & (uint)AnimationFlags.Eat) != 0u);
 			animatorComponent.SetFloat ("speedMultiplier", animationSpeedMultiplier);
 		}
 	}
@@ -475,8 +446,8 @@ public class ZombieBehavior : SensingEntity {
 	{
 		HealthComponent h = GetComponent<HealthComponent>();
 		if( h != null && h.enabled ){
-			h.dealDamage( 25.0f );
-			ZombieBehavior.turnIntoRagdoll( gameObject );
+			h.dealDamage( 25.0f, null );
+			turnIntoRagdoll();
 			if( !h.isDead() ) {
 				m_state = State.Hit;
 				m_stateTime = 0.0f;
