@@ -213,7 +213,7 @@ public class SensingEntity : MonoBehaviour {
 
 			if (h != null) {
 				h.dropWeapon();
-				a.runtimeAnimatorController = h.zombieAnimationController; // use zombie animation controller after resurrection
+				a.ResetTrigger ("ghoulidleanimation");
 				Destroy (h);
 				gameObject.AddComponent<ZombieBehavior>();
 				gameObject.GetComponent<ZombieBehavior>().initDelay = 8.0f;

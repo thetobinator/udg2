@@ -24,7 +24,6 @@ public class HumanBehavior : SensingEntity {
 	bool m_hasGun;
 	GameObject m_gun;
 	public Transform handBone = null;
-	public RuntimeAnimatorController zombieAnimationController = null;
 	
 	void updateSpawnBehaviour()
 	{

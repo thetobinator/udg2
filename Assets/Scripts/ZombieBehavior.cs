@@ -192,6 +192,7 @@ public class ZombieBehavior : SensingEntity {
 	bool dealDamage( GameObject human, float damage )
 	{
 		HealthComponent health = human.GetComponent<HealthComponent> ();
+		HumanBehavior h = human.GetComponent<HumanBehavior> ();
 
 		if( health == null )
 		{
@@ -202,7 +203,7 @@ public class ZombieBehavior : SensingEntity {
 
 		if( health.isDead() )
 		{
-			if( human.GetComponent<HumanBehavior>().turnIntoRagdoll() )
+			if( h != null && h.turnIntoRagdoll() )
 			{
                 m_state = State.EatFlesh;
                 updateEatFleshBehaviour();
@@ -251,7 +252,7 @@ public class ZombieBehavior : SensingEntity {
 			
 		if (n != null && a != null && r != null) {			
 			n.enabled = true;
-			a.enabled = true;
+			a.ResetTrigger ("ghoulidleanimation");
 			n.SetDestination (this.transform.position);
 		}
 	}
@@ -438,7 +439,9 @@ public class ZombieBehavior : SensingEntity {
 			animatorComponent.SetBool ("attack", (m_animationFlags & (uint)AnimationFlags.Attack) != 0u);
 			animatorComponent.SetBool ("turn", (m_animationFlags & (uint)AnimationFlags.Turn) != 0u);
 			animatorComponent.SetBool ("eat", (m_animationFlags & (uint)AnimationFlags.Eat) != 0u);
+			animatorComponent.SetBool ("shoot", false);
 			animatorComponent.SetFloat ("speedMultiplier", animationSpeedMultiplier);
+			animatorComponent.SetBool ("zombie", true);
 		}
 	}
     
@@ -596,9 +599,10 @@ public class ZombieBehavior : SensingEntity {
 				} else {
 					GetComponent<Animator> ().SetFloat ("speed", 0.0f);
 					//print ( "REACHED" );
-					m_hasPlayerTask = false;
-					previousObject = taskObject;
-					taskObject = null;
+					// :TO: this needs to be refactored
+					//m_hasPlayerTask = false;
+					//previousObject = taskObject;
+					//taskObject = null;
 				}
 			} else {
 				this.transform.Translate (Vector3.forward * Time.deltaTime);

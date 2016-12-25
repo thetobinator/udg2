@@ -11,7 +11,6 @@ public class UMACharGen : MonoBehaviour
     public OverlayLibrary overlayLibrary;
     public RaceLibrary raceLibrary;
     public RuntimeAnimatorController animationController;
-	public RuntimeAnimatorController secondaryAnimationController;
 
     private UMADynamicAvatar umaDynamicAvatar;
     private UMAData umaData;
@@ -100,7 +99,6 @@ public class UMACharGen : MonoBehaviour
           
         } else {
 			HumanBehavior hb = GO.AddComponent<HumanBehavior> ();
-			hb.zombieAnimationController = secondaryAnimationController;
 			GO.tag = "Human";
           //  GameObject[] humans = GameObject.FindGameObjectsWithTag("Human");
             //GO.name = "Human" + humans.Length;
