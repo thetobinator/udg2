@@ -252,7 +252,6 @@ public class ZombieBehavior : SensingEntity {
 			
 		if (n != null && a != null && r != null) {			
 			n.enabled = true;
-			a.ResetTrigger ("ghoulidleanimation");
 			n.SetDestination (this.transform.position);
 		}
 	}

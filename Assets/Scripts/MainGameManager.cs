@@ -435,52 +435,28 @@ public class MainGameManager : MainGameInit
         return root;
     }
 
-    public int zombieCount()
+	private uint getNumLivingObjectsWithTag( string tag )
+	{
+		uint numLivingObjects = 0u;
+		foreach (GameObject h in GameObject.FindGameObjectsWithTag(tag))
+		{
+			HealthComponent hc = h.GetComponent<HealthComponent>();
+			if (hc != null && !hc.isDead())
+			{
+				++numLivingObjects;
+			}
+		}
+		return numLivingObjects;
+	}
+
+    public uint zombieCount()
     {
-       // newZombies = GameObject.FindGameObjectsWithTag("Zombie");
-        foreach(GameObject z in GameObject.FindGameObjectsWithTag("Zombie"))
-        {
-            if (z.GetComponent<HealthComponent>().current_health <= 0.0f && !z.GetComponent<NavMeshAgent>().enabled)
-            {
-                z.tag = "Dead";
-                z.name = "Dead";
-               // z.transform.parent = GameObject.Find("DeadBodies").transform;
-            }
-           /* else
-            {
-              Vector3 ztrans = z.transform.localPosition;
-                GameObject p = GameObject.Find("ZombieParent");
-                p.transform.localPosition = ztrans;
-                if (getRootObject(z).name != "ZombieParent")
-                {                
-                    z.transform.SetParent(GameObject.Find("ZombieParent").transform,false);                
-                }
-                z.transform.localPosition = ztrans;
-            }*/
-        }
-        newZombies = GameObject.FindGameObjectsWithTag("Zombie");
-        return newZombies.Length;
+		return getNumLivingObjectsWithTag ("Zombie");
     }
 
-    public int humanCount()
+    public uint humanCount()
     {
-        foreach (GameObject h in GameObject.FindGameObjectsWithTag("Human"))
-        {
-            HealthComponent hc = h.GetComponent<HealthComponent>();
-            if (hc != null && hc.current_health <= 0.0f)
-            {
-                h.tag = "Zombie";
-                h.name = "Zombie" + GameObject.FindGameObjectsWithTag("Zombie").Length;
-                ZombieBehavior z =  h.AddComponent<ZombieBehavior>();
-                hc.current_health = 100.0f;
-                HumanBehavior hb = GetComponent<HumanBehavior>();
-                Destroy(hb);
-            }
-          //parenting disabled because of position shift.
-            //h.transform.SetParent(GameObject.Find("HumanParent").transform, false);
-        }
-        newHumans = GameObject.FindGameObjectsWithTag("Human");
-        return newHumans.Length;
+		return getNumLivingObjectsWithTag ("Human");
     }
 
     public void Update()
