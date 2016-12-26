@@ -2,7 +2,18 @@
 using System.Collections;
 
 public class SensingEntity : MonoBehaviour {
-	
+	protected enum AnimationFlags
+	{
+		Walk = 1 << 0,
+		Run = 1 << 1,
+		Attack = 1 << 2,
+		Turn = 1 << 3,
+		Eat = 1 << 4,
+		Shoot = 1 << 5,
+	}
+
+	public float speedMultiplier = 1.0f;
+	protected uint m_animationFlags = 0u;
 	protected float m_earQueryInterval = 0.5f;
 	protected float m_eyeQueryInterval = 0.5f;
 	protected GameObject m_nonLocalizedObjectOfInterestCandidate = null;
@@ -226,5 +237,23 @@ public class SensingEntity : MonoBehaviour {
 			n.enabled = false;
 		}
 		return result;
+	}
+
+	protected void updateAnimationState()
+	{
+		bool isWalking = (m_animationFlags & (uint)AnimationFlags.Walk) != 0u;
+		float animationSpeedMultiplier = isWalking ? 2.5f : speedMultiplier * 0.6f;
+		Animator animatorComponent = GetComponent<Animator> ();
+		if (animatorComponent != null && animatorComponent.enabled) {
+			animatorComponent.SetBool ("walk", isWalking );
+			animatorComponent.SetBool ("run", (m_animationFlags & (uint)AnimationFlags.Run) != 0u );
+			animatorComponent.SetBool ("attack", (m_animationFlags & (uint)AnimationFlags.Attack) != 0u);
+			animatorComponent.SetBool ("turn", (m_animationFlags & (uint)AnimationFlags.Turn) != 0u);
+			animatorComponent.SetBool ("eat", (m_animationFlags & (uint)AnimationFlags.Eat) != 0u);
+			animatorComponent.SetBool ("eat", (m_animationFlags & (uint)AnimationFlags.Eat) != 0u);
+			animatorComponent.SetBool ("shoot", (m_animationFlags & (uint)AnimationFlags.Shoot) != 0u);
+			animatorComponent.SetBool ("zombie", gameObject.tag == "Zombie");
+			animatorComponent.SetFloat ("speedMultiplier", animationSpeedMultiplier);
+		}
 	}
 }

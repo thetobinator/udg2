@@ -17,18 +17,8 @@ public class ZombieBehavior : SensingEntity {
 		Hit,				// hit, target has some time to escape
 		Dead,				// dead, this time really
 	};
-
-	enum AnimationFlags
-	{
-		Walk = 1 << 0,
-		Run = 1 << 1,
-		Attack = 1 << 2,
-		Turn = 1 << 3,
-		Eat = 1 << 4,
-	}
     
 	public float initDelay = 0.0f;
-	public float speedMultiplier = 1.0f;
 	State m_state;
 	float m_stateTime = 0.0f;
 	Vector3 m_forwardDirectionBeforeLookingAround;
@@ -37,7 +27,6 @@ public class ZombieBehavior : SensingEntity {
 	GameObject previousObject;
 	bool m_hasPlayerTask = false;
 	Vector3 m_oldPosition;
-	uint m_animationFlags;
 
     public bool hasPlayerTask()
 	{
@@ -423,27 +412,9 @@ public class ZombieBehavior : SensingEntity {
         NavMeshAgent nma = GetComponent<NavMeshAgent>();
         if (!nma) { return; }
 		GetComponent<NavMeshAgent> ().speed = 1.2f * speedMultiplier;//m_hasPlayerTask ? 1.2f : 1.2f;
-        
-
-
     }
 
-	void updateAnimationState()
-	{
-		float animationSpeedMultiplier = speedMultiplier * 0.6f;
-		Animator animatorComponent = GetComponent<Animator> ();
-		if (animatorComponent != null && animatorComponent.enabled) {
-			animatorComponent.SetBool ("walk", (m_animationFlags & (uint)AnimationFlags.Walk) != 0u );
-			animatorComponent.SetBool ("run", (m_animationFlags & (uint)AnimationFlags.Run) != 0u );
-			animatorComponent.SetBool ("attack", (m_animationFlags & (uint)AnimationFlags.Attack) != 0u);
-			animatorComponent.SetBool ("turn", (m_animationFlags & (uint)AnimationFlags.Turn) != 0u);
-			animatorComponent.SetBool ("eat", (m_animationFlags & (uint)AnimationFlags.Eat) != 0u);
-			animatorComponent.SetBool ("shoot", false);
-			animatorComponent.SetFloat ("speedMultiplier", animationSpeedMultiplier);
-			animatorComponent.SetBool ("zombie", true);
-		}
-	}
-    
+
     public void handleBulletImpact( Collision collision )
 	{
 		HealthComponent h = GetComponent<HealthComponent>();

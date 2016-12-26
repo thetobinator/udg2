@@ -86,7 +86,6 @@ public class HumanBehavior : SensingEntity {
 	
 	void updateIdleBehaviour()
 	{
-		GetComponent<Animator>().SetBool ("walk", false );
 		updateSenses ();
 		if( m_localizedObjectOfInterestCandidate != null )
 		{
@@ -102,7 +101,6 @@ public class HumanBehavior : SensingEntity {
 	
 	void updateAlertBehaviour()
 	{
-		GetComponent<Animator>().SetBool ("walk", false );
 		updateSenses();
 		if( m_localizedObjectOfInterestCandidate != null )
 		{
@@ -148,13 +146,13 @@ public class HumanBehavior : SensingEntity {
 		if (reachedPosition () && m_stateTime > 0.5f ) {
 			m_state = State.Alerted;
 		} else {
-			GetComponent<Animator> ().SetBool ("walk", true);
+			m_animationFlags |= (uint)AnimationFlags.Walk;
 		}
 	}
 
 	void updateStandAndShootBehaviour()
 	{
-		GetComponent<Animator>().SetBool ("walk", false );
+		m_animationFlags |= (uint)AnimationFlags.Shoot;
 		updateSenses ();
 		if( m_localizedObjectOfInterestCandidate != null )
 		{
@@ -208,6 +206,8 @@ public class HumanBehavior : SensingEntity {
 	
 	void updateState()
 	{
+		m_animationFlags = 0u;
+
 		State oldState = m_state;
 
 		switch( m_state )
@@ -253,10 +253,7 @@ public class HumanBehavior : SensingEntity {
 			m_stateTime += Time.deltaTime;	
 		}
 
-		Animator animatorComponent = GetComponent<Animator> ();
-		if (animatorComponent != null) {
-			animatorComponent.SetBool ("shoot", m_state == State.StandAndShoot);
-		}
+		updateAnimationState ();
     }
 
 	public void dropWeapon()
