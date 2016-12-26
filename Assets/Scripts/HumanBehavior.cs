@@ -261,7 +261,7 @@ public class HumanBehavior : SensingEntity {
 		if( m_gun != null )
 		{
 			m_gun.transform.parent = null;
-			m_gun.GetComponent<CapsuleCollider>().enabled = true;
+			m_gun.GetComponent<BoxCollider>().enabled = true;
 			m_gun.GetComponent<Rigidbody>().useGravity = true;
 		}
 	}
