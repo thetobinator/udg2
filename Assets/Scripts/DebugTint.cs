@@ -10,16 +10,24 @@ public class DebugTint : MonoBehaviour {
 	void Start () {
 		addRenderComponents (this.gameObject);
 	}
+
+	bool addRenderComponent( GameObject obj ){
+		var renderer = obj.GetComponent<Renderer> ();
+		if (renderer != null) {
+			m_renderComponents.Add (renderer);
+			return true;
+		}
+		return false;
+	}
 	
 	void addRenderComponents( GameObject root ) {
+		if (addRenderComponent (gameObject)) {
+			return;
+		}
+
 		foreach (Transform child in root.transform)
 		{
-			var renderer = child.gameObject.GetComponent<Renderer> ();
-			if( renderer != null )
-			{
-				m_renderComponents.Add(renderer);
-			}
-			else
+			if( !addRenderComponent( child.gameObject ) )
 			{
 				// recursion
 				addRenderComponents( child.gameObject );
@@ -30,7 +38,6 @@ public class DebugTint : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		foreach (Renderer renderer in m_renderComponents) {
-			// Set specular shader
 			renderer.material.SetColor ("_Color", tintColor);
 		}
 	}
