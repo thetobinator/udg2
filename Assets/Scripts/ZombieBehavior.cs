@@ -414,6 +414,10 @@ public class ZombieBehavior : SensingEntity {
 		GetComponent<NavMeshAgent> ().speed = 1.2f * speedMultiplier;//m_hasPlayerTask ? 1.2f : 1.2f;
     }
 
+	public void die()
+	{
+		m_state = State.Dead;
+	}
 
     public void handleBulletImpact( Collision collision )
 	{

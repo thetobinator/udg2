@@ -33,6 +33,7 @@ public class SensingEntity : MonoBehaviour {
 
 	protected void Update()
 	{
+		m_time += Time.deltaTime;
 		if (m_postProcessHumanRagdoll > 0u) {
 			--m_postProcessHumanRagdoll;
 			if (m_postProcessHumanRagdoll == 2u) {
@@ -44,6 +45,11 @@ public class SensingEntity : MonoBehaviour {
 				gameObject.AddComponent<ZombieBehavior> ();
 				gameObject.GetComponent<ZombieBehavior> ().initDelay = 8.0f;
 				Destroy (this);
+			}
+		} else if( m_time > 10.0f ) {
+			HealthComponent hc = GetComponent<HealthComponent> ();
+			if (hc.isDead ()) {
+				Destroy (gameObject);
 			}
 		}
 	}
@@ -111,8 +117,6 @@ public class SensingEntity : MonoBehaviour {
 		float oldTime = m_time - Time.deltaTime;
 		bool updateEars = (int)( oldTime / m_earQueryInterval ) != (int)( m_time / m_earQueryInterval );
 		bool updateEyes = (int)( oldTime / m_eyeQueryInterval ) != (int)( m_time / m_eyeQueryInterval );
-
-		m_time += Time.deltaTime;
 
 		if( updateEars || updateEyes )
 		{
@@ -240,6 +244,7 @@ public class SensingEntity : MonoBehaviour {
 		bool result = false;
 		if (n != null && a != null && r != null && a.enabled) {
 			r.ragdolled = true;
+			m_time = 0.0f;
 			if (h != null) {
 				h.die ();
 				if (!hc.wasKilledBy (null)) {
@@ -248,7 +253,7 @@ public class SensingEntity : MonoBehaviour {
 				result = true;
 			} else if (z != null) {
 				if (hc.isDead()) {
-					Destroy(z);
+					z.die ();
 				}
 				result = true;
 			}
