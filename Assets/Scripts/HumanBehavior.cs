@@ -256,7 +256,7 @@ public class HumanBehavior : SensingEntity {
 		updateAnimationState ();
     }
 
-	public void dropWeapon()
+	void dropWeapon()
 	{
 		if( m_gun != null )
 		{
@@ -277,16 +277,22 @@ public class HumanBehavior : SensingEntity {
 		}
 	}
 
+	public void die()
+	{
+		dropWeapon ();
+		m_state = State.Dead;
+	}
+
 	void Start()
 	{
+		base.Start ();
 		m_state = State.WaitForComponents;
 	}
 
 	void Update ()
 	{
+		base.Update ();
 		updateState();
-
-
 
 		GetComponent<NavMeshAgent>().speed = 1.5f;
 
@@ -295,9 +301,9 @@ public class HumanBehavior : SensingEntity {
 		Vector3 diff = GetComponent<Transform> ().position - GetComponent<NavMeshAgent> ().destination;
 		if (GetComponent<Animator> ()) {
 			if (diff.magnitude > 0.7f) {
-				GetComponent<Animator> ().SetFloat ("speed", movement.magnitude / Time.deltaTime);
+				//GetComponent<Animator> ().SetFloat ("speed", movement.magnitude / Time.deltaTime);
 			} else {
-				GetComponent<Animator> ().SetFloat ("speed", 0.0f);
+				//GetComponent<Animator> ().SetFloat ("speed", 0.0f);
 				//print ( "REACHED" );
 				//m_hasPlayerTask = false;
 				//previousObject = taskObject;

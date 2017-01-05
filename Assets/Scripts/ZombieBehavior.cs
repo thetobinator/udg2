@@ -540,6 +540,7 @@ public class ZombieBehavior : SensingEntity {
    
     void Start()
     {
+		base.Start ();
         if (initDelay > 0.0f)
         {
             m_state = State.Init;
@@ -553,7 +554,7 @@ public class ZombieBehavior : SensingEntity {
 
     void Update()
     {
-     
+		base.Update ();
         updateState();
     
         if (GetComponent<NavMeshAgent>().enabled)
@@ -565,9 +566,9 @@ public class ZombieBehavior : SensingEntity {
     
 			if (GetComponent<Animator> ()) {
 				if (diff.magnitude > 0.7f) {
-					GetComponent<Animator> ().SetFloat ("speed", movement.magnitude / Time.deltaTime);
+					//GetComponent<Animator> ().SetFloat ("speed", movement.magnitude / Time.deltaTime);
 				} else {
-					GetComponent<Animator> ().SetFloat ("speed", 0.0f);
+					//GetComponent<Animator> ().SetFloat ("speed", 0.0f);
 					//print ( "REACHED" );
 					// :TO: this needs to be refactored
 					//m_hasPlayerTask = false;

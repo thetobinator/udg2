@@ -23,10 +23,29 @@ public class SensingEntity : MonoBehaviour {
 	private float m_runnerAlertSqrDistanceThreshold = 256.0f;
 	private float m_runnerDetectSqrDistanceThreshold = 64.0f;
 	private float m_time = 0.0f;
+	private uint m_postProcessHumanRagdoll = 0u;
+	private RuntimeAnimatorController m_animationControllerBeforeRagdolling = null;
 
-	public void Init()
+	protected void Start()
 	{
 		m_time = Random.value; // avoid triggering the senses of all objects at the same time
+	}
+
+	protected void Update()
+	{
+		if (m_postProcessHumanRagdoll > 0u) {
+			--m_postProcessHumanRagdoll;
+			if (m_postProcessHumanRagdoll == 2u) {
+				m_animationControllerBeforeRagdolling = GetComponent<Animator> ().runtimeAnimatorController;
+				GetComponent<Animator> ().runtimeAnimatorController = null;
+			} else if (m_postProcessHumanRagdoll == 1u) {
+				GetComponent<Animator> ().runtimeAnimatorController = m_animationControllerBeforeRagdolling;
+			} else if (m_postProcessHumanRagdoll == 0u) {
+				gameObject.AddComponent<ZombieBehavior> ();
+				gameObject.GetComponent<ZombieBehavior> ().initDelay = 8.0f;
+				Destroy (this);
+			}
+		}
 	}
 
 	protected string getOpposingFactionTag()
@@ -220,13 +239,12 @@ public class SensingEntity : MonoBehaviour {
 
 		bool result = false;
 		if (n != null && a != null && r != null && a.enabled) {
-			r.ragdolled=true;
-
+			r.ragdolled = true;
 			if (h != null) {
-				h.dropWeapon();
-				Destroy (h);
-				gameObject.AddComponent<ZombieBehavior>();
-				gameObject.GetComponent<ZombieBehavior>().initDelay = 8.0f;
+				h.die ();
+				if (!hc.wasKilledBy (null)) {
+					m_postProcessHumanRagdoll = 3u;
+				}
 				result = true;
 			} else if (z != null) {
 				if (hc.isDead()) {
@@ -244,12 +262,11 @@ public class SensingEntity : MonoBehaviour {
 		bool isWalking = (m_animationFlags & (uint)AnimationFlags.Walk) != 0u;
 		float animationSpeedMultiplier = isWalking ? 2.5f : speedMultiplier * 0.6f;
 		Animator animatorComponent = GetComponent<Animator> ();
-		if (animatorComponent != null && animatorComponent.enabled) {
+		if (animatorComponent != null && animatorComponent.enabled && animatorComponent.runtimeAnimatorController != null) {
 			animatorComponent.SetBool ("walk", isWalking );
 			animatorComponent.SetBool ("run", (m_animationFlags & (uint)AnimationFlags.Run) != 0u );
 			animatorComponent.SetBool ("attack", (m_animationFlags & (uint)AnimationFlags.Attack) != 0u);
 			animatorComponent.SetBool ("turn", (m_animationFlags & (uint)AnimationFlags.Turn) != 0u);
-			animatorComponent.SetBool ("eat", (m_animationFlags & (uint)AnimationFlags.Eat) != 0u);
 			animatorComponent.SetBool ("eat", (m_animationFlags & (uint)AnimationFlags.Eat) != 0u);
 			animatorComponent.SetBool ("shoot", (m_animationFlags & (uint)AnimationFlags.Shoot) != 0u);
 			animatorComponent.SetBool ("zombie", gameObject.tag == "Zombie");
