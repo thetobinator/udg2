@@ -147,7 +147,8 @@ public class MainGameManager : MainGameInit
                 {
                     // add dummy destination marker:
                     NavMeshPath path = new NavMeshPath();
-                    NavMesh.CalculatePath(commandCandidate.transform.position, hit.point, NavMesh.AllAreas, path);
+					Vector3 hitPoint = CrosshairBehaviour.getRecentlyFocusedHuman () != null ? CrosshairBehaviour.getRecentlyFocusedHuman ().transform.position : hit.point;
+                    NavMesh.CalculatePath(commandCandidate.transform.position, hitPoint, NavMesh.AllAreas, path);
                     if (path.corners.Length > 0)
                     {
                         Vector3 destinationPosition = path.corners[path.corners.Length - 1];

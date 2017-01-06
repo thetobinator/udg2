@@ -494,7 +494,7 @@ public class ZombieBehavior : SensingEntity {
 	{
         // getChildRootObject for Humans/Zombies contained in the HumanParent/ZombieParent
         //GameObject colliderRootObject = getChildRootObject(hit.collider.gameObject.transform.parent.gameObject);
-        GameObject colliderRootObject = getRootObject(hit.collider.gameObject.transform.parent.gameObject);
+		GameObject colliderRootObject = CrosshairBehaviour.getRecentlyFocusedHuman() != null ? CrosshairBehaviour.getRecentlyFocusedHuman() : getRootObject(hit.collider.gameObject.transform.parent.gameObject);
         if (colliderRootObject.tag == getOpposingFactionTag ()) {
 			setObjectOfInterest (colliderRootObject);
 			m_positionOfInterest = m_objectOfInterest.GetComponent< Transform > ().position;
