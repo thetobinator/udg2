@@ -10,6 +10,7 @@ public class SensingEntity : MonoBehaviour {
 		Turn = 1 << 3,
 		Eat = 1 << 4,
 		Shoot = 1 << 5,
+		Kick = 1 << 6,
 	}
 
 	public float speedMultiplier = 1.0f;
@@ -172,7 +173,13 @@ public class SensingEntity : MonoBehaviour {
 					Vector3 direction2D = direction;
 					direction2D.y = 0.0f;
 					direction2D.Normalize();
-					if( Vector3.Dot( direction2D, viewDirection ) > 0.707f )
+					HealthComponent hc = GetComponent<HealthComponent> ();
+					float relevantDotProduct = 0.707f;
+					if (hc != null && hc.initialHealth != hc.current_health) {
+						relevantDotProduct = -1.0f;
+						// give hurt victims chance to react
+					}
+					if( Vector3.Dot( direction2D, viewDirection ) > relevantDotProduct )
 					{
 						// in azimuth
 						Vector3 rayStart = headPosition + 0.5f * direction;
@@ -274,6 +281,7 @@ public class SensingEntity : MonoBehaviour {
 			animatorComponent.SetBool ("turn", (m_animationFlags & (uint)AnimationFlags.Turn) != 0u);
 			animatorComponent.SetBool ("eat", (m_animationFlags & (uint)AnimationFlags.Eat) != 0u);
 			animatorComponent.SetBool ("shoot", (m_animationFlags & (uint)AnimationFlags.Shoot) != 0u);
+			animatorComponent.SetBool ("kick", (m_animationFlags & (uint)AnimationFlags.Kick) != 0u);
 			animatorComponent.SetBool ("zombie", gameObject.tag == "Zombie");
 			animatorComponent.SetFloat ("speedMultiplier", animationSpeedMultiplier);
 		}

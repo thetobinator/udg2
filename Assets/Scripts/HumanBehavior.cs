@@ -10,6 +10,7 @@ public class HumanBehavior : SensingEntity {
 		Idle,				// no zombies sensed, just stand there
 		Alerted,			// sensed zombies without exact localization, look around, moaning sounds
 		StandAndShoot,		// shoot at localized zombie
+		Kick,				// kick to defend self
 		RunOff,				// run away from one of the localized zombies
 		Dead,				// dead, this time really
 	};
@@ -107,10 +108,15 @@ public class HumanBehavior : SensingEntity {
 			setObjectOfInterest( m_localizedObjectOfInterestCandidate );
 			m_positionOfInterest = m_objectOfInterest.GetComponent< Transform >().position;
 
+			const float selfDefenseThreshold = 4.0f;
 			const float runOffThresholdSmall = 25.0f;
 			const float runOffThresholdLarge = 49.0f;
 			float sqrDistance = ( transform.position - m_positionOfInterest ).sqrMagnitude;
-			if( ( sqrDistance < runOffThresholdSmall && !m_hasGun ) || ( sqrDistance > runOffThresholdLarge && m_hasGun ) )
+			if( sqrDistance < selfDefenseThreshold )
+			{
+				m_state = State.Kick;
+			}
+			else if( ( sqrDistance < runOffThresholdSmall && !m_hasGun ) || ( sqrDistance > runOffThresholdLarge && m_hasGun ) )
 			{
 				m_state = State.RunOff;
 			}
@@ -139,6 +145,11 @@ public class HumanBehavior : SensingEntity {
 		if( m_objectOfInterest != null )
 		{
 			m_positionOfInterest = m_objectOfInterest.GetComponent< Transform > ().position;
+			const float selfDefenseThreshold = 4.0f;
+			float sqrDistance = ( transform.position - m_positionOfInterest ).sqrMagnitude;
+			if (sqrDistance < selfDefenseThreshold) {
+				m_state = State.Kick;
+			}
 		}
 
 		m_targetPosition = getTargetPositionForDangerPosition (m_positionOfInterest);
@@ -159,10 +170,13 @@ public class HumanBehavior : SensingEntity {
 			setObjectOfInterest( m_localizedObjectOfInterestCandidate );
 			m_positionOfInterest = m_objectOfInterest.GetComponent< Transform >().position;
 			
-			const float runOffThresholdSmall = 25.0f;
+			const float selfDefenseThreshold = 4.0f;
 			const float runOffThresholdLarge = 81.0f;
 			float sqrDistance = ( transform.position - m_positionOfInterest ).sqrMagnitude;
-			if( ( /*sqrDistance < runOffThresholdSmall ||*/ sqrDistance > runOffThresholdLarge ) && m_stateTime > 1.0f )
+			if (sqrDistance < selfDefenseThreshold) {
+				m_state = State.Kick;
+			}
+			else if( sqrDistance > runOffThresholdLarge && m_stateTime > 1.0f )
 			{
 				m_state = State.RunOff;
 			}
@@ -186,6 +200,23 @@ public class HumanBehavior : SensingEntity {
 		if (m_stateTime > 2.0f) {
 			m_state = State.Alerted;
 		}		
+	}
+
+	void updateKickBehaviour()
+	{
+		if (m_stateTime < 0.7f) {
+			m_animationFlags |= (uint)AnimationFlags.Walk;
+			approachPosition (m_positionOfInterest);
+		} else if (m_stateTime < 1.2f) {
+			m_animationFlags |= (uint)AnimationFlags.Kick;
+		} else if (m_localizedObjectOfInterestCandidate != null) {
+			if (Random.Range (0, 1) == 0) {
+				m_localizedObjectOfInterestCandidate.GetComponent<ZombieBehavior> ().handleKicked (gameObject);
+			}
+			m_localizedObjectOfInterestCandidate = null;
+		} else {
+			m_state = State.Alerted;
+		}
 	}
 
 	Vector3 getTargetPositionForDangerPosition( Vector3 dangerPosition )
@@ -234,6 +265,10 @@ public class HumanBehavior : SensingEntity {
 
 		case State.StandAndShoot:
 			updateStandAndShootBehaviour();
+			break;
+
+		case State.Kick:
+			updateKickBehaviour();
 			break;
 			
 		case State.RunOff:

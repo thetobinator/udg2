@@ -419,7 +419,7 @@ public class ZombieBehavior : SensingEntity {
 		m_state = State.Dead;
 	}
 
-    public void handleBulletImpact( Collision collision )
+	void dealSomeDamageAndTurnIntoRagdoll()
 	{
 		HealthComponent h = GetComponent<HealthComponent>();
 		if( h != null && h.enabled ){
@@ -430,6 +430,25 @@ public class ZombieBehavior : SensingEntity {
 				m_stateTime = 0.0f;
 			}
 		}
+	}
+
+    public void handleBulletImpact( Collision collision )
+	{
+		dealSomeDamageAndTurnIntoRagdoll ();
+	}
+
+	public void handleKicked( GameObject kicker )
+	{
+		Vector3 impact = transform.position;
+		impact -= kicker.transform.position;
+		impact.Normalize ();
+		impact *= 2.0f;
+		Component[] rigidBodies = GetComponentsInChildren<Rigidbody> ();
+		foreach (Rigidbody r in rigidBodies) {
+			r.AddForce(impact,ForceMode.VelocityChange);
+		}
+
+		dealSomeDamageAndTurnIntoRagdoll ();
 	}
 
     /*
