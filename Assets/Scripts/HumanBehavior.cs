@@ -204,6 +204,7 @@ public class HumanBehavior : SensingEntity {
 
 	void updateKickBehaviour()
 	{
+		setCollidersEnabled (false);
 		if (m_stateTime < 0.7f) {
 			m_animationFlags |= (uint)AnimationFlags.Walk;
 			approachPosition (m_positionOfInterest);
@@ -215,6 +216,7 @@ public class HumanBehavior : SensingEntity {
 			}
 			m_localizedObjectOfInterestCandidate = null;
 		} else {
+			setCollidersEnabled (true);
 			m_state = State.Alerted;
 		}
 	}

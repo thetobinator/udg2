@@ -49,8 +49,13 @@ public class SensingEntity : MonoBehaviour {
 			}
 		} else if( m_time > 10.0f ) {
 			HealthComponent hc = GetComponent<HealthComponent> ();
-			if (hc.isDead ()) {
-				Destroy (gameObject);
+			RagdollHelper r = GetComponent<RagdollHelper> ();
+			if (hc.isDead () && r.ragdolled) {
+				if (m_time > 12.0f) {
+					Destroy (gameObject);
+				} else {
+					setCollidersEnabled (false);
+				}
 			}
 		}
 	}
@@ -248,6 +253,8 @@ public class SensingEntity : MonoBehaviour {
 		RagdollHelper r = GetComponent<RagdollHelper> ();
 		HealthComponent hc = GetComponent<HealthComponent>();
 
+		setCollidersEnabled (true);
+
 		bool result = false;
 		if (n != null && a != null && r != null && a.enabled) {
 			r.ragdolled = true;
@@ -285,5 +292,24 @@ public class SensingEntity : MonoBehaviour {
 			animatorComponent.SetBool ("zombie", gameObject.tag == "Zombie");
 			animatorComponent.SetFloat ("speedMultiplier", animationSpeedMultiplier);
 		}
+	}
+
+	protected void setCollidersEnabled(bool collidersEnabled){
+		foreach (CapsuleCollider child in GetComponentsInChildren<CapsuleCollider>()) {
+			child.enabled = collidersEnabled;
+		}
+		foreach (SphereCollider child in GetComponentsInChildren<SphereCollider>()) {
+			child.enabled = collidersEnabled;
+		}
+		foreach (BoxCollider child in GetComponentsInChildren<BoxCollider>()) {
+			child.enabled = collidersEnabled;
+		}
+		/*
+		foreach (Rigidbody child in GetComponentsInChildren<Rigidbody>()) {
+			child.velocity = new Vector3(0.0f, 0.0f, 0.0f);
+			child.angularVelocity = new Vector3(0.0f, 0.0f, 0.0f);
+			child.Sleep ();
+		}
+		*/
 	}
 }

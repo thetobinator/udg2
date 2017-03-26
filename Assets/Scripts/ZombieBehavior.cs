@@ -27,6 +27,7 @@ public class ZombieBehavior : SensingEntity {
 	GameObject previousObject;
 	bool m_hasPlayerTask = false;
 	Vector3 m_oldPosition;
+	GameObject m_victimHead = null;
 
     public bool hasPlayerTask()
 	{
@@ -194,32 +195,17 @@ public class ZombieBehavior : SensingEntity {
 		{
 			if( h != null && h.turnIntoRagdoll() )
 			{
-                m_state = State.EatFlesh;
-                updateEatFleshBehaviour();
+				m_victimHead = human;
              
-                bool hasHead = false;
-                GameObject eatTarget = null;
-                foreach (Transform child in GetComponentsInChildren<Transform>())
+                foreach (Transform child in human.GetComponentsInChildren<Transform>())
                 {
-                    
                     if (child.name == "Head")
                     {
-                        hasHead = true;
-                        eatTarget = child.gameObject;                         
+						m_victimHead = child.gameObject;
+						break;
                     }
                 }
-
-                if (hasHead)
-                {
-                    m_objectOfInterest = eatTarget;
-                    m_state = State.ApproachTarget;
-                  
-                }
-
-              //  m_objectOfInterest = null;
-
-                return false;
-            }              
+            }
 		}
 
 		return health.isDead ();
@@ -306,7 +292,6 @@ public class ZombieBehavior : SensingEntity {
 				setObjectOfInterest (null);
 				setLocalizedObjectOfInterestCandidate( null );
 				setNonLocalizedObjectOfInterestCandidate( null );
-				m_animationFlags |= (uint)AnimationFlags.Eat;
 				m_hasPlayerTask = false;
 				m_state = State.EatFlesh;
 				return;
@@ -317,10 +302,32 @@ public class ZombieBehavior : SensingEntity {
 
 	void updateEatFleshBehaviour()
 	{
-		updateSenses ();
-		if (m_nonLocalizedObjectOfInterestCandidate != null
-		    || m_localizedObjectOfInterestCandidate != null
-		    || m_stateTime > 2.0f ) {
+		if (m_stateTime == 0.0f) {
+			m_animationFlags |= (uint)AnimationFlags.Eat;
+		}
+
+		if (m_victimHead != null && m_stateTime < 3.0f) {
+			Vector3 offset = m_victimHead.transform.position;
+			offset -= transform.position;
+			offset.y = 0.0f;
+			offset.Normalize ();
+			transform.rotation = Quaternion.FromToRotation (Vector3.forward, offset);
+			offset *= 0.25f;
+			Vector3 finalEatingPosition = m_victimHead.transform.position - offset;
+			finalEatingPosition.y = transform.position.y;
+			Vector3 delta = finalEatingPosition - transform.position;
+			if (delta.sqrMagnitude < 9.0) {
+				transform.position = transform.position + 0.1f * delta;
+			}
+			// disable collision while eating
+			setCollidersEnabled(false);
+		}
+
+		approachPosition (transform.position);
+
+		if (m_stateTime > 6.8f ) { // full playback of animation
+			// enable collision again
+			setCollidersEnabled(true);
 			m_state = State.ApproachTarget;
 		}
 	}
