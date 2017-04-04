@@ -133,7 +133,7 @@ namespace UnityStandardAssets.CrossPlatformInput.Inspector
                     }
                 }
                 string definesString = string.Join(";", defines.ToArray());
-                PlayerSettings.SetScriptingDefineSymbolsForGroup(group, definesString);
+                //PlayerSettings.SetScriptingDefineSymbolsForGroup(group, definesString);
             }
         }
 
