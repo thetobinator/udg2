@@ -1,4 +1,6 @@
-﻿/// Render a volumetric line strip using an additive shader
+﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
+/// Render a volumetric line strip using an additive shader
 ///
 /// Based on the Volumetric lines algorithm by Sébastien Hillaire
 /// http://sebastien.hillaire.free.fr/index.php?option=com_content&view=article&id=57&Itemid=74
@@ -66,13 +68,13 @@ Shader "VolumetricLine/VolumetricLineStripAdditive" {
 			    v2f o;
 			    o.uv = TRANSFORM_TEX (v.texcoord, _MainTex);  
 			   
-			    float4 vMVP = mul(UNITY_MATRIX_MVP, v.vertex);
+			    float4 vMVP = UnityObjectToClipPos(v.vertex);
 			   
 			    float4 prev = float4(v.normal.xyz, 1.0);
-			    float4 prevMVP = mul(UNITY_MATRIX_MVP, prev);
+			    float4 prevMVP = UnityObjectToClipPos(prev);
 			   
 			    float4 next = float4(v.tangent.xyz, 1.0);
-			    float4 nextMVP = mul(UNITY_MATRIX_MVP, next);
+			    float4 nextMVP = UnityObjectToClipPos(next);
 			   
 			    float2 lineDirProjPrev = _LineWidth * normalize((vMVP.xy/vMVP.w) - (prevMVP.xy/prevMVP.w));
 			//                if (sign(prevMVP.w) != sign(vMVP.w))
