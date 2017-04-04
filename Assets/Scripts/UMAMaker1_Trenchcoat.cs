@@ -372,7 +372,7 @@ public class UMAMaker1_Trenchcoat: MonoBehaviour {
         GO.transform.localPosition = Vector3.zero;
         GO.transform.localRotation = Quaternion.identity;
        // GO.AddComponent(typeof(Animator));
-        GO.AddComponent(typeof(NavMeshAgent));
+        GO.AddComponent(typeof(UnityEngine.AI.NavMeshAgent));
         GO.AddComponent(typeof(Rigidbody));
         GO.AddComponent(typeof(CapsuleCollider));
         var goCol = GO.GetComponent<CapsuleCollider>();

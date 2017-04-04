@@ -105,7 +105,7 @@ public class UMACharGen : MonoBehaviour
                     
     }
         
-		GO.AddComponent<NavMeshAgent> ();
+		GO.AddComponent<UnityEngine.AI.NavMeshAgent> ();
 		GO.AddComponent<HealthComponent> ();
 
         // Initialize Avatar and grab a reference to its data component

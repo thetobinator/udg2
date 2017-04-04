@@ -175,7 +175,7 @@ public class TodoList : EditorWindow
 		{
 			//Debug.Log("Save Data: " + _listData.items.Count);
 			EditorUtility.SetDirty(_listData);
-			EditorApplication.SaveAssets();
+			AssetDatabase.SaveAssets();
 			AssetDatabase.SaveAssets();		
 		}	
 	}
@@ -183,7 +183,7 @@ public class TodoList : EditorWindow
 	void OnDestroy()
 	{
 		EditorUtility.SetDirty(_listData);
-		EditorApplication.SaveAssets();
+		AssetDatabase.SaveAssets();
 		AssetDatabase.SaveAssets();
 	}	
 }

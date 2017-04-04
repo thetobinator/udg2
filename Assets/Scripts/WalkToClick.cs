@@ -77,7 +77,7 @@ public class WalkToClick : MonoBehaviour {
 			Ray ray = m_camera.GetComponent<Camera> ().ScreenPointToRay (Input.mousePosition);
 			RaycastHit hit = new RaycastHit ();
 			if (Physics.Raycast (ray, out hit)) {
-                GetComponent<NavMeshAgent>().SetDestination(hit.point);
+                GetComponent<UnityEngine.AI.NavMeshAgent>().SetDestination(hit.point);
 
 				/*if (this.tag == "Zombie"){
 					if( hit.collider.tag != "Terrain" || hit.collider.tag != "Zombie")
@@ -143,7 +143,7 @@ public class WalkToClick : MonoBehaviour {
 		if (m_hasDestination) {
 			Vector3 movement = GetComponent<Transform> ().position - m_oldPosition;
 			m_oldPosition = GetComponent<Transform> ().position;
-			Vector3 diff = GetComponent<Transform> ().position - GetComponent<NavMeshAgent> ().destination;
+			Vector3 diff = GetComponent<Transform> ().position - GetComponent<UnityEngine.AI.NavMeshAgent> ().destination;
 			if (GetComponent<Animator> ()) {
 				if (diff.magnitude > 0.7f) {
 					GetComponent<Animator> ().SetFloat ("speed", movement.magnitude / Time.deltaTime);

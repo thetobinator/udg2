@@ -130,7 +130,7 @@ public class MainGameManager : MainGameInit
                 {
                     ZombieBehavior zb = zombie.GetComponent<ZombieBehavior>();
                     HealthComponent hc = zombie.GetComponent<HealthComponent>();
-                    NavMeshAgent na = zombie.GetComponent<NavMeshAgent>();
+                    UnityEngine.AI.NavMeshAgent na = zombie.GetComponent<UnityEngine.AI.NavMeshAgent>();
                     if (zb != null && zb.enabled && zb.hasPlayerTask() == acceptedTaskFlag
                         && hc != null && hc.enabled && !hc.isDead() && na != null && na.enabled)
                     {
@@ -146,9 +146,9 @@ public class MainGameManager : MainGameInit
                 if (commandCandidate != null)
                 {
                     // add dummy destination marker:
-                    NavMeshPath path = new NavMeshPath();
+                    UnityEngine.AI.NavMeshPath path = new UnityEngine.AI.NavMeshPath();
 					Vector3 hitPoint = CrosshairBehaviour.getRecentlyFocusedHuman () != null ? CrosshairBehaviour.getRecentlyFocusedHuman ().transform.position : hit.point;
-                    NavMesh.CalculatePath(commandCandidate.transform.position, hitPoint, NavMesh.AllAreas, path);
+                    UnityEngine.AI.NavMesh.CalculatePath(commandCandidate.transform.position, hitPoint, UnityEngine.AI.NavMesh.AllAreas, path);
                     if (path.corners.Length > 0)
                     {
                         Vector3 destinationPosition = path.corners[path.corners.Length - 1];
