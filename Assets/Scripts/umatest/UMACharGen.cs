@@ -223,7 +223,7 @@ public class UMACharGen : MonoBehaviour
 		umaRecipe.SetRace(raceLibrary.GetRace("HumanMale"));
 
 		umaData.umaRecipe.slotDataList[0] = slotLibrary.InstantiateSlot("MaleFace");
-		//umaData.umaRecipe.slotDataList[0].AddOverlay(overlayLibrary.InstantiateOverlay("MaleHead02"));
+		umaData.umaRecipe.slotDataList[0].AddOverlay(overlayLibrary.InstantiateOverlay("M_Face_01"));
 
 		umaData.umaRecipe.slotDataList[1] = slotLibrary.InstantiateSlot("MaleEyes");
 		umaData.umaRecipe.slotDataList[1].AddOverlay(overlayLibrary.InstantiateOverlay("EyeOverlay"));
@@ -232,7 +232,7 @@ public class UMACharGen : MonoBehaviour
 		umaData.umaRecipe.slotDataList[2].AddOverlay(overlayLibrary.InstantiateOverlay("InnerMouth"));
 
 		umaData.umaRecipe.slotDataList[3] = slotLibrary.InstantiateSlot("MaleTorso");
-		//umaData.umaRecipe.slotDataList[3].AddOverlay(overlayLibrary.InstantiateOverlay("MaleBody02"));
+		umaData.umaRecipe.slotDataList[3].AddOverlay(overlayLibrary.InstantiateOverlay("M_Bod Overlay 1"));
 
 		umaData.umaRecipe.slotDataList[4] = slotLibrary.InstantiateSlot("MaleHands");
 		umaData.umaRecipe.slotDataList[4].SetOverlayList(umaData.umaRecipe.slotDataList[3].GetOverlayList());
