@@ -234,7 +234,7 @@ public class HumanBehavior : SensingEntity {
 			return oppositeDirection + dangerPosition;
 		}
 
-		return GetComponent<NavMeshAgent>().destination;
+		return GetComponent<UnityEngine.AI.NavMeshAgent>().destination;
 	}
 	
 	void updateState()
@@ -331,11 +331,11 @@ public class HumanBehavior : SensingEntity {
 		base.Update ();
 		updateState();
 
-		GetComponent<NavMeshAgent>().speed = 1.5f;
+		GetComponent<UnityEngine.AI.NavMeshAgent>().speed = 1.5f;
 
 		Vector3 movement = GetComponent<Transform> ().position - m_oldPosition;
 		m_oldPosition = GetComponent<Transform> ().position;
-		Vector3 diff = GetComponent<Transform> ().position - GetComponent<NavMeshAgent> ().destination;
+		Vector3 diff = GetComponent<Transform> ().position - GetComponent<UnityEngine.AI.NavMeshAgent> ().destination;
 		if (GetComponent<Animator> ()) {
 			if (diff.magnitude > 0.7f) {
 				//GetComponent<Animator> ().SetFloat ("speed", movement.magnitude / Time.deltaTime);

@@ -741,7 +741,7 @@ public class UMAMaker1_FemaleCivilian: MonoBehaviour {
         goCol.center = new Vector3(0f, 0.78f, 0f);
         goCol.height = 1.7f;
         goCol.radius = 0.2f;
-        GO.AddComponent(typeof(NavMeshAgent));
+        GO.AddComponent(typeof(UnityEngine.AI.NavMeshAgent));
 
         // hand collision to prevent slide through
         // LeftFistBox();

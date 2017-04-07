@@ -171,7 +171,7 @@ public class ZombieBehavior : SensingEntity {
 	void updateHitBehaviour()
 	{
 		if (m_stateTime > 4.0f) {
-			GetComponent<NavMeshAgent> ().enabled = true;
+			GetComponent<UnityEngine.AI.NavMeshAgent> ().enabled = true;
 			m_state = State.Idle;
 		}
 		else if (m_stateTime > 2.0f) {
@@ -221,7 +221,7 @@ public class ZombieBehavior : SensingEntity {
         //this.gameObject.transform.parent = GameObject.Find("ZombieParent").transform;
         speedMultiplier = Random.Range (0.5f, 2.5f);
 		
-		NavMeshAgent n = GetComponent<NavMeshAgent>();
+		UnityEngine.AI.NavMeshAgent n = GetComponent<UnityEngine.AI.NavMeshAgent>();
 		Animator a = GetComponent<Animator>();
 		RagdollHelper r = GetComponent<RagdollHelper> ();
 			
@@ -416,9 +416,9 @@ public class ZombieBehavior : SensingEntity {
 
 		updateAnimationState ();
 		
-        NavMeshAgent nma = GetComponent<NavMeshAgent>();
+        UnityEngine.AI.NavMeshAgent nma = GetComponent<UnityEngine.AI.NavMeshAgent>();
         if (!nma) { return; }
-		GetComponent<NavMeshAgent> ().speed = 1.2f * speedMultiplier;//m_hasPlayerTask ? 1.2f : 1.2f;
+		GetComponent<UnityEngine.AI.NavMeshAgent> ().speed = 1.2f * speedMultiplier;//m_hasPlayerTask ? 1.2f : 1.2f;
     }
 
 	public void die()
@@ -587,12 +587,12 @@ public class ZombieBehavior : SensingEntity {
 		base.Update ();
         updateState();
     
-        if (GetComponent<NavMeshAgent>().enabled)
+        if (GetComponent<UnityEngine.AI.NavMeshAgent>().enabled)
         {
            // zombieKeyboardInput(); // passed control to a keyboard script? Probably A good idea
             Vector3 movement = GetComponent<Transform>().position - m_oldPosition;
             m_oldPosition = GetComponent<Transform>().position;
-            Vector3 diff = GetComponent<Transform>().position - GetComponent<NavMeshAgent>().destination;
+            Vector3 diff = GetComponent<Transform>().position - GetComponent<UnityEngine.AI.NavMeshAgent>().destination;
     
 			if (GetComponent<Animator> ()) {
 				if (diff.magnitude > 0.7f) {

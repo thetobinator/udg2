@@ -82,13 +82,13 @@ public class SensingEntity : MonoBehaviour {
 
 	protected void approachPosition( Vector3 targetPosition )
 	{
-		NavMeshAgent nma = GetComponent<NavMeshAgent>();
+		UnityEngine.AI.NavMeshAgent nma = GetComponent<UnityEngine.AI.NavMeshAgent>();
 		if( nma == null || !nma.enabled || !nma.isOnNavMesh )
 		{
 			return;
 		}
-		NavMeshHit hit;
-		if( NavMesh.SamplePosition( transform.position, out hit, 3, NavMesh.AllAreas ) )
+		UnityEngine.AI.NavMeshHit hit;
+		if( UnityEngine.AI.NavMesh.SamplePosition( transform.position, out hit, 3, UnityEngine.AI.NavMesh.AllAreas ) )
 		{
 			nma.SetDestination( targetPosition );
 		}
@@ -96,7 +96,7 @@ public class SensingEntity : MonoBehaviour {
 
 	protected bool reachedPosition()
 	{
-		NavMeshAgent nma = GetComponent<NavMeshAgent>();
+		UnityEngine.AI.NavMeshAgent nma = GetComponent<UnityEngine.AI.NavMeshAgent>();
 		if( nma == null )
 		{
 			return false;
@@ -246,7 +246,7 @@ public class SensingEntity : MonoBehaviour {
 
 	public bool turnIntoRagdoll()
 	{
-		NavMeshAgent n = GetComponent<NavMeshAgent>();
+		UnityEngine.AI.NavMeshAgent n = GetComponent<UnityEngine.AI.NavMeshAgent>();
 		Animator a = GetComponent<Animator>();
 		HumanBehavior h = GetComponent<HumanBehavior>();
 		ZombieBehavior z = GetComponent<ZombieBehavior>();
