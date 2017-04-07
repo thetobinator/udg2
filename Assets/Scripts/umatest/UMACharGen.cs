@@ -51,8 +51,9 @@ public class UMACharGen : MonoBehaviour
 	string getMappedSlotName(string name) {
 		// :TODO: :TO: fix clothing
 		if (s_slotMap.Count == 0) {
-			s_slotMap ["FemaleEyelash"] = "";
-			s_slotMap ["FemaleTshirt01"] = "";
+			
+			//s_slotMap ["FemaleEyelash"] = "";
+			//s_slotMap ["FemaleTshirt01"] = "";
 			s_slotMap ["FemaleShortHair01"] = "";
 			s_slotMap ["FemaleLongHair01"] = "";
 		}
@@ -67,7 +68,9 @@ public class UMACharGen : MonoBehaviour
 	string getMappedOverlayName(string name) {
 		// :TODO: :TO: fix clothing
 		if (s_overlayMap.Count == 0) {
+			
 			s_overlayMap ["FemaleHead01"] = "F_H_Head";
+			/*
 			s_overlayMap ["FemaleEyebrow01"] = "";
 			s_overlayMap ["FemaleBody01"] = "";
 			s_overlayMap ["FemaleBody02"] = "";
@@ -75,6 +78,7 @@ public class UMACharGen : MonoBehaviour
 			s_overlayMap ["FemaleShirt01"] = "";
 			s_overlayMap ["FemaleShirt02"] = "";
 			s_overlayMap ["FemaleJeans01"] = "";
+			*/
 		}
 
 		if (s_overlayMap.ContainsKey (name)) {
@@ -217,8 +221,9 @@ public class UMACharGen : MonoBehaviour
 		return newName;
 	}
 
-	void CreateNeutrum()
+	void CreateMale2()
 	{
+		// this serves as a starting point to rework the randomized male after Unity update
 		var umaRecipe = umaDynamicAvatar.umaData.umaRecipe;
 		umaRecipe.SetRace(raceLibrary.GetRace("HumanMale"));
 
@@ -242,17 +247,40 @@ public class UMACharGen : MonoBehaviour
 
 		umaData.umaRecipe.slotDataList[6] = slotLibrary.InstantiateSlot("MaleFeet");
 		umaData.umaRecipe.slotDataList[6].SetOverlayList(umaData.umaRecipe.slotDataList[3].GetOverlayList());
-
-		//umaData.umaRecipe.slotDataList[3].AddOverlay(overlayLibrary.InstantiateOverlay("MaleUnderwear01"));
-		//umaData.umaRecipe.slotDataList[5].AddOverlay(overlayLibrary.InstantiateOverlay("MaleUnderwear01"));
-
-		//umaData.umaRecipe.slotDataList[0].AddOverlay(overlayLibrary.InstantiateOverlay("MaleEyebrow01",Color.black));
-
 	}
+
+	void CreateFemale2()
+	{
+		// this serves as a starting point to rework the randomized female after Unity update
+		var umaRecipe = umaDynamicAvatar.umaData.umaRecipe;
+		umaRecipe.SetRace(raceLibrary.GetRace("HumanFemale"));
+
+		umaData.umaRecipe.slotDataList[0] = slotLibrary.InstantiateSlot("FemaleFace");
+		umaData.umaRecipe.slotDataList[0].AddOverlay(overlayLibrary.InstantiateOverlay("F_H_Head"));
+
+		umaData.umaRecipe.slotDataList[1] = slotLibrary.InstantiateSlot("FemaleEyes");
+		umaData.umaRecipe.slotDataList[1].AddOverlay(overlayLibrary.InstantiateOverlay("EyeOverlay"));
+
+		umaData.umaRecipe.slotDataList[2] = slotLibrary.InstantiateSlot("FemaleInnerMouth");
+		umaData.umaRecipe.slotDataList[2].AddOverlay(overlayLibrary.InstantiateOverlay("InnerMouth"));
+
+		umaData.umaRecipe.slotDataList[3] = slotLibrary.InstantiateSlot("FemaleTorso");
+		umaData.umaRecipe.slotDataList[3].AddOverlay(overlayLibrary.InstantiateOverlay("FemaleShirt01"));
+
+		umaData.umaRecipe.slotDataList[4] = slotLibrary.InstantiateSlot("FemaleHands");
+		umaData.umaRecipe.slotDataList[4].SetOverlayList(umaData.umaRecipe.slotDataList[3].GetOverlayList());
+
+		umaData.umaRecipe.slotDataList[5] = slotLibrary.InstantiateSlot("FemaleLegs");
+		umaData.umaRecipe.slotDataList[5].SetOverlayList(umaData.umaRecipe.slotDataList[3].GetOverlayList());
+
+		umaData.umaRecipe.slotDataList[6] = slotLibrary.InstantiateSlot("FemaleFeet");
+		umaData.umaRecipe.slotDataList[6].SetOverlayList(umaData.umaRecipe.slotDataList[3].GetOverlayList());
+	}
+
 
 	void CreateFemale()
 	{
-		CreateNeutrum ();return;//remove me
+		CreateFemale2 ();return;
 		var umaRecipe = umaDynamicAvatar.umaData.umaRecipe;
 		umaRecipe.SetRace (raceLibrary.GetRace ("HumanFemale"));
 
@@ -287,7 +315,9 @@ public class UMACharGen : MonoBehaviour
 
 			tempSlotList.Add (GetSlotLibrary ().InstantiateSlot (getMappedSlotName ("FemaleFace")));
 			headIndex = tempSlotList.Count - 1;
-			tempSlotList [headIndex].AddOverlay (GetOverlayLibrary ().InstantiateOverlay (getMappedOverlayName ("FemaleHead01"), skinColor));
+			if (mappedHead1OverlayName != "") {
+				tempSlotList [headIndex].AddOverlay (GetOverlayLibrary ().InstantiateOverlay (mappedHead1OverlayName, skinColor));
+			}
 			if (mappedEyeBrowOverlayName != "") {
 				tempSlotList [headIndex].AddOverlay (GetOverlayLibrary ().InstantiateOverlay (mappedEyeBrowOverlayName, new Color (0.125f, 0.065f, 0.065f, 1.0f)));
 			}
@@ -300,7 +330,7 @@ public class UMACharGen : MonoBehaviour
 			tempSlotList.Add (GetSlotLibrary ().InstantiateSlot (getMappedSlotName ("FemaleHead_Head")));
 			headIndex = tempSlotList.Count - 1;
 			if (mappedHead1OverlayName != "") {
-				tempSlotList [headIndex].AddOverlay (GetOverlayLibrary ().InstantiateOverlay (getMappedOverlayName ("FemaleHead01"), skinColor));
+				tempSlotList [headIndex].AddOverlay (GetOverlayLibrary ().InstantiateOverlay (mappedHead1OverlayName, skinColor));
 			}
 			if (mappedEyeBrowOverlayName != "") {
 				tempSlotList [headIndex].AddOverlay (GetOverlayLibrary ().InstantiateOverlay (mappedEyeBrowOverlayName, new Color (0.125f, 0.065f, 0.065f, 1.0f)));
@@ -433,7 +463,7 @@ public class UMACharGen : MonoBehaviour
 
 	void CreateMale()
 	{
-		CreateNeutrum ();return;//remove me
+		CreateMale2 ();return;//remove me
 		var umaRecipe = umaDynamicAvatar.umaData.umaRecipe;
 		umaRecipe.SetRace(raceLibrary.GetRace("HumanMale"));
 
