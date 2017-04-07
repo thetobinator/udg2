@@ -6,43 +6,81 @@ using UMA;
 public class UMACharGen : MonoBehaviour
 {
 
-    public UMAGeneratorBase generator;
-    public SlotLibrary slotLibrary;
-    public OverlayLibrary overlayLibrary;
-    public RaceLibrary raceLibrary;
-    public RuntimeAnimatorController animationController;
+	public UMAGeneratorBase generator;
+	public SlotLibrary slotLibrary;
+	public OverlayLibrary overlayLibrary;
+	public RaceLibrary raceLibrary;
+	public RuntimeAnimatorController animationController;
 
-    private UMADynamicAvatar umaDynamicAvatar;
-    private UMAData umaData;
-    private UMADnaHumanoid umaDna;
-    private UMADnaTutorial umaTutorialDNA;
+	private UMADynamicAvatar umaDynamicAvatar;
+	private UMAData umaData;
+	private UMADnaHumanoid umaDna;
+	private UMADnaTutorial umaTutorialDNA;
 
-    private int numberOfSlots = 10;
+	private int numberOfSlots = 2; // <- fix this
 
 	public bool isMultiSpawn = false;
 
 	private GameObject m_createdObject = null;
 	private int m_spawnCount = 0;
 
-    void Start()
-    {
+	static Dictionary<string,string> s_slotMap = new Dictionary<string,string>();
+	static Dictionary<string,string> s_overlayMap = new Dictionary<string,string>();
+
+	void Start()
+	{
 		setupFallbackObjects ();
 		m_createdObject = GenerateUMA(name + "( generated object " + m_spawnCount + ")");
 		++m_spawnCount;
-      
+
 		if (!isMultiSpawn) {
 			Destroy (gameObject);
 		}
-    }
+	}
 
-    // is this spawning new ones when they die? -bill I'll see.
+	// is this spawning new ones when they die? -bill I'll see.
 	void Update()
 	{
 		if (m_createdObject.GetComponent<HealthComponent> ().isDead ()) {
 			m_createdObject = GenerateUMA (name + "( generated object " + m_spawnCount + ")");
-       
-            ++m_spawnCount;
+
+			++m_spawnCount;
 		}
+	}
+
+	string getMappedSlotName(string name) {
+		// :TODO: :TO: fix clothing
+		if (s_slotMap.Count == 0) {
+			s_slotMap ["FemaleEyelash"] = "";
+			s_slotMap ["FemaleTshirt01"] = "";
+			s_slotMap ["FemaleShortHair01"] = "";
+			s_slotMap ["FemaleLongHair01"] = "";
+		}
+
+		if (s_slotMap.ContainsKey (name)) {
+			return s_slotMap [name];
+		}
+
+		return name;
+	}
+
+	string getMappedOverlayName(string name) {
+		// :TODO: :TO: fix clothing
+		if (s_overlayMap.Count == 0) {
+			s_overlayMap ["FemaleHead01"] = "F_H_Head";
+			s_overlayMap ["FemaleEyebrow01"] = "";
+			s_overlayMap ["FemaleBody01"] = "";
+			s_overlayMap ["FemaleBody02"] = "";
+			s_overlayMap ["FemaleUnderwear01"] = "";
+			s_overlayMap ["FemaleShirt01"] = "";
+			s_overlayMap ["FemaleShirt02"] = "";
+			s_overlayMap ["FemaleJeans01"] = "";
+		}
+
+		if (s_overlayMap.ContainsKey (name)) {
+			return s_overlayMap [name];
+		}
+		return name;
 	}
 
 	void setupFallbackObjects()
@@ -61,96 +99,96 @@ public class UMACharGen : MonoBehaviour
 		}
 	}
 
- 
 
-    // this is totally not working as expected 10/6/2016
-       void parentAtPosition(GameObject obj)
-    {
-        Vector3 currentPos = obj.transform.position;
-        Vector3 mainPos = GameObject.Find("MainGameManager").transform.position;
-        float x = currentPos.x - mainPos.x;
-        float y = currentPos.y - mainPos.y;
-        float z = currentPos.z - mainPos.z;
-        obj.transform.SetParent(GameObject.Find("MainGameManager").transform);
-        Vector3 newpos = new Vector3(x, y, z);
-        obj.transform.localPosition = newpos;
-    }
 
-    
-    GameObject GenerateUMA(string name)
-    {
-        // Create a new game object and add UMA components to it
-     
+	// this is totally not working as expected 10/6/2016
+	void parentAtPosition(GameObject obj)
+	{
+		Vector3 currentPos = obj.transform.position;
+		Vector3 mainPos = GameObject.Find("MainGameManager").transform.position;
+		float x = currentPos.x - mainPos.x;
+		float y = currentPos.y - mainPos.y;
+		float z = currentPos.z - mainPos.z;
+		obj.transform.SetParent(GameObject.Find("MainGameManager").transform);
+		Vector3 newpos = new Vector3(x, y, z);
+		obj.transform.localPosition = newpos;
+	}
+
+
+	GameObject GenerateUMA(string name)
+	{
+		// Create a new game object and add UMA components to it
+
 		GameObject GO = new GameObject(name);
-        GO.transform.position = this.transform.position;
-        //parentAtPosition(GO);
-       
+		GO.transform.position = this.transform.position;
+		//parentAtPosition(GO);
 
-        umaDynamicAvatar = GO.AddComponent<UMADynamicAvatar>();
+
+		umaDynamicAvatar = GO.AddComponent<UMADynamicAvatar>();
 		umaDynamicAvatar.animationController = animationController;
 		GO.AddComponent<RagdollCreatorTest>();
 		if (name.Contains ("Zombie")) {
-         
+
 			ZombieBehavior zbh = GO.AddComponent<ZombieBehavior> ();
 			zbh.speedMultiplier = Random.Range (0.5f, 2.5f);
 			GO.tag = "Zombie";
-            GameObject[] zombies = GameObject.FindGameObjectsWithTag("Zombie");
-            GO.name = "Zombie" + zombies.Length;
-          
-        } else {
+			GameObject[] zombies = GameObject.FindGameObjectsWithTag("Zombie");
+			GO.name = "Zombie" + zombies.Length;
+
+		} else {
 			HumanBehavior hb = GO.AddComponent<HumanBehavior> ();
 			GO.tag = "Human";
-          //  GameObject[] humans = GameObject.FindGameObjectsWithTag("Human");
-            //GO.name = "Human" + humans.Length;
-                    
-    }
-        
+			//  GameObject[] humans = GameObject.FindGameObjectsWithTag("Human");
+			//GO.name = "Human" + humans.Length;
+
+		}
+
 		GO.AddComponent<UnityEngine.AI.NavMeshAgent> ();
 		GO.AddComponent<HealthComponent> ();
 
-        // Initialize Avatar and grab a reference to its data component
-        umaDynamicAvatar.Initialize();
-        umaData = umaDynamicAvatar.umaData;
+		// Initialize Avatar and grab a reference to its data component
+		umaDynamicAvatar.Initialize();
+		umaData = umaDynamicAvatar.umaData;
 
-        // Attach our generator
-        umaDynamicAvatar.umaGenerator = generator;
-        umaData.umaGenerator = generator;
+		// Attach our generator
+		umaDynamicAvatar.umaGenerator = generator;
+		umaData.umaGenerator = generator;
 
-        // Set up slot Array
-        umaData.umaRecipe.slotDataList = new SlotData[numberOfSlots];
+		// Set up slot Array
+		umaData.umaRecipe.slotDataList = new SlotData[numberOfSlots];
 
-        // Set up our Morph references
-        umaDna = new UMADnaHumanoid();
-        umaTutorialDNA = new UMADnaTutorial();
-        umaData.umaRecipe.AddDna(umaDna);
-        umaData.umaRecipe.AddDna(umaTutorialDNA);
+		// Set up our Morph references
+		umaDna = new UMADnaHumanoid();
+		umaTutorialDNA = new UMADnaTutorial();
+		umaData.umaRecipe.AddDna(umaDna);
+		umaData.umaRecipe.AddDna(umaTutorialDNA);
 
 
 		if (name.Contains ("Female")) {
 			CreateFemale ();
 		} else {
 			CreateMale ();
-        
-        }
 
-        // Generate our UMA
+		}
+
+		// Generate our UMA
 		setupDna (umaDna);
-        umaDynamicAvatar.UpdateNewRace();
+		umaDynamicAvatar.UpdateNewRace();
 
-        if (name.Contains("Human"))
-        {
-            if (name.Contains("Female"))
-            {
-                GO.name = createName("Female");
-            }
-            else
-            {
-              GO.name = createName("Male");
-            }
-        }
+		if (name.Contains("Human"))
+		{
+			if (name.Contains("Female"))
+			{
+				GO.name = createName("Female");
+			}
+			else
+			{
+				GO.name = createName("Male");
+			}
+		}
 
-        return GO;
-    }
+		return GO;
+	}
 
 	private SlotLibrary GetSlotLibrary()
 	{
@@ -162,193 +200,254 @@ public class UMACharGen : MonoBehaviour
 		return overlayLibrary;
 	}
 
-    string createName(string sex)
-    {   string newName = "";
-        string firstName = "";
-        HumanNameLists humanNameList = GameObject.Find("HumanNamesList").GetComponent<HumanNameLists>();
-        string lastName = humanNameList.lastNames[Random.Range(0, humanNameList.lastNames.Count - 1)];
-        if (sex == "Female")
-        {        
-             firstName = humanNameList.femaleNames[Random.Range(0, humanNameList.femaleNames.Count - 1)];        
-        }
-        else
-        {
-             firstName = humanNameList.maleNames[Random.Range(0, humanNameList.maleNames.Count - 1)];
-        }
-        newName = firstName + " " + lastName;
-        return newName;
-    }
+	string createName(string sex)
+	{   string newName = "";
+		string firstName = "";
+		HumanNameLists humanNameList = GameObject.Find("HumanNamesList").GetComponent<HumanNameLists>();
+		string lastName = humanNameList.lastNames[Random.Range(0, humanNameList.lastNames.Count - 1)];
+		if (sex == "Female")
+		{        
+			firstName = humanNameList.femaleNames[Random.Range(0, humanNameList.femaleNames.Count - 1)];        
+		}
+		else
+		{
+			firstName = humanNameList.maleNames[Random.Range(0, humanNameList.maleNames.Count - 1)];
+		}
+		newName = firstName + " " + lastName;
+		return newName;
+	}
+
+	void CreateNeutrum()
+	{
+		var umaRecipe = umaDynamicAvatar.umaData.umaRecipe;
+		umaRecipe.SetRace (raceLibrary.GetRace ("HumanMale"));
+
+		umaData.umaRecipe.slotDataList = new SlotData[2];
+
+		umaData.umaRecipe.slotDataList[0] = GetSlotLibrary().InstantiateSlot(getMappedSlotName("MaleTorso"));
+		umaData.umaRecipe.slotDataList[1] = GetSlotLibrary().InstantiateSlot(getMappedSlotName("MaleLegs"));
 
 
-    void CreateFemale()
-    {
-        var umaRecipe = umaDynamicAvatar.umaData.umaRecipe;
-        umaRecipe.SetRace(raceLibrary.GetRace("HumanFemale"));
+		//umaData.umaRecipe.slotDataList[1] = GetSlotLibrary().InstantiateSlot(getMappedSlotName("MaleFace"));
+
+			//umaData.umaRecipe.slotDataList[1] = GetSlotLibrary().InstantiateSlot(getMappedSlotName("MaleFace"));
+
+
+		/*
+			umaData.umaRecipe.slotDataList[1] = GetSlotLibrary().InstantiateSlot(getMappedSlotName("MaleHead_Head"));
+
+
+			umaData.umaRecipe.slotDataList[6] = GetSlotLibrary().InstantiateSlot(getMappedSlotName("MaleHead_Eyes"), umaData.umaRecipe.slotDataList[1].GetOverlayList());
+			umaData.umaRecipe.slotDataList[8] = GetSlotLibrary().InstantiateSlot(getMappedSlotName("MaleHead_Mouth"), umaData.umaRecipe.slotDataList[1].GetOverlayList());
+
+
+			umaData.umaRecipe.slotDataList[9] = GetSlotLibrary().InstantiateSlot(getMappedSlotName("MaleHead_Nose"), umaData.umaRecipe.slotDataList[1].GetOverlayList());
+
+
+			umaData.umaRecipe.slotDataList[7] = GetSlotLibrary().InstantiateSlot(getMappedSlotName("MaleHead_Ears"), umaData.umaRecipe.slotDataList[1].GetOverlayList());
+		
+
+
+
+
+
+
+
+		umaData.umaRecipe.slotDataList[3] = GetSlotLibrary().InstantiateSlot(getMappedSlotName("MaleHands"), umaData.umaRecipe.slotDataList[2].GetOverlayList());
+
+		umaData.umaRecipe.slotDataList[4] = GetSlotLibrary().InstantiateSlot(getMappedSlotName("MaleInnerMouth"));
+
+
+
+
+		umaData.umaRecipe.slotDataList[5] = GetSlotLibrary().InstantiateSlot(getMappedSlotName("MaleFeet"), umaData.umaRecipe.slotDataList[2].GetOverlayList());
+		*/
+	}
+
+	void CreateFemale()
+	{
+		CreateNeutrum ();return;//remove me
+		var umaRecipe = umaDynamicAvatar.umaData.umaRecipe;
+		umaRecipe.SetRace (raceLibrary.GetRace ("HumanFemale"));
 
 		// copied from Bill's code
 
-		Color skinColor = new Color(1, 1, 1, 1);
+		Color skinColor = new Color (1, 1, 1, 1);
 		float skinTone;
 
-		skinTone = Random.Range(0.1f, 0.6f);
-		skinColor = new Color(skinTone + Random.Range(0.35f, 0.4f), skinTone + Random.Range(0.25f, 0.4f), skinTone + Random.Range(0.35f, 0.4f), 1);
+		skinTone = Random.Range (0.1f, 0.6f);
+		skinColor = new Color (skinTone + Random.Range (0.35f, 0.4f), skinTone + Random.Range (0.25f, 0.4f), skinTone + Random.Range (0.35f, 0.4f), 1);
 
-		Color HairColor = new Color(Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), 1);
+		Color HairColor = new Color (Random.Range (0.1f, 0.9f), Random.Range (0.1f, 0.9f), Random.Range (0.1f, 0.9f), 1);
 
 		int randomResult = 0;
 		//Female Avatar
 
 		//Example of dynamic list
-		List<SlotData> tempSlotList = new List<SlotData>();
+		List<SlotData> tempSlotList = new List<SlotData> ();
 
 
-		//tempSlotList.Add(GetSlotLibrary().InstantiateSlot("FemaleEyes"));
-		//tempSlotList[tempSlotList.Count - 1].AddOverlay(GetOverlayLibrary().InstantiateOverlay("EyeOverlay"));
-		//tempSlotList[tempSlotList.Count - 1].AddOverlay(GetOverlayLibrary().InstantiateOverlay("EyeOverlayAdjust", new Color(Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), 1)));
-		tempSlotList.Add(GetSlotLibrary().InstantiateSlot("FemaleTorso"));
+		//tempSlotList.Add(GetSlotLibrary().InstantiateSlot(getMappedSlotName("FemaleEyes")));
+		//tempSlotList[tempSlotList.Count - 1].AddOverlay(GetOverlayLibrary().InstantiateOverlay(getMappedOverlayNameName("EyeOverlay")));
+		//tempSlotList[tempSlotList.Count - 1].AddOverlay(GetOverlayLibrary().InstantiateOverlay(getMappedOverlayName("EyeOverlayAdjust", new Color(Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), 1))));
+		tempSlotList.Add (GetSlotLibrary ().InstantiateSlot (getMappedSlotName ("FemaleTorso")));
 		int headIndex = 0;
 
-		randomResult = Random.Range(0, 2);
-		if (randomResult == 0)
-		{
+		string mappedEyeBrowOverlayName = getMappedOverlayName ("FemaleEyebrow01");
+		string mappedHead1OverlayName = getMappedOverlayName ("FemaleHead01");
 
-			tempSlotList.Add(GetSlotLibrary().InstantiateSlot("FemaleFace"));
+		randomResult = Random.Range (0, 2);
+		if (randomResult == 0) {
+
+			tempSlotList.Add (GetSlotLibrary ().InstantiateSlot (getMappedSlotName ("FemaleFace")));
 			headIndex = tempSlotList.Count - 1;
-			tempSlotList[headIndex].AddOverlay(GetOverlayLibrary().InstantiateOverlay("FemaleHead01", skinColor));
-			tempSlotList[headIndex].AddOverlay(GetOverlayLibrary().InstantiateOverlay("FemaleEyebrow01", new Color(0.125f, 0.065f, 0.065f, 1.0f)));
+			tempSlotList [headIndex].AddOverlay (GetOverlayLibrary ().InstantiateOverlay (getMappedOverlayName ("FemaleHead01"), skinColor));
+			if (mappedEyeBrowOverlayName != "") {
+				tempSlotList [headIndex].AddOverlay (GetOverlayLibrary ().InstantiateOverlay (mappedEyeBrowOverlayName, new Color (0.125f, 0.065f, 0.065f, 1.0f)));
+			}
 
-			randomResult = Random.Range(0, 2);
-			if (randomResult == 0)
-			{
-				tempSlotList[headIndex].AddOverlay(GetOverlayLibrary().InstantiateOverlay("FemaleLipstick01", new Color(skinColor.r + Random.Range(0.0f, 0.3f), skinColor.g, skinColor.b + Random.Range(0.0f, 0.2f), 1)));
+			randomResult = Random.Range (0, 2);
+			if (randomResult == 0) {
+				tempSlotList [headIndex].AddOverlay (GetOverlayLibrary ().InstantiateOverlay (getMappedOverlayName ("FemaleLipstick01"), new Color (skinColor.r + Random.Range (0.0f, 0.3f), skinColor.g, skinColor.b + Random.Range (0.0f, 0.2f), 1)));
+			}
+		} else if (randomResult == 1) {
+			tempSlotList.Add (GetSlotLibrary ().InstantiateSlot (getMappedSlotName ("FemaleHead_Head")));
+			headIndex = tempSlotList.Count - 1;
+			if (mappedHead1OverlayName != "") {
+				tempSlotList [headIndex].AddOverlay (GetOverlayLibrary ().InstantiateOverlay (getMappedOverlayName ("FemaleHead01"), skinColor));
+			}
+			if (mappedEyeBrowOverlayName != "") {
+				tempSlotList [headIndex].AddOverlay (GetOverlayLibrary ().InstantiateOverlay (mappedEyeBrowOverlayName, new Color (0.125f, 0.065f, 0.065f, 1.0f)));
+			}
+
+			tempSlotList.Add (GetSlotLibrary ().InstantiateSlot (getMappedSlotName ("FemaleHead_Eyes"), tempSlotList [headIndex].GetOverlayList ()));
+			tempSlotList.Add (GetSlotLibrary ().InstantiateSlot (getMappedSlotName ("FemaleHead_Mouth"), tempSlotList [headIndex].GetOverlayList ()));
+			tempSlotList.Add (GetSlotLibrary ().InstantiateSlot (getMappedSlotName ("FemaleHead_Nose"), tempSlotList [headIndex].GetOverlayList ()));
+
+
+			randomResult = Random.Range (0, 2);
+			if (randomResult == 0) {
+				tempSlotList.Add (GetSlotLibrary ().InstantiateSlot (getMappedSlotName ("FemaleHead_Ears"), tempSlotList [headIndex].GetOverlayList ()));
+
+				//   tempSlotList.Add(GetSlotLibrary().InstantiateSlot(getMappedSlotName("FemaleHead_ElvenEars")));
+				//tempSlotList[tempSlotList.Count - 1].AddOverlay(GetOverlayLibrary().InstantiateOverlay(getMappedOverlayName("ElvenEars", skinColor)));
+			} else if (randomResult == 1) {
+				tempSlotList.Add (GetSlotLibrary ().InstantiateSlot (getMappedSlotName ("FemaleHead_Ears"), tempSlotList [headIndex].GetOverlayList ()));
+			}
+
+			randomResult = Random.Range (0, 2);
+			if (randomResult == 0) {
+				tempSlotList [headIndex].AddOverlay (GetOverlayLibrary ().InstantiateOverlay (getMappedOverlayName ("FemaleLipstick01"), new Color (skinColor.r + Random.Range (0.0f, 0.3f), skinColor.g, skinColor.b + Random.Range (0.0f, 0.2f), 1)));
 			}
 		}
-		else if (randomResult == 1)
-		{
-			tempSlotList.Add(GetSlotLibrary().InstantiateSlot("FemaleHead_Head"));
-			headIndex = tempSlotList.Count - 1;
-			tempSlotList[headIndex].AddOverlay(GetOverlayLibrary().InstantiateOverlay("FemaleHead01", skinColor));
-			tempSlotList[headIndex].AddOverlay(GetOverlayLibrary().InstantiateOverlay("FemaleEyebrow01", new Color(0.125f, 0.065f, 0.065f, 1.0f)));
 
-			tempSlotList.Add(GetSlotLibrary().InstantiateSlot("FemaleHead_Eyes", tempSlotList[headIndex].GetOverlayList()));
-			tempSlotList.Add(GetSlotLibrary().InstantiateSlot("FemaleHead_Mouth", tempSlotList[headIndex].GetOverlayList()));
-			tempSlotList.Add(GetSlotLibrary().InstantiateSlot("FemaleHead_Nose", tempSlotList[headIndex].GetOverlayList()));
-
-
-			randomResult = Random.Range(0, 2);
-			if (randomResult == 0)
-			{
-				tempSlotList.Add(GetSlotLibrary().InstantiateSlot("FemaleHead_Ears", tempSlotList[headIndex].GetOverlayList()));
-
-				//   tempSlotList.Add(GetSlotLibrary().InstantiateSlot("FemaleHead_ElvenEars"));
-				//tempSlotList[tempSlotList.Count - 1].AddOverlay(GetOverlayLibrary().InstantiateOverlay("ElvenEars", skinColor));
-			}
-			else if (randomResult == 1)
-			{
-				tempSlotList.Add(GetSlotLibrary().InstantiateSlot("FemaleHead_Ears", tempSlotList[headIndex].GetOverlayList()));
-			}
-
-			randomResult = Random.Range(0, 2);
-			if (randomResult == 0)
-			{
-				tempSlotList[headIndex].AddOverlay(GetOverlayLibrary().InstantiateOverlay("FemaleLipstick01", new Color(skinColor.r + Random.Range(0.0f, 0.3f), skinColor.g, skinColor.b + Random.Range(0.0f, 0.2f), 1)));
-			}
+		string eyeLashSlotName = getMappedSlotName ("FemaleEyelash");
+		if (eyeLashSlotName != "") {
+			tempSlotList.Add (GetSlotLibrary ().InstantiateSlot (eyeLashSlotName));
+			tempSlotList [tempSlotList.Count - 1].AddOverlay (GetOverlayLibrary ().InstantiateOverlay (getMappedOverlayName ("FemaleEyelash"), Color.black));
 		}
 
-		tempSlotList.Add(GetSlotLibrary().InstantiateSlot("FemaleEyelash"));
-		tempSlotList[tempSlotList.Count - 1].AddOverlay(GetOverlayLibrary().InstantiateOverlay("FemaleEyelash", Color.black));
-
-		tempSlotList.Add(GetSlotLibrary().InstantiateSlot("FemaleTorso"));
-
-        // zombiegirl slot models  broken disabled 10 - 09 - 2016 .
-        /*	if (this.gameObject.tag == "SpawnPoint_Zombie")
+		// zombiegirl slot models  broken disabled 10 - 09 - 2016 .
+		/*	if (this.gameObject.tag == "SpawnPoint_Zombie")
 		{
-			tempSlotList.Add(GetSlotLibrary().InstantiateSlot("ZombieGirl_BodyNew"));
-			tempSlotList.Add(GetSlotLibrary().InstantiateSlot("ZombieGirl_TopNew"));
-			//tempSlotList[bodyIndex].AddOverlay(GetOverlayLibrary().InstantiateOverlay("ZombieGirlTop", new Color(Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), 1)));
+			tempSlotList.Add(GetSlotLibrary().InstantiateSlot(getMappedSlotName("ZombieGirl_BodyNew")));
+			tempSlotList.Add(GetSlotLibrary().InstantiateSlot(getMappedSlotName("ZombieGirl_TopNew")));
+			//tempSlotList[bodyIndex].AddOverlay(GetOverlayLibrary().InstantiateOverlay(getMappedOverlayName("ZombieGirlTop", new Color(Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), 1))));
 
-			tempSlotList.Add(GetSlotLibrary().InstantiateSlot("ZombieGirl_PantsNew"));
+			tempSlotList.Add(GetSlotLibrary().InstantiateSlot(getMappedSlotName("ZombieGirl_PantsNew")));
 		}*/
 
 
-        int bodyIndex = tempSlotList.Count - 1;
+		int bodyIndex = 0;
 		randomResult = Random.Range(0, 2);
-		if (randomResult == 0)
+
+		string mappedBody1OverlayName = getMappedOverlayName ("FemaleBody01");
+		string mappedBody2OverlayName = getMappedOverlayName ("FemaleBody02");
+		string mappedUnderwearOverlayName = getMappedOverlayName ("FemaleUnderwear01");
+		string mappedTshirt1OverlayName = getMappedOverlayName ("FemaleShirt01");
+		string mappedTshirt2OverlayName = getMappedOverlayName ("FemaleShirt02");
+		string mappedJeansOverlayName = getMappedOverlayName ("FemaleJeans01");
+		string mappedTshirtSlotName = getMappedSlotName ("FemaleTshirt01");
+
+		if (randomResult == 0 && mappedBody1OverlayName != "")
 		{
-			tempSlotList[bodyIndex].AddOverlay(GetOverlayLibrary().InstantiateOverlay("FemaleBody01", skinColor));
+			tempSlotList [bodyIndex].AddOverlay (GetOverlayLibrary ().InstantiateOverlay (mappedBody1OverlayName, skinColor));
 		}
-		if (randomResult == 1)
+		if (randomResult == 1 && mappedBody2OverlayName != "")
 		{
-			tempSlotList[bodyIndex].AddOverlay(GetOverlayLibrary().InstantiateOverlay("FemaleBody02", skinColor));
+			tempSlotList [bodyIndex].AddOverlay (GetOverlayLibrary ().InstantiateOverlay (mappedBody2OverlayName, skinColor));
 		}
 
-		tempSlotList[bodyIndex].AddOverlay(GetOverlayLibrary().InstantiateOverlay("FemaleUnderwear01", new Color(Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), 1)));
+		if (mappedUnderwearOverlayName != "") {
+			tempSlotList [bodyIndex].AddOverlay (GetOverlayLibrary ().InstantiateOverlay (mappedUnderwearOverlayName, new Color (Random.Range (0.1f, 0.9f), Random.Range (0.1f, 0.9f), Random.Range (0.1f, 0.9f), 1)));
+		}
 
 		randomResult = Random.Range(0, 4);
-		if (randomResult == 0)
+		if (randomResult == 0 && mappedTshirt1OverlayName != "")
 		{
-			tempSlotList[bodyIndex].AddOverlay(GetOverlayLibrary().InstantiateOverlay("FemaleShirt01", new Color(Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), 1)));
+			tempSlotList[bodyIndex].AddOverlay(GetOverlayLibrary().InstantiateOverlay(mappedTshirt1OverlayName, new Color(Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), 1)));
 		}
-		else if (randomResult == 1)
+		else if (randomResult == 1 && mappedTshirt2OverlayName != "")
 		{
-
-			tempSlotList[bodyIndex].AddOverlay(GetOverlayLibrary().InstantiateOverlay("FemaleShirt02", new Color(Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), 1)));
-
+			tempSlotList[bodyIndex].AddOverlay(GetOverlayLibrary().InstantiateOverlay(mappedTshirt2OverlayName, new Color(Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), 1)));
 		}
-		else if (randomResult == 2)
+		else if (randomResult == 2 && mappedTshirtSlotName != "")
 		{
-			tempSlotList.Add(GetSlotLibrary().InstantiateSlot("FemaleTshirt01"));
-			tempSlotList[tempSlotList.Count - 1].AddOverlay(GetOverlayLibrary().InstantiateOverlay("FemaleTshirt01", new Color(Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), 1)));
-		}
-		else
-		{
-
+			tempSlotList.Add(GetSlotLibrary().InstantiateSlot(mappedTshirtSlotName));
+			if (mappedTshirt1OverlayName != "") {
+				tempSlotList [tempSlotList.Count - 1].AddOverlay (GetOverlayLibrary ().InstantiateOverlay (mappedTshirt1OverlayName, new Color (Random.Range (0.1f, 0.9f), Random.Range (0.1f, 0.9f), Random.Range (0.1f, 0.9f), 1)));
+			}
 		}
 
-		tempSlotList.Add(GetSlotLibrary().InstantiateSlot("FemaleHands", tempSlotList[bodyIndex].GetOverlayList()));
+		tempSlotList.Add(GetSlotLibrary().InstantiateSlot(getMappedSlotName("FemaleHands"), tempSlotList[bodyIndex].GetOverlayList()));
 
-		tempSlotList.Add(GetSlotLibrary().InstantiateSlot("FemaleInnerMouth"));
-		tempSlotList[tempSlotList.Count - 1].AddOverlay(GetOverlayLibrary().InstantiateOverlay("InnerMouth"));
+		tempSlotList.Add(GetSlotLibrary().InstantiateSlot(getMappedSlotName("FemaleInnerMouth")));
+		tempSlotList[tempSlotList.Count - 1].AddOverlay(GetOverlayLibrary().InstantiateOverlay(getMappedOverlayName("InnerMouth")));
 
-		tempSlotList.Add(GetSlotLibrary().InstantiateSlot("FemaleFeet", tempSlotList[bodyIndex].GetOverlayList()));
+		tempSlotList.Add(GetSlotLibrary().InstantiateSlot(getMappedSlotName("FemaleFeet"), tempSlotList[bodyIndex].GetOverlayList()));
 
 		randomResult = Random.Range(0, 2);
-randomResult = 1; // :TO: always some trousers for women for now, add skirts etc. later
+		randomResult = 1; // :TO: always some trousers for women for now, add skirts etc. later
 		if (randomResult == 0)
 		{
-			tempSlotList.Add(GetSlotLibrary().InstantiateSlot("FemaleLegs", tempSlotList[bodyIndex].GetOverlayList()));
+			tempSlotList.Add(GetSlotLibrary().InstantiateSlot(getMappedSlotName("FemaleLegs"), tempSlotList[bodyIndex].GetOverlayList()));
 		}
 		else if (randomResult == 1)
 		{
-			tempSlotList.Add(GetSlotLibrary().InstantiateSlot("FemaleLegs", tempSlotList[bodyIndex].GetOverlayList()));
-			tempSlotList[bodyIndex].AddOverlay(GetOverlayLibrary().InstantiateOverlay("FemaleJeans01", new Color(Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), 1)));
+			tempSlotList.Add(GetSlotLibrary().InstantiateSlot(getMappedSlotName("FemaleLegs"), tempSlotList[bodyIndex].GetOverlayList()));
+			if (mappedJeansOverlayName != "") {
+				tempSlotList [bodyIndex].AddOverlay (GetOverlayLibrary ().InstantiateOverlay (mappedJeansOverlayName, new Color (Random.Range (0.1f, 0.9f), Random.Range (0.1f, 0.9f), Random.Range (0.1f, 0.9f), 1)));
+			}
 		}
 
+		string mappedShortHairSlotName = getMappedSlotName ("FemaleShortHair01");
+		string mappedLongHairSlotName = getMappedSlotName ("FemaleLongHair01");
 		randomResult = Random.Range(0, 3);
-		if (randomResult == 0)
+		if (randomResult == 0 && mappedShortHairSlotName != "")
 		{
-			tempSlotList.Add(GetSlotLibrary().InstantiateSlot("FemaleShortHair01", tempSlotList[headIndex].GetOverlayList()));
-			tempSlotList[headIndex].AddOverlay(GetOverlayLibrary().InstantiateOverlay("FemaleShortHair01", HairColor));
+			tempSlotList.Add(GetSlotLibrary().InstantiateSlot(mappedShortHairSlotName, tempSlotList[headIndex].GetOverlayList()));
+			tempSlotList[headIndex].AddOverlay(GetOverlayLibrary().InstantiateOverlay(getMappedOverlayName("FemaleShortHair01"), HairColor));
 		}
-		else if (randomResult == 1)
+		else if (randomResult == 1 && mappedLongHairSlotName != "")
 		{
-			tempSlotList.Add(GetSlotLibrary().InstantiateSlot("FemaleLongHair01", tempSlotList[headIndex].GetOverlayList()));
-			tempSlotList[headIndex].AddOverlay(GetOverlayLibrary().InstantiateOverlay("FemaleLongHair01", HairColor));
+			tempSlotList.Add(GetSlotLibrary().InstantiateSlot(mappedLongHairSlotName, tempSlotList[headIndex].GetOverlayList()));
+			tempSlotList[headIndex].AddOverlay(GetOverlayLibrary().InstantiateOverlay(getMappedOverlayName("FemaleLongHair01"), HairColor));
 		}
-		else
+		else if( mappedLongHairSlotName != "")
 		{
-			tempSlotList.Add(GetSlotLibrary().InstantiateSlot("FemaleLongHair01", tempSlotList[headIndex].GetOverlayList()));
-			tempSlotList[headIndex].AddOverlay(GetOverlayLibrary().InstantiateOverlay("FemaleLongHair01", HairColor));
+			tempSlotList.Add(GetSlotLibrary().InstantiateSlot(mappedLongHairSlotName, tempSlotList[headIndex].GetOverlayList()));
+			tempSlotList[headIndex].AddOverlay(GetOverlayLibrary().InstantiateOverlay(getMappedOverlayName("FemaleLongHair01"), HairColor));
 
-			tempSlotList.Add(GetSlotLibrary().InstantiateSlot("FemaleLongHair01_Module"));
-			tempSlotList[tempSlotList.Count - 1].AddOverlay(GetOverlayLibrary().InstantiateOverlay("FemaleLongHair01_Module", HairColor));
+			tempSlotList.Add(GetSlotLibrary().InstantiateSlot(getMappedSlotName("FemaleLongHair01_Module")));
+			tempSlotList[tempSlotList.Count - 1].AddOverlay(GetOverlayLibrary().InstantiateOverlay(getMappedOverlayName("FemaleLongHair01_Module"), HairColor));
 		}
 
 		umaData.SetSlots(tempSlotList.ToArray());
-    }
+	}
 
 	void CreateMale()
 	{
+		CreateNeutrum ();return;//remove me
 		var umaRecipe = umaDynamicAvatar.umaData.umaRecipe;
 		umaRecipe.SetRace(raceLibrary.GetRace("HumanMale"));
 
@@ -367,66 +466,66 @@ randomResult = 1; // :TO: always some trousers for women for now, add skirts etc
 
 		umaData.umaRecipe.slotDataList = new SlotData[15];
 
-		umaData.umaRecipe.slotDataList[0] = GetSlotLibrary().InstantiateSlot("MaleEyes");
-		//umaData.umaRecipe.slotDataList[0].AddOverlay(GetOverlayLibrary().InstantiateOverlay("EyeOverlay"));
-		//umaData.umaRecipe.slotDataList[0].AddOverlay(GetOverlayLibrary().InstantiateOverlay("EyeOverlayAdjust", new Color(Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), 1)));
+		umaData.umaRecipe.slotDataList[0] = GetSlotLibrary().InstantiateSlot(getMappedSlotName("MaleEyes"));
+		//umaData.umaRecipe.slotDataList[0].AddOverlay(GetOverlayLibrary().InstantiateOverlay(getMappedOverlayNameName("EyeOverlay")));
+		//umaData.umaRecipe.slotDataList[0].AddOverlay(GetOverlayLibrary().InstantiateOverlay(getMappedOverlayName("EyeOverlayAdjust", new Color(Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), 1)))=;
 
 		randomResult = Random.Range(0, 2);
 		if (randomResult == 0)
 		{
-			umaData.umaRecipe.slotDataList[1] = GetSlotLibrary().InstantiateSlot("MaleFace");
+			umaData.umaRecipe.slotDataList[1] = GetSlotLibrary().InstantiateSlot(getMappedSlotName("MaleFace"));
 
 			randomResult = Random.Range(0, 2);
 
 			if (randomResult == 0)
 			{
-				umaData.umaRecipe.slotDataList[1].AddOverlay(GetOverlayLibrary().InstantiateOverlay("MaleHead01", skinColor));
+				umaData.umaRecipe.slotDataList[1].AddOverlay(GetOverlayLibrary().InstantiateOverlay(getMappedOverlayName("MaleHead01"), skinColor));
 			}
 			else if (randomResult == 1)
 			{
-				umaData.umaRecipe.slotDataList[1].AddOverlay(GetOverlayLibrary().InstantiateOverlay("MaleHead02", skinColor));
+				umaData.umaRecipe.slotDataList[1].AddOverlay(GetOverlayLibrary().InstantiateOverlay(getMappedOverlayName("MaleHead02"), skinColor));
 			}
 		}
 		else if (randomResult == 1)
 		{
-			umaData.umaRecipe.slotDataList[1] = GetSlotLibrary().InstantiateSlot("MaleHead_Head");
+			umaData.umaRecipe.slotDataList[1] = GetSlotLibrary().InstantiateSlot(getMappedSlotName("MaleHead_Head"));
 
 			randomResult = Random.Range(0, 2);
 			if (randomResult == 0)
 			{
-				umaData.umaRecipe.slotDataList[1].AddOverlay(GetOverlayLibrary().InstantiateOverlay("MaleHead01", skinColor));
+				umaData.umaRecipe.slotDataList[1].AddOverlay(GetOverlayLibrary().InstantiateOverlay(getMappedOverlayName("MaleHead01"), skinColor));
 			}
 			else if (randomResult == 1)
 			{
-				umaData.umaRecipe.slotDataList[1].AddOverlay(GetOverlayLibrary().InstantiateOverlay("MaleHead02", skinColor));
+				umaData.umaRecipe.slotDataList[1].AddOverlay(GetOverlayLibrary().InstantiateOverlay(getMappedOverlayName("MaleHead02"), skinColor));
 			}
 
-			umaData.umaRecipe.slotDataList[7] = GetSlotLibrary().InstantiateSlot("MaleHead_Eyes", umaData.umaRecipe.slotDataList[1].GetOverlayList());
-			umaData.umaRecipe.slotDataList[9] = GetSlotLibrary().InstantiateSlot("MaleHead_Mouth", umaData.umaRecipe.slotDataList[1].GetOverlayList());
+			umaData.umaRecipe.slotDataList[7] = GetSlotLibrary().InstantiateSlot(getMappedSlotName("MaleHead_Eyes"), umaData.umaRecipe.slotDataList[1].GetOverlayList());
+			umaData.umaRecipe.slotDataList[9] = GetSlotLibrary().InstantiateSlot(getMappedSlotName("MaleHead_Mouth"), umaData.umaRecipe.slotDataList[1].GetOverlayList());
 
 			randomResult = Random.Range(0, 2);
 			if (randomResult == 0)
 			{
-				//umaData.umaRecipe.slotDataList[10] = GetSlotLibrary().InstantiateSlot("MaleHead_PigNose", umaData.umaRecipe.slotDataList[1].GetOverlayList());
-				//umaData.umaRecipe.slotDataList[1].AddOverlay(GetOverlayLibrary().InstantiateOverlay("MaleHead_PigNose", skinColor));
-				umaData.umaRecipe.slotDataList[10] = GetSlotLibrary().InstantiateSlot("MaleHead_Nose", umaData.umaRecipe.slotDataList[1].GetOverlayList());
+				//umaData.umaRecipe.slotDataList[10] = GetSlotLibrary().InstantiateSlot(getMappedSlotName("MaleHead_PigNose", umaData.umaRecipe.slotDataList[1].GetOverlayList()));
+				//umaData.umaRecipe.slotDataList[1].AddOverlay(GetOverlayLibrary().InstantiateOverlay(getMappedOverlayName("MaleHead_PigNose", skinColor)));
+				umaData.umaRecipe.slotDataList[10] = GetSlotLibrary().InstantiateSlot(getMappedSlotName("MaleHead_Nose"), umaData.umaRecipe.slotDataList[1].GetOverlayList());
 
 			}
 			else if (randomResult == 1)
 			{
-				umaData.umaRecipe.slotDataList[10] = GetSlotLibrary().InstantiateSlot("MaleHead_Nose", umaData.umaRecipe.slotDataList[1].GetOverlayList());
+				umaData.umaRecipe.slotDataList[10] = GetSlotLibrary().InstantiateSlot(getMappedSlotName("MaleHead_Nose"), umaData.umaRecipe.slotDataList[1].GetOverlayList());
 			}
 
 			randomResult = Random.Range(0, 2);
 			if (randomResult == 0)
 			{
-				umaData.umaRecipe.slotDataList[8] = GetSlotLibrary().InstantiateSlot("MaleHead_Ears", umaData.umaRecipe.slotDataList[1].GetOverlayList());
-				// umaData.umaRecipe.slotDataList[8] = GetSlotLibrary().InstantiateSlot("MaleHead_ElvenEars");
-				//	umaData.umaRecipe.slotDataList[8].AddOverlay(GetOverlayLibrary().InstantiateOverlay("ElvenEars", skinColor));
+				umaData.umaRecipe.slotDataList[8] = GetSlotLibrary().InstantiateSlot(getMappedSlotName("MaleHead_Ears"), umaData.umaRecipe.slotDataList[1].GetOverlayList());
+				// umaData.umaRecipe.slotDataList[8] = GetSlotLibrary().InstantiateSlot(getMappedSlotName("MaleHead_ElvenEars"));
+				//	umaData.umaRecipe.slotDataList[8].AddOverlay(GetOverlayLibrary().InstantiateOverlay(getMappedOverlayName("ElvenEars"), skinColor));
 			}
 			else if (randomResult == 1)
 			{
-				umaData.umaRecipe.slotDataList[8] = GetSlotLibrary().InstantiateSlot("MaleHead_Ears", umaData.umaRecipe.slotDataList[1].GetOverlayList());
+				umaData.umaRecipe.slotDataList[8] = GetSlotLibrary().InstantiateSlot(getMappedSlotName("MaleHead_Ears"), umaData.umaRecipe.slotDataList[1].GetOverlayList());
 			}
 		}
 
@@ -434,11 +533,11 @@ randomResult = 1; // :TO: always some trousers for women for now, add skirts etc
 		randomResult = Random.Range(0, 3);
 		if (randomResult == 0)
 		{
-			umaData.umaRecipe.slotDataList[1].AddOverlay(GetOverlayLibrary().InstantiateOverlay("MaleHair01", HairColor * 0.25f));
+			umaData.umaRecipe.slotDataList[1].AddOverlay(GetOverlayLibrary().InstantiateOverlay(getMappedOverlayName("MaleHair01"), HairColor * 0.25f));
 		}
 		else if (randomResult == 1)
 		{
-			umaData.umaRecipe.slotDataList[1].AddOverlay(GetOverlayLibrary().InstantiateOverlay("MaleHair02", HairColor * 0.25f));
+			umaData.umaRecipe.slotDataList[1].AddOverlay(GetOverlayLibrary().InstantiateOverlay(getMappedOverlayName("MaleHair02"), HairColor * 0.25f));
 		}
 		else
 		{
@@ -449,15 +548,15 @@ randomResult = 1; // :TO: always some trousers for women for now, add skirts etc
 		randomResult = Random.Range(0, 4);
 		if (randomResult == 0)
 		{
-			umaData.umaRecipe.slotDataList[1].AddOverlay(GetOverlayLibrary().InstantiateOverlay("MaleBeard01", HairColor * 0.15f));
+			umaData.umaRecipe.slotDataList[1].AddOverlay(GetOverlayLibrary().InstantiateOverlay(getMappedOverlayName("MaleBeard01"), HairColor * 0.15f));
 		}
 		else if (randomResult == 1)
 		{
-			umaData.umaRecipe.slotDataList[1].AddOverlay(GetOverlayLibrary().InstantiateOverlay("MaleBeard02", HairColor * 0.15f));
+			umaData.umaRecipe.slotDataList[1].AddOverlay(GetOverlayLibrary().InstantiateOverlay(getMappedOverlayName("MaleBeard02"), HairColor * 0.15f));
 		}
 		else if (randomResult == 2)
 		{
-			umaData.umaRecipe.slotDataList[1].AddOverlay(GetOverlayLibrary().InstantiateOverlay("MaleBeard03", HairColor * 0.15f));
+			umaData.umaRecipe.slotDataList[1].AddOverlay(GetOverlayLibrary().InstantiateOverlay(getMappedOverlayName("MaleBeard03"), HairColor * 0.15f));
 		}
 		else
 		{
@@ -468,15 +567,15 @@ randomResult = 1; // :TO: always some trousers for women for now, add skirts etc
 		randomResult = Random.Range(0, 4);
 		if (randomResult == 0)
 		{
-			umaData.umaRecipe.slotDataList[1].AddOverlay(GetOverlayLibrary().InstantiateOverlay("MaleBeard01", HairColor * 0.15f));
+			umaData.umaRecipe.slotDataList[1].AddOverlay(GetOverlayLibrary().InstantiateOverlay(getMappedOverlayName("MaleBeard01"), HairColor * 0.15f));
 		}
 		else if (randomResult == 1)
 		{
-			umaData.umaRecipe.slotDataList[1].AddOverlay(GetOverlayLibrary().InstantiateOverlay("MaleBeard02", HairColor * 0.15f));
+			umaData.umaRecipe.slotDataList[1].AddOverlay(GetOverlayLibrary().InstantiateOverlay(getMappedOverlayName("MaleBeard02"), HairColor * 0.15f));
 		}
 		else if (randomResult == 2)
 		{
-			umaData.umaRecipe.slotDataList[1].AddOverlay(GetOverlayLibrary().InstantiateOverlay("MaleBeard03", HairColor * 0.15f));
+			umaData.umaRecipe.slotDataList[1].AddOverlay(GetOverlayLibrary().InstantiateOverlay(getMappedOverlayName("MaleBeard03"), HairColor * 0.15f));
 		}
 		else
 		{
@@ -486,52 +585,52 @@ randomResult = 1; // :TO: always some trousers for women for now, add skirts etc
 		randomResult = Random.Range(0, 2);
 		if (randomResult == 0)
 		{
-			umaData.umaRecipe.slotDataList[1].AddOverlay(GetOverlayLibrary().InstantiateOverlay("MaleEyebrow01", HairColor * 0.05f));
+			umaData.umaRecipe.slotDataList[1].AddOverlay(GetOverlayLibrary().InstantiateOverlay(getMappedOverlayName("MaleEyebrow01"), HairColor * 0.05f));
 		}
 		else
 		{
-			umaData.umaRecipe.slotDataList[1].AddOverlay(GetOverlayLibrary().InstantiateOverlay("MaleEyebrow02", HairColor * 0.05f));
+			umaData.umaRecipe.slotDataList[1].AddOverlay(GetOverlayLibrary().InstantiateOverlay(getMappedOverlayName("MaleEyebrow02"), HairColor * 0.05f));
 		}
 
-		umaData.umaRecipe.slotDataList[2] = GetSlotLibrary().InstantiateSlot("MaleTorso");
+		umaData.umaRecipe.slotDataList[2] = GetSlotLibrary().InstantiateSlot(getMappedSlotName("MaleTorso"));
 
 		randomResult = Random.Range(0, 2);
 		if (randomResult == 0)
 		{
-			umaData.umaRecipe.slotDataList[2].AddOverlay(GetOverlayLibrary().InstantiateOverlay("MaleBody01", skinColor));
+			umaData.umaRecipe.slotDataList[2].AddOverlay(GetOverlayLibrary().InstantiateOverlay(getMappedOverlayName("MaleBody01"), skinColor));
 		}
 		else
 		{
-			umaData.umaRecipe.slotDataList[2].AddOverlay(GetOverlayLibrary().InstantiateOverlay("MaleBody02", skinColor));
+			umaData.umaRecipe.slotDataList[2].AddOverlay(GetOverlayLibrary().InstantiateOverlay(getMappedOverlayName("MaleBody02"), skinColor));
 		}
 
 
 		randomResult = Random.Range(0, 2);
 		if (randomResult == 0)
 		{
-			umaData.umaRecipe.slotDataList[2].AddOverlay(GetOverlayLibrary().InstantiateOverlay("MaleShirt01", new Color(Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), 1)));
+			umaData.umaRecipe.slotDataList[2].AddOverlay(GetOverlayLibrary().InstantiateOverlay(getMappedOverlayName("MaleShirt01"), new Color(Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), 1)));
 		}
 
-		umaData.umaRecipe.slotDataList[3] = GetSlotLibrary().InstantiateSlot("MaleHands", umaData.umaRecipe.slotDataList[2].GetOverlayList());
+		umaData.umaRecipe.slotDataList[3] = GetSlotLibrary().InstantiateSlot(getMappedSlotName("MaleHands"), umaData.umaRecipe.slotDataList[2].GetOverlayList());
 
-		umaData.umaRecipe.slotDataList[4] = GetSlotLibrary().InstantiateSlot("MaleInnerMouth");
-		umaData.umaRecipe.slotDataList[4].AddOverlay(GetOverlayLibrary().InstantiateOverlay("InnerMouth"));
+		umaData.umaRecipe.slotDataList[4] = GetSlotLibrary().InstantiateSlot(getMappedSlotName("MaleInnerMouth"));
+		umaData.umaRecipe.slotDataList[4].AddOverlay(GetOverlayLibrary().InstantiateOverlay(getMappedOverlayName("InnerMouth")));
 
 
 		randomResult = Random.Range(0, 2);
-randomResult = 1; // :TO: always trousers for now
+		randomResult = 1; // :TO: always trousers for now
 		if (randomResult == 0)
 		{
-			umaData.umaRecipe.slotDataList[4] = GetSlotLibrary().InstantiateSlot("MaleLegs", umaData.umaRecipe.slotDataList[2].GetOverlayList());
-			umaData.umaRecipe.slotDataList[4].AddOverlay(GetOverlayLibrary().InstantiateOverlay("MaleUnderwear01", new Color(Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), 1)));
+			umaData.umaRecipe.slotDataList[4] = GetSlotLibrary().InstantiateSlot(getMappedSlotName("MaleLegs"), umaData.umaRecipe.slotDataList[2].GetOverlayList());
+			umaData.umaRecipe.slotDataList[4].AddOverlay(GetOverlayLibrary().InstantiateOverlay(getMappedOverlayName("MaleUnderwear01"), new Color(Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), 1)));
 		}
 		else
 		{
-			umaData.umaRecipe.slotDataList[4] = GetSlotLibrary().InstantiateSlot("MaleJeans01");
-			umaData.umaRecipe.slotDataList[4].AddOverlay(GetOverlayLibrary().InstantiateOverlay("MaleJeans01", new Color(Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), 1)));
+			umaData.umaRecipe.slotDataList[4] = GetSlotLibrary().InstantiateSlot(getMappedSlotName("MaleJeans01"));
+			umaData.umaRecipe.slotDataList[4].AddOverlay(GetOverlayLibrary().InstantiateOverlay(getMappedOverlayName("MaleJeans01"), new Color(Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), 1)));
 		}
 
-		umaData.umaRecipe.slotDataList[5] = GetSlotLibrary().InstantiateSlot("MaleFeet", umaData.umaRecipe.slotDataList[2].GetOverlayList());
+		umaData.umaRecipe.slotDataList[5] = GetSlotLibrary().InstantiateSlot(getMappedSlotName("MaleFeet"), umaData.umaRecipe.slotDataList[2].GetOverlayList());
 	}
 
 
