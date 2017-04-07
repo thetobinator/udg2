@@ -17,7 +17,7 @@ public class UMACharGen : MonoBehaviour
 	private UMADnaHumanoid umaDna;
 	private UMADnaTutorial umaTutorialDNA;
 
-	private int numberOfSlots = 2; // <- fix this
+	private int numberOfSlots = 7; // <- fix this
 
 	public bool isMultiSpawn = false;
 
@@ -220,48 +220,34 @@ public class UMACharGen : MonoBehaviour
 	void CreateNeutrum()
 	{
 		var umaRecipe = umaDynamicAvatar.umaData.umaRecipe;
-		umaRecipe.SetRace (raceLibrary.GetRace ("HumanMale"));
+		umaRecipe.SetRace(raceLibrary.GetRace("HumanMale"));
 
-		umaData.umaRecipe.slotDataList = new SlotData[2];
+		umaData.umaRecipe.slotDataList[0] = slotLibrary.InstantiateSlot("MaleFace");
+		//umaData.umaRecipe.slotDataList[0].AddOverlay(overlayLibrary.InstantiateOverlay("MaleHead02"));
 
-		umaData.umaRecipe.slotDataList[0] = GetSlotLibrary().InstantiateSlot(getMappedSlotName("MaleTorso"));
-		umaData.umaRecipe.slotDataList[1] = GetSlotLibrary().InstantiateSlot(getMappedSlotName("MaleLegs"));
+		umaData.umaRecipe.slotDataList[1] = slotLibrary.InstantiateSlot("MaleEyes");
+		umaData.umaRecipe.slotDataList[1].AddOverlay(overlayLibrary.InstantiateOverlay("EyeOverlay"));
 
+		umaData.umaRecipe.slotDataList[2] = slotLibrary.InstantiateSlot("MaleInnerMouth");
+		umaData.umaRecipe.slotDataList[2].AddOverlay(overlayLibrary.InstantiateOverlay("InnerMouth"));
 
-		//umaData.umaRecipe.slotDataList[1] = GetSlotLibrary().InstantiateSlot(getMappedSlotName("MaleFace"));
+		umaData.umaRecipe.slotDataList[3] = slotLibrary.InstantiateSlot("MaleTorso");
+		//umaData.umaRecipe.slotDataList[3].AddOverlay(overlayLibrary.InstantiateOverlay("MaleBody02"));
 
-			//umaData.umaRecipe.slotDataList[1] = GetSlotLibrary().InstantiateSlot(getMappedSlotName("MaleFace"));
+		umaData.umaRecipe.slotDataList[4] = slotLibrary.InstantiateSlot("MaleHands");
+		umaData.umaRecipe.slotDataList[4].SetOverlayList(umaData.umaRecipe.slotDataList[3].GetOverlayList());
 
+		umaData.umaRecipe.slotDataList[5] = slotLibrary.InstantiateSlot("MaleLegs");
+		umaData.umaRecipe.slotDataList[5].SetOverlayList(umaData.umaRecipe.slotDataList[3].GetOverlayList());
 
-		/*
-			umaData.umaRecipe.slotDataList[1] = GetSlotLibrary().InstantiateSlot(getMappedSlotName("MaleHead_Head"));
+		umaData.umaRecipe.slotDataList[6] = slotLibrary.InstantiateSlot("MaleFeet");
+		umaData.umaRecipe.slotDataList[6].SetOverlayList(umaData.umaRecipe.slotDataList[3].GetOverlayList());
 
+		//umaData.umaRecipe.slotDataList[3].AddOverlay(overlayLibrary.InstantiateOverlay("MaleUnderwear01"));
+		//umaData.umaRecipe.slotDataList[5].AddOverlay(overlayLibrary.InstantiateOverlay("MaleUnderwear01"));
 
-			umaData.umaRecipe.slotDataList[6] = GetSlotLibrary().InstantiateSlot(getMappedSlotName("MaleHead_Eyes"), umaData.umaRecipe.slotDataList[1].GetOverlayList());
-			umaData.umaRecipe.slotDataList[8] = GetSlotLibrary().InstantiateSlot(getMappedSlotName("MaleHead_Mouth"), umaData.umaRecipe.slotDataList[1].GetOverlayList());
+		//umaData.umaRecipe.slotDataList[0].AddOverlay(overlayLibrary.InstantiateOverlay("MaleEyebrow01",Color.black));
 
-
-			umaData.umaRecipe.slotDataList[9] = GetSlotLibrary().InstantiateSlot(getMappedSlotName("MaleHead_Nose"), umaData.umaRecipe.slotDataList[1].GetOverlayList());
-
-
-			umaData.umaRecipe.slotDataList[7] = GetSlotLibrary().InstantiateSlot(getMappedSlotName("MaleHead_Ears"), umaData.umaRecipe.slotDataList[1].GetOverlayList());
-		
-
-
-
-
-
-
-
-		umaData.umaRecipe.slotDataList[3] = GetSlotLibrary().InstantiateSlot(getMappedSlotName("MaleHands"), umaData.umaRecipe.slotDataList[2].GetOverlayList());
-
-		umaData.umaRecipe.slotDataList[4] = GetSlotLibrary().InstantiateSlot(getMappedSlotName("MaleInnerMouth"));
-
-
-
-
-		umaData.umaRecipe.slotDataList[5] = GetSlotLibrary().InstantiateSlot(getMappedSlotName("MaleFeet"), umaData.umaRecipe.slotDataList[2].GetOverlayList());
-		*/
 	}
 
 	void CreateFemale()
