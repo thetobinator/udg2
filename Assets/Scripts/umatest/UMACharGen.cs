@@ -17,7 +17,7 @@ public class UMACharGen : MonoBehaviour
 	private UMADnaHumanoid umaDna;
 	private UMADnaTutorial umaTutorialDNA;
 
-	private int numberOfSlots = 7; // <- fix this
+	private int numberOfSlots = 20;
 
 	public bool isMultiSpawn = false;
 
@@ -54,8 +54,8 @@ public class UMACharGen : MonoBehaviour
 			
 			//s_slotMap ["FemaleEyelash"] = "";
 			//s_slotMap ["FemaleTshirt01"] = "";
-			s_slotMap ["FemaleShortHair01"] = "";
-			s_slotMap ["FemaleLongHair01"] = "";
+			//s_slotMap ["FemaleShortHair01"] = "";
+			//s_slotMap ["FemaleLongHair01"] = "";
 		}
 
 		if (s_slotMap.ContainsKey (name)) {
@@ -248,15 +248,18 @@ public class UMACharGen : MonoBehaviour
 		umaData.umaRecipe.slotDataList[6] = slotLibrary.InstantiateSlot("MaleFeet");
 		umaData.umaRecipe.slotDataList[6].SetOverlayList(umaData.umaRecipe.slotDataList[3].GetOverlayList());
 	}
-
+	/*
 	void CreateFemale2()
 	{
 		// this serves as a starting point to rework the randomized female after Unity update
 		var umaRecipe = umaDynamicAvatar.umaData.umaRecipe;
 		umaRecipe.SetRace(raceLibrary.GetRace("HumanFemale"));
 
+		List<SlotData> tempSlotList = new List<SlotData> ();
+
 		umaData.umaRecipe.slotDataList[0] = slotLibrary.InstantiateSlot("FemaleFace");
 		umaData.umaRecipe.slotDataList[0].AddOverlay(overlayLibrary.InstantiateOverlay("F_H_Head"));
+		umaData.umaRecipe.slotDataList[0].AddOverlay(overlayLibrary.InstantiateOverlay("FemaleEyebrow01"));
 
 		umaData.umaRecipe.slotDataList[1] = slotLibrary.InstantiateSlot("FemaleEyes");
 		umaData.umaRecipe.slotDataList[1].AddOverlay(overlayLibrary.InstantiateOverlay("EyeOverlay"));
@@ -265,26 +268,33 @@ public class UMACharGen : MonoBehaviour
 		umaData.umaRecipe.slotDataList[2].AddOverlay(overlayLibrary.InstantiateOverlay("InnerMouth"));
 
 		umaData.umaRecipe.slotDataList[3] = slotLibrary.InstantiateSlot("FemaleTorso");
-		umaData.umaRecipe.slotDataList[3].AddOverlay(overlayLibrary.InstantiateOverlay("FemaleShirt01"));
+		umaData.umaRecipe.slotDataList[3].AddOverlay(overlayLibrary.InstantiateOverlay("FemaleBody01"));//FemaleBody02
 
 		umaData.umaRecipe.slotDataList[4] = slotLibrary.InstantiateSlot("FemaleHands");
 		umaData.umaRecipe.slotDataList[4].SetOverlayList(umaData.umaRecipe.slotDataList[3].GetOverlayList());
 
 		umaData.umaRecipe.slotDataList[5] = slotLibrary.InstantiateSlot("FemaleLegs");
 		umaData.umaRecipe.slotDataList[5].SetOverlayList(umaData.umaRecipe.slotDataList[3].GetOverlayList());
+		umaData.umaRecipe.slotDataList[5].AddOverlay(overlayLibrary.InstantiateOverlay("FemaleJeans01"));
 
 		umaData.umaRecipe.slotDataList[6] = slotLibrary.InstantiateSlot("FemaleFeet");
 		umaData.umaRecipe.slotDataList[6].SetOverlayList(umaData.umaRecipe.slotDataList[3].GetOverlayList());
-	}
 
+		umaData.umaRecipe.slotDataList[7] = slotLibrary.InstantiateSlot("FemaleLongHair01");
+		umaData.umaRecipe.slotDataList[7].AddOverlay(overlayLibrary.InstantiateOverlay("FemaleLongHair01"));
+
+		umaData.umaRecipe.slotDataList[8] = slotLibrary.InstantiateSlot("FemaleLongHair01_Module");
+		umaData.umaRecipe.slotDataList[8].AddOverlay(overlayLibrary.InstantiateOverlay("FemaleLongHair01_Module"));
+
+		umaData.umaRecipe.slotDataList[9] = slotLibrary.InstantiateSlot("FemaleTshirt01");
+		umaData.umaRecipe.slotDataList[9].AddOverlay(overlayLibrary.InstantiateOverlay("FemaleShirt01"));
+	}
+	*/
 
 	void CreateFemale()
 	{
-		CreateFemale2 ();return;
 		var umaRecipe = umaDynamicAvatar.umaData.umaRecipe;
 		umaRecipe.SetRace (raceLibrary.GetRace ("HumanFemale"));
-
-		// copied from Bill's code
 
 		Color skinColor = new Color (1, 1, 1, 1);
 		float skinTone;
@@ -294,87 +304,30 @@ public class UMACharGen : MonoBehaviour
 
 		Color HairColor = new Color (Random.Range (0.1f, 0.9f), Random.Range (0.1f, 0.9f), Random.Range (0.1f, 0.9f), 1);
 
-		int randomResult = 0;
-		//Female Avatar
-
-		//Example of dynamic list
-		List<SlotData> tempSlotList = new List<SlotData> ();
-
-
-		//tempSlotList.Add(GetSlotLibrary().InstantiateSlot(getMappedSlotName("FemaleEyes")));
-		//tempSlotList[tempSlotList.Count - 1].AddOverlay(GetOverlayLibrary().InstantiateOverlay(getMappedOverlayNameName("EyeOverlay")));
-		//tempSlotList[tempSlotList.Count - 1].AddOverlay(GetOverlayLibrary().InstantiateOverlay(getMappedOverlayName("EyeOverlayAdjust", new Color(Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), 1))));
-		tempSlotList.Add (GetSlotLibrary ().InstantiateSlot (getMappedSlotName ("FemaleTorso")));
 		int headIndex = 0;
+		int bodyIndex = 1;
+		int randomResult = 0;
+
+		List<SlotData> tempSlotList = new List<SlotData> ();
 
 		string mappedEyeBrowOverlayName = getMappedOverlayName ("FemaleEyebrow01");
 		string mappedHead1OverlayName = getMappedOverlayName ("FemaleHead01");
 
+		tempSlotList.Add (GetSlotLibrary ().InstantiateSlot (getMappedSlotName ("FemaleFace")));
+		if (mappedHead1OverlayName != "") {
+			tempSlotList [headIndex].AddOverlay (GetOverlayLibrary ().InstantiateOverlay (mappedHead1OverlayName, skinColor));
+		}
+		if (mappedEyeBrowOverlayName != "") {
+			tempSlotList [headIndex].AddOverlay (GetOverlayLibrary ().InstantiateOverlay (mappedEyeBrowOverlayName, new Color (0.125f, 0.065f, 0.065f, 1.0f)));
+		}
+
 		randomResult = Random.Range (0, 2);
 		if (randomResult == 0) {
-
-			tempSlotList.Add (GetSlotLibrary ().InstantiateSlot (getMappedSlotName ("FemaleFace")));
-			headIndex = tempSlotList.Count - 1;
-			if (mappedHead1OverlayName != "") {
-				tempSlotList [headIndex].AddOverlay (GetOverlayLibrary ().InstantiateOverlay (mappedHead1OverlayName, skinColor));
-			}
-			if (mappedEyeBrowOverlayName != "") {
-				tempSlotList [headIndex].AddOverlay (GetOverlayLibrary ().InstantiateOverlay (mappedEyeBrowOverlayName, new Color (0.125f, 0.065f, 0.065f, 1.0f)));
-			}
-
-			randomResult = Random.Range (0, 2);
-			if (randomResult == 0) {
-				tempSlotList [headIndex].AddOverlay (GetOverlayLibrary ().InstantiateOverlay (getMappedOverlayName ("FemaleLipstick01"), new Color (skinColor.r + Random.Range (0.0f, 0.3f), skinColor.g, skinColor.b + Random.Range (0.0f, 0.2f), 1)));
-			}
-		} else if (randomResult == 1) {
-			tempSlotList.Add (GetSlotLibrary ().InstantiateSlot (getMappedSlotName ("FemaleHead_Head")));
-			headIndex = tempSlotList.Count - 1;
-			if (mappedHead1OverlayName != "") {
-				tempSlotList [headIndex].AddOverlay (GetOverlayLibrary ().InstantiateOverlay (mappedHead1OverlayName, skinColor));
-			}
-			if (mappedEyeBrowOverlayName != "") {
-				tempSlotList [headIndex].AddOverlay (GetOverlayLibrary ().InstantiateOverlay (mappedEyeBrowOverlayName, new Color (0.125f, 0.065f, 0.065f, 1.0f)));
-			}
-
-			tempSlotList.Add (GetSlotLibrary ().InstantiateSlot (getMappedSlotName ("FemaleHead_Eyes"), tempSlotList [headIndex].GetOverlayList ()));
-			tempSlotList.Add (GetSlotLibrary ().InstantiateSlot (getMappedSlotName ("FemaleHead_Mouth"), tempSlotList [headIndex].GetOverlayList ()));
-			tempSlotList.Add (GetSlotLibrary ().InstantiateSlot (getMappedSlotName ("FemaleHead_Nose"), tempSlotList [headIndex].GetOverlayList ()));
-
-
-			randomResult = Random.Range (0, 2);
-			if (randomResult == 0) {
-				tempSlotList.Add (GetSlotLibrary ().InstantiateSlot (getMappedSlotName ("FemaleHead_Ears"), tempSlotList [headIndex].GetOverlayList ()));
-
-				//   tempSlotList.Add(GetSlotLibrary().InstantiateSlot(getMappedSlotName("FemaleHead_ElvenEars")));
-				//tempSlotList[tempSlotList.Count - 1].AddOverlay(GetOverlayLibrary().InstantiateOverlay(getMappedOverlayName("ElvenEars", skinColor)));
-			} else if (randomResult == 1) {
-				tempSlotList.Add (GetSlotLibrary ().InstantiateSlot (getMappedSlotName ("FemaleHead_Ears"), tempSlotList [headIndex].GetOverlayList ()));
-			}
-
-			randomResult = Random.Range (0, 2);
-			if (randomResult == 0) {
-				tempSlotList [headIndex].AddOverlay (GetOverlayLibrary ().InstantiateOverlay (getMappedOverlayName ("FemaleLipstick01"), new Color (skinColor.r + Random.Range (0.0f, 0.3f), skinColor.g, skinColor.b + Random.Range (0.0f, 0.2f), 1)));
-			}
+			tempSlotList [headIndex].AddOverlay (GetOverlayLibrary ().InstantiateOverlay (getMappedOverlayName ("FemaleLipstick01"), new Color (skinColor.r + Random.Range (0.0f, 0.3f), skinColor.g, skinColor.b + Random.Range (0.0f, 0.2f), 1)));
 		}
 
-		string eyeLashSlotName = getMappedSlotName ("FemaleEyelash");
-		if (eyeLashSlotName != "") {
-			tempSlotList.Add (GetSlotLibrary ().InstantiateSlot (eyeLashSlotName));
-			tempSlotList [tempSlotList.Count - 1].AddOverlay (GetOverlayLibrary ().InstantiateOverlay (getMappedOverlayName ("FemaleEyelash"), Color.black));
-		}
+		tempSlotList.Add (GetSlotLibrary ().InstantiateSlot (getMappedSlotName ("FemaleTorso")));
 
-		// zombiegirl slot models  broken disabled 10 - 09 - 2016 .
-		/*	if (this.gameObject.tag == "SpawnPoint_Zombie")
-		{
-			tempSlotList.Add(GetSlotLibrary().InstantiateSlot(getMappedSlotName("ZombieGirl_BodyNew")));
-			tempSlotList.Add(GetSlotLibrary().InstantiateSlot(getMappedSlotName("ZombieGirl_TopNew")));
-			//tempSlotList[bodyIndex].AddOverlay(GetOverlayLibrary().InstantiateOverlay(getMappedOverlayName("ZombieGirlTop", new Color(Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), 1))));
-
-			tempSlotList.Add(GetSlotLibrary().InstantiateSlot(getMappedSlotName("ZombieGirl_PantsNew")));
-		}*/
-
-
-		int bodyIndex = 0;
 		randomResult = Random.Range(0, 2);
 
 		string mappedBody1OverlayName = getMappedOverlayName ("FemaleBody01");
@@ -398,21 +351,15 @@ public class UMACharGen : MonoBehaviour
 			tempSlotList [bodyIndex].AddOverlay (GetOverlayLibrary ().InstantiateOverlay (mappedUnderwearOverlayName, new Color (Random.Range (0.1f, 0.9f), Random.Range (0.1f, 0.9f), Random.Range (0.1f, 0.9f), 1)));
 		}
 
-		randomResult = Random.Range(0, 4);
+		randomResult = Random.Range(0, 2);
+		tempSlotList.Add(GetSlotLibrary().InstantiateSlot(mappedTshirtSlotName));
 		if (randomResult == 0 && mappedTshirt1OverlayName != "")
 		{
-			tempSlotList[bodyIndex].AddOverlay(GetOverlayLibrary().InstantiateOverlay(mappedTshirt1OverlayName, new Color(Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), 1)));
+			tempSlotList[tempSlotList.Count - 1].AddOverlay(GetOverlayLibrary().InstantiateOverlay(mappedTshirt1OverlayName, new Color(Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), 1)));
 		}
 		else if (randomResult == 1 && mappedTshirt2OverlayName != "")
 		{
-			tempSlotList[bodyIndex].AddOverlay(GetOverlayLibrary().InstantiateOverlay(mappedTshirt2OverlayName, new Color(Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), 1)));
-		}
-		else if (randomResult == 2 && mappedTshirtSlotName != "")
-		{
-			tempSlotList.Add(GetSlotLibrary().InstantiateSlot(mappedTshirtSlotName));
-			if (mappedTshirt1OverlayName != "") {
-				tempSlotList [tempSlotList.Count - 1].AddOverlay (GetOverlayLibrary ().InstantiateOverlay (mappedTshirt1OverlayName, new Color (Random.Range (0.1f, 0.9f), Random.Range (0.1f, 0.9f), Random.Range (0.1f, 0.9f), 1)));
-			}
+			tempSlotList[tempSlotList.Count - 1].AddOverlay(GetOverlayLibrary().InstantiateOverlay(mappedTshirt2OverlayName, new Color(Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), 1)));
 		}
 
 		tempSlotList.Add(GetSlotLibrary().InstantiateSlot(getMappedSlotName("FemaleHands"), tempSlotList[bodyIndex].GetOverlayList()));
@@ -420,20 +367,20 @@ public class UMACharGen : MonoBehaviour
 		tempSlotList.Add(GetSlotLibrary().InstantiateSlot(getMappedSlotName("FemaleInnerMouth")));
 		tempSlotList[tempSlotList.Count - 1].AddOverlay(GetOverlayLibrary().InstantiateOverlay(getMappedOverlayName("InnerMouth")));
 
+		tempSlotList.Add(GetSlotLibrary().InstantiateSlot(getMappedSlotName("FemaleEyes")));
+		tempSlotList[tempSlotList.Count - 1].AddOverlay(overlayLibrary.InstantiateOverlay("EyeOverlay"));
+
+		randomResult = Random.Range (0, 2);
+		if (randomResult == 0) {
+			tempSlotList.Add(GetSlotLibrary().InstantiateSlot(getMappedSlotName("FemaleEyelash")));
+			tempSlotList [tempSlotList.Count - 1].AddOverlay (GetOverlayLibrary ().InstantiateOverlay (getMappedOverlayName ("FemaleEyelash"), Color.black));
+		}
+
 		tempSlotList.Add(GetSlotLibrary().InstantiateSlot(getMappedSlotName("FemaleFeet"), tempSlotList[bodyIndex].GetOverlayList()));
 
-		randomResult = Random.Range(0, 2);
-		randomResult = 1; // :TO: always some trousers for women for now, add skirts etc. later
-		if (randomResult == 0)
-		{
-			tempSlotList.Add(GetSlotLibrary().InstantiateSlot(getMappedSlotName("FemaleLegs"), tempSlotList[bodyIndex].GetOverlayList()));
-		}
-		else if (randomResult == 1)
-		{
-			tempSlotList.Add(GetSlotLibrary().InstantiateSlot(getMappedSlotName("FemaleLegs"), tempSlotList[bodyIndex].GetOverlayList()));
-			if (mappedJeansOverlayName != "") {
-				tempSlotList [bodyIndex].AddOverlay (GetOverlayLibrary ().InstantiateOverlay (mappedJeansOverlayName, new Color (Random.Range (0.1f, 0.9f), Random.Range (0.1f, 0.9f), Random.Range (0.1f, 0.9f), 1)));
-			}
+		tempSlotList.Add(GetSlotLibrary().InstantiateSlot(getMappedSlotName("FemaleLegs"), tempSlotList[bodyIndex].GetOverlayList()));
+		if (mappedJeansOverlayName != "") {
+			tempSlotList [bodyIndex].AddOverlay (GetOverlayLibrary ().InstantiateOverlay (mappedJeansOverlayName, new Color (Random.Range (0.1f, 0.9f), Random.Range (0.1f, 0.9f), Random.Range (0.1f, 0.9f), 1)));
 		}
 
 		string mappedShortHairSlotName = getMappedSlotName ("FemaleShortHair01");
@@ -441,18 +388,18 @@ public class UMACharGen : MonoBehaviour
 		randomResult = Random.Range(0, 3);
 		if (randomResult == 0 && mappedShortHairSlotName != "")
 		{
-			tempSlotList.Add(GetSlotLibrary().InstantiateSlot(mappedShortHairSlotName, tempSlotList[headIndex].GetOverlayList()));
-			tempSlotList[headIndex].AddOverlay(GetOverlayLibrary().InstantiateOverlay(getMappedOverlayName("FemaleShortHair01"), HairColor));
+			tempSlotList.Add(GetSlotLibrary().InstantiateSlot(mappedShortHairSlotName));
+			tempSlotList[tempSlotList.Count-1].AddOverlay(GetOverlayLibrary().InstantiateOverlay(getMappedOverlayName("FemaleShortHair01"), HairColor));
 		}
 		else if (randomResult == 1 && mappedLongHairSlotName != "")
 		{
-			tempSlotList.Add(GetSlotLibrary().InstantiateSlot(mappedLongHairSlotName, tempSlotList[headIndex].GetOverlayList()));
-			tempSlotList[headIndex].AddOverlay(GetOverlayLibrary().InstantiateOverlay(getMappedOverlayName("FemaleLongHair01"), HairColor));
+			tempSlotList.Add(GetSlotLibrary().InstantiateSlot(mappedLongHairSlotName));
+			tempSlotList[tempSlotList.Count - 1 ].AddOverlay(GetOverlayLibrary().InstantiateOverlay(getMappedOverlayName("FemaleLongHair01"), HairColor));
 		}
 		else if( mappedLongHairSlotName != "")
 		{
-			tempSlotList.Add(GetSlotLibrary().InstantiateSlot(mappedLongHairSlotName, tempSlotList[headIndex].GetOverlayList()));
-			tempSlotList[headIndex].AddOverlay(GetOverlayLibrary().InstantiateOverlay(getMappedOverlayName("FemaleLongHair01"), HairColor));
+			tempSlotList.Add(GetSlotLibrary().InstantiateSlot(mappedLongHairSlotName));
+			tempSlotList[tempSlotList.Count - 1].AddOverlay(GetOverlayLibrary().InstantiateOverlay(getMappedOverlayName("FemaleLongHair01"), HairColor));
 
 			tempSlotList.Add(GetSlotLibrary().InstantiateSlot(getMappedSlotName("FemaleLongHair01_Module")));
 			tempSlotList[tempSlotList.Count - 1].AddOverlay(GetOverlayLibrary().InstantiateOverlay(getMappedOverlayName("FemaleLongHair01_Module"), HairColor));

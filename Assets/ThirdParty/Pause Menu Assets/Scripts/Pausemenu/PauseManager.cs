@@ -339,6 +339,10 @@ namespace GreatArcStudios
             lastTexLimit = QualitySettings.masterTextureLimit;
             //set last shadow cascade 
             lastShadowCascade = QualitySettings.shadowCascades;
+
+
+			print ("[PauseManager.cs] :TODO: :TO: Fix setting loading");
+			/*
             saveSettings.LoadGameSettings(File.ReadAllText(Application.persistentDataPath + "/" + saveSettings.fileName));
             try
             {
@@ -351,6 +355,7 @@ namespace GreatArcStudios
                     Debug.Log("Terrain Not Assigned");
                 }
             }
+            */
 
             //set the blur boolean to false;
             //blurBool = false;
