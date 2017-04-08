@@ -340,7 +340,6 @@ public class UMACharGen : MonoBehaviour
 
 	void CreateMale()
 	{
-		//CreateMale2 ();return;//remove me
 		var umaRecipe = umaDynamicAvatar.umaData.umaRecipe;
 		umaRecipe.SetRace(raceLibrary.GetRace("HumanMale"));
 

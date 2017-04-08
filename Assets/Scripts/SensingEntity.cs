@@ -25,7 +25,6 @@ public class SensingEntity : MonoBehaviour {
 	private float m_runnerDetectSqrDistanceThreshold = 64.0f;
 	private float m_time = 0.0f;
 	private uint m_postProcessHumanRagdoll = 0u;
-	private RuntimeAnimatorController m_animationControllerBeforeRagdolling = null;
 
 	protected void Start()
 	{
@@ -37,12 +36,7 @@ public class SensingEntity : MonoBehaviour {
 		m_time += Time.deltaTime;
 		if (m_postProcessHumanRagdoll > 0u) {
 			--m_postProcessHumanRagdoll;
-			if (m_postProcessHumanRagdoll == 2u) {
-				m_animationControllerBeforeRagdolling = GetComponent<Animator> ().runtimeAnimatorController;
-				GetComponent<Animator> ().runtimeAnimatorController = null;
-			} else if (m_postProcessHumanRagdoll == 1u) {
-				GetComponent<Animator> ().runtimeAnimatorController = m_animationControllerBeforeRagdolling;
-			} else if (m_postProcessHumanRagdoll == 0u) {
+			if (m_postProcessHumanRagdoll == 0u) {
 				gameObject.AddComponent<ZombieBehavior> ();
 				gameObject.GetComponent<ZombieBehavior> ().initDelay = 8.0f;
 				Destroy (this);
@@ -262,7 +256,7 @@ public class SensingEntity : MonoBehaviour {
 			if (h != null) {
 				h.die ();
 				if (!hc.wasKilledBy (null)) {
-					m_postProcessHumanRagdoll = 3u;
+					m_postProcessHumanRagdoll = 1u;
 				}
 				result = true;
 			} else if (z != null) {
