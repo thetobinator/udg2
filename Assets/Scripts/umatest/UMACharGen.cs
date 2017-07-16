@@ -17,6 +17,9 @@ public class UMACharGen : MonoBehaviour
 	private UMADnaHumanoid umaDna;
 	private UMADnaTutorial umaTutorialDNA;
 
+	public string[] upperBodyClothingSlots;
+	public string[] upperBodyClothingOverlays;
+
 	private int numberOfSlots = 20;
 
 	public bool isMultiSpawn = false;
@@ -169,9 +172,9 @@ public class UMACharGen : MonoBehaviour
 
 
 		if (name.Contains ("Female")) {
-			CreateFemale ();
+			CreateFemale (name.Contains("Zombie"));
 		} else {
-			CreateMale ();
+			CreateMale (name.Contains("Zombie"));
 
 		}
 
@@ -221,7 +224,7 @@ public class UMACharGen : MonoBehaviour
 		return newName;
 	}
 
-	void CreateFemale()
+	void CreateFemale(bool addBloodOverlay)
 	{
 		var umaRecipe = umaDynamicAvatar.umaData.umaRecipe;
 		umaRecipe.SetRace (raceLibrary.GetRace ("HumanFemale"));
@@ -263,10 +266,7 @@ public class UMACharGen : MonoBehaviour
 		string mappedBody1OverlayName = getMappedOverlayName ("FemaleBody01");
 		string mappedBody2OverlayName = getMappedOverlayName ("FemaleBody02");
 		string mappedUnderwearOverlayName = getMappedOverlayName ("FemaleUnderwear01");
-		string mappedTshirt1OverlayName = getMappedOverlayName ("FemaleShirt01");
-		string mappedTshirt2OverlayName = getMappedOverlayName ("FemaleShirt02");
 		string mappedJeansOverlayName = getMappedOverlayName ("FemaleJeans01");
-		string mappedTshirtSlotName = getMappedSlotName ("FemaleTshirt01");
 
 		if (randomResult == 0 && mappedBody1OverlayName != "")
 		{
@@ -281,15 +281,19 @@ public class UMACharGen : MonoBehaviour
 			tempSlotList [bodyIndex].AddOverlay (GetOverlayLibrary ().InstantiateOverlay (mappedUnderwearOverlayName, new Color (Random.Range (0.1f, 0.9f), Random.Range (0.1f, 0.9f), Random.Range (0.1f, 0.9f), 1)));
 		}
 
-		randomResult = Random.Range(0, 2);
-		tempSlotList.Add(GetSlotLibrary().InstantiateSlot(mappedTshirtSlotName));
-		if (randomResult == 0 && mappedTshirt1OverlayName != "")
-		{
-			tempSlotList[tempSlotList.Count - 1].AddOverlay(GetOverlayLibrary().InstantiateOverlay(mappedTshirt1OverlayName, new Color(Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), 1)));
+		string upperClothingSlotName = "FemaleTshirt01";
+		string upperClothingOverlayName = "FemaleShirt01";
+		if (upperBodyClothingSlots.Length > 0 && upperBodyClothingSlots.Length == upperBodyClothingOverlays.Length) {
+			randomResult = Random.Range (0, upperBodyClothingSlots.Length);
+			upperClothingSlotName = upperBodyClothingSlots[randomResult];
+			upperClothingOverlayName = upperBodyClothingOverlays[randomResult];
 		}
-		else if (randomResult == 1 && mappedTshirt2OverlayName != "")
-		{
-			tempSlotList[tempSlotList.Count - 1].AddOverlay(GetOverlayLibrary().InstantiateOverlay(mappedTshirt2OverlayName, new Color(Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), 1)));
+
+		tempSlotList.Add(GetSlotLibrary().InstantiateSlot(upperClothingSlotName));
+		tempSlotList[tempSlotList.Count - 1].AddOverlay(GetOverlayLibrary().InstantiateOverlay(upperClothingOverlayName, new Color(Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), 1)));
+
+		if (addBloodOverlay) {
+			//tempSlotList [tempSlotList.Count - 1].AddOverlay (GetOverlayLibrary ().InstantiateOverlay (getMappedOverlayName ("some kind of blood, bla bla")));
 		}
 
 		tempSlotList.Add(GetSlotLibrary().InstantiateSlot(getMappedSlotName("FemaleHands"), tempSlotList[bodyIndex].GetOverlayList()));
@@ -338,7 +342,7 @@ public class UMACharGen : MonoBehaviour
 		umaData.SetSlots(tempSlotList.ToArray());
 	}
 
-	void CreateMale()
+	void CreateMale(bool addBlood)
 	{
 		var umaRecipe = umaDynamicAvatar.umaData.umaRecipe;
 		umaRecipe.SetRace(raceLibrary.GetRace("HumanMale"));
@@ -519,6 +523,10 @@ public class UMACharGen : MonoBehaviour
 		if (randomResult == 0)
 		{
 			umaData.umaRecipe.slotDataList[2].AddOverlay(GetOverlayLibrary().InstantiateOverlay(getMappedOverlayName("MaleShirt01"), new Color(Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), 1)));
+		}
+
+		if (addBlood) {
+			//umaData.umaRecipe.slotDataList [2].AddOverlay (GetOverlayLibrary ().InstantiateOverlay (getMappedOverlayName ("some blood again")));
 		}
 	}
 
