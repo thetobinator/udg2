@@ -292,10 +292,6 @@ public class UMACharGen : MonoBehaviour
 		tempSlotList.Add(GetSlotLibrary().InstantiateSlot(upperClothingSlotName));
 		tempSlotList[tempSlotList.Count - 1].AddOverlay(GetOverlayLibrary().InstantiateOverlay(upperClothingOverlayName, new Color(Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), 1)));
 
-		if (addBloodOverlay) {
-			//tempSlotList [tempSlotList.Count - 1].AddOverlay (GetOverlayLibrary ().InstantiateOverlay (getMappedOverlayName ("some kind of blood, bla bla")));
-		}
-
 		tempSlotList.Add(GetSlotLibrary().InstantiateSlot(getMappedSlotName("FemaleHands"), tempSlotList[bodyIndex].GetOverlayList()));
 
 		tempSlotList.Add(GetSlotLibrary().InstantiateSlot(getMappedSlotName("FemaleInnerMouth")));
@@ -304,8 +300,16 @@ public class UMACharGen : MonoBehaviour
 		tempSlotList.Add(GetSlotLibrary().InstantiateSlot(getMappedSlotName("FemaleEyes")));
 		tempSlotList[tempSlotList.Count - 1].AddOverlay(overlayLibrary.InstantiateOverlay("EyeOverlay"));
 
+		string []bloodOverlays = {"uma_zombie_blood_overlay", "uma_zombie_blood_2_overlay", "uma_zombie_blood_3_overlay" };
+		if (addBloodOverlay) {
+			for (int i = 0; i < tempSlotList.Count; ++i) {
+				tempSlotList [i].AddOverlay (GetOverlayLibrary ().InstantiateOverlay (getMappedOverlayName (bloodOverlays[Random.Range(0,bloodOverlays.Length)])));
+			}
+		}
+
 		randomResult = Random.Range (0, 2);
-		if (randomResult == 0) {
+		bool hasEyeLash = randomResult == 0;
+		if (hasEyeLash) {
 			tempSlotList.Add(GetSlotLibrary().InstantiateSlot(getMappedSlotName("FemaleEyelash")));
 			tempSlotList [tempSlotList.Count - 1].AddOverlay (GetOverlayLibrary ().InstantiateOverlay (getMappedOverlayName ("FemaleEyelash"), Color.black));
 		}
@@ -342,7 +346,7 @@ public class UMACharGen : MonoBehaviour
 		umaData.SetSlots(tempSlotList.ToArray());
 	}
 
-	void CreateMale(bool addBlood)
+	void CreateMale(bool addBloodOverlay)
 	{
 		var umaRecipe = umaDynamicAvatar.umaData.umaRecipe;
 		umaRecipe.SetRace(raceLibrary.GetRace("HumanMale"));
@@ -525,8 +529,13 @@ public class UMACharGen : MonoBehaviour
 			umaData.umaRecipe.slotDataList[2].AddOverlay(GetOverlayLibrary().InstantiateOverlay(getMappedOverlayName("MaleShirt01"), new Color(Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), 1)));
 		}
 
-		if (addBlood) {
-			//umaData.umaRecipe.slotDataList [2].AddOverlay (GetOverlayLibrary ().InstantiateOverlay (getMappedOverlayName ("some blood again")));
+		string []bloodOverlays = {"uma_zombie_blood_overlay", "uma_zombie_blood_2_overlay", "uma_zombie_blood_3_overlay" };
+		if (addBloodOverlay) {
+			for (int i = 0; i < umaData.umaRecipe.slotDataList.Length; ++i) {
+				if (umaData.umaRecipe.slotDataList [i] != null) {
+					umaData.umaRecipe.slotDataList [i].AddOverlay (GetOverlayLibrary ().InstantiateOverlay (getMappedOverlayName (bloodOverlays[Random.Range(0,bloodOverlays.Length)])));
+				}
+			}
 		}
 	}
 
