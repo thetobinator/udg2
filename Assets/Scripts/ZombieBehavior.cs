@@ -442,6 +442,7 @@ public class ZombieBehavior : SensingEntity {
     public void handleBulletImpact( Collision collision )
 	{
 		dealSomeDamageAndTurnIntoRagdoll ();
+		Instantiate( MainGameManager.instance.bloodParticles, collision.transform.position, collision.transform.rotation);
 	}
 
 	public void handleKicked( GameObject kicker )

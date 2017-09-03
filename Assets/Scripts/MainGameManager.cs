@@ -27,6 +27,7 @@ public class MainGameManager : MainGameInit
     public GameObject gun;
     public GameObject destinationMarker;
     public GameObject ragdollTemplatePrefab;
+	public GameObject bloodParticles;
     private GameObject m_ragdollTemplate;
 
 

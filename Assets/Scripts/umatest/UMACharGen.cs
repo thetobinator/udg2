@@ -300,7 +300,7 @@ public class UMACharGen : MonoBehaviour
 		tempSlotList.Add(GetSlotLibrary().InstantiateSlot(getMappedSlotName("FemaleEyes")));
 		tempSlotList[tempSlotList.Count - 1].AddOverlay(overlayLibrary.InstantiateOverlay("EyeOverlay"));
 
-		string []bloodOverlays = {"uma_zombie_blood_overlay", "uma_zombie_blood_2_overlay", "uma_zombie_blood_3_overlay" };
+		string []bloodOverlays = {"uma_zombie_blood_overlay", "uma_zombie_blood_2_overlay", "uma_zombie_blood_2_overlay" };
 		if (addBloodOverlay) {
 			for (int i = 0; i < tempSlotList.Count; ++i) {
 				tempSlotList [i].AddOverlay (GetOverlayLibrary ().InstantiateOverlay (getMappedOverlayName (bloodOverlays[Random.Range(0,bloodOverlays.Length)])));
@@ -529,7 +529,7 @@ public class UMACharGen : MonoBehaviour
 			umaData.umaRecipe.slotDataList[2].AddOverlay(GetOverlayLibrary().InstantiateOverlay(getMappedOverlayName("MaleShirt01"), new Color(Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), 1)));
 		}
 
-		string []bloodOverlays = {"uma_zombie_blood_overlay", "uma_zombie_blood_2_overlay", "uma_zombie_blood_3_overlay" };
+		string []bloodOverlays = {"uma_zombie_blood_3_overlay", "uma_zombie_blood_2_overlay", "uma_zombie_blood_3_overlay" };
 		if (addBloodOverlay) {
 			for (int i = 0; i < umaData.umaRecipe.slotDataList.Length; ++i) {
 				if (umaData.umaRecipe.slotDataList [i] != null) {

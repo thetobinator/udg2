@@ -311,6 +311,7 @@ public class HumanBehavior : SensingEntity {
 			if( h.isDead() ){
 				turnIntoRagdoll();
 			}
+			Instantiate( MainGameManager.instance.bloodParticles, collision.transform.position, collision.transform.rotation);
 		}
 	}
 
