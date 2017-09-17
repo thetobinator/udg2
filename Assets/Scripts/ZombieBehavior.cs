@@ -319,6 +319,9 @@ public class ZombieBehavior : SensingEntity {
 			if (delta.sqrMagnitude < 9.0) {
 				transform.position = transform.position + 0.1f * delta;
 			}
+			if ((int)m_stateTime != (int)(m_stateTime + Time.deltaTime)) {
+				Instantiate( MainGameManager.instance.bloodParticles, m_victimHead.transform.position, Quaternion.LookRotation(new Vector3(0,1,0), new Vector3(0,0,1)));
+			}
 			// disable collision while eating
 			setCollidersEnabled(false);
 		}
