@@ -205,6 +205,7 @@ public class HumanBehavior : SensingEntity {
 		// no roundhouse kicks in this mode, assume the target position equals a safe position
 		approachPosition( m_targetPosition );
 		if (reachedPosition() || m_stateTime > 4.0f) {
+			m_targetPosition = transform.position;
 			m_state = State.Alerted;
 		} else {
 			m_animationFlags |= (uint)AnimationFlags.Walk;
@@ -254,6 +255,7 @@ public class HumanBehavior : SensingEntity {
 
 	void updateKickBehaviour()
 	{
+		m_fleeCooldown -= Time.deltaTime;
 		setCollidersEnabled (false);
 		if (m_stateTime < 0.7f) {
 			m_animationFlags |= (uint)AnimationFlags.Walk;
