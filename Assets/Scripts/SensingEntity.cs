@@ -14,6 +14,7 @@ public class SensingEntity : MonoBehaviour {
 	}
 
 	public float speedMultiplier = 1.0f;
+	protected float m_speedBoost = 1.0f;
 	protected uint m_animationFlags = 0u;
 	protected float m_earQueryInterval = 0.5f;
 	protected float m_eyeQueryInterval = 0.5f;
@@ -273,7 +274,7 @@ public class SensingEntity : MonoBehaviour {
 	protected void updateAnimationState()
 	{
 		bool isWalking = (m_animationFlags & (uint)AnimationFlags.Walk) != 0u;
-		float animationSpeedMultiplier = isWalking ? 2.5f : speedMultiplier * 0.6f;
+		float animationSpeedMultiplier = m_speedBoost * (isWalking ? 2.5f : speedMultiplier * 0.6f);
 		Animator animatorComponent = GetComponent<Animator> ();
 		if (animatorComponent != null && animatorComponent.enabled && animatorComponent.runtimeAnimatorController != null) {
 			animatorComponent.SetBool ("walk", isWalking );

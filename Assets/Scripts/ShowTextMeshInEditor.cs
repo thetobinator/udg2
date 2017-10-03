@@ -33,11 +33,12 @@ public class ShowTextMeshInEditor : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
-        if (this.tag == "SpawnPoint_Human")
-        {
-            this.editingText = "H\nU\nM\nA\nN";
+		if (this.tag == "SpawnPoint_Human") {
+			this.editingText = "H\nU\nM\nA\nN";
                 
-        }
+		} else if (this.tag == "SafePoint_Human") {
+			this.editingText = "Safe\nPoint";
+		}
         else
         {
             this.editingText = "Z\nO\nM\nB\nI\nE";
