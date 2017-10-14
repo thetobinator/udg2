@@ -516,17 +516,18 @@ public class UMACharGen : MonoBehaviour
 
 		umaData.umaRecipe.slotDataList[5] = GetSlotLibrary().InstantiateSlot(getMappedSlotName("MaleFeet"), umaData.umaRecipe.slotDataList[2].GetOverlayList());
 
-		// these do not really work:
+		// hair does not really work:
 		randomResult = Random.Range(0, 1);
 		if (randomResult == 0)
 		{
 			umaData.umaRecipe.slotDataList[1].AddOverlay(GetOverlayLibrary().InstantiateOverlay(getMappedOverlayName("MaleHair01"), HairColor * 0.25f));
 		}
 
-		randomResult = Random.Range(0, 2);
-		if (randomResult == 0)
+		randomResult = Random.Range(0, 3);
+		if (randomResult > 0)
 		{
-			umaData.umaRecipe.slotDataList[2].AddOverlay(GetOverlayLibrary().InstantiateOverlay(getMappedOverlayName("MaleShirt01"), new Color(Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), 1)));
+			umaData.umaRecipe.slotDataList[6] = GetSlotLibrary().InstantiateSlot(getMappedSlotName("UMA_Human_Male_Shirt"));
+			umaData.umaRecipe.slotDataList[6].AddOverlay(GetOverlayLibrary().InstantiateOverlay(getMappedOverlayName("uma_human_male_shirt_overlay"), new Color(Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), Random.Range(0.1f, 0.9f), 1)));
 		}
 
 		string []bloodOverlays = {"uma_zombie_blood_3_overlay", "uma_zombie_blood_2_overlay", "uma_zombie_blood_3_overlay" };
