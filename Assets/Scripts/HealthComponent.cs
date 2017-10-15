@@ -3,7 +3,7 @@ using System.Collections;
 
 public class HealthComponent : MonoBehaviour {
 	public float initialHealth = 100.0f;   
-	public float current_health;
+	private float current_health;
 
     //breakable barricades code.
     private GameObject thisObject;
@@ -57,6 +57,10 @@ public class HealthComponent : MonoBehaviour {
 	public void reanimate() {
         current_health = initialHealth;
 		m_killer = null;
+	}
+
+	public float getCurrentHealth() {
+		return current_health;
 	}
 
     public void explodeInstantly()

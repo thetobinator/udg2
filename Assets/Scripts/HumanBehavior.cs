@@ -197,7 +197,7 @@ public class HumanBehavior : SensingEntity {
 			}
 		}
 
-		return transform.position;
+		//return transform.position;
 	}
 
 	void updateFleeToSafePosition()
@@ -206,6 +206,7 @@ public class HumanBehavior : SensingEntity {
 		approachPosition( m_targetPosition );
 		if (reachedPosition() || m_stateTime > 4.0f) {
 			m_targetPosition = transform.position;
+			approachPosition (m_targetPosition);
 			m_state = State.Alerted;
 		} else {
 			m_animationFlags |= (uint)AnimationFlags.Walk;
@@ -345,6 +346,11 @@ public class HumanBehavior : SensingEntity {
 		{
 			m_stateTime += Time.deltaTime;	
 		}
+
+		//GetComponent<ShowTextMeshInEditor> ().gameText = m_state.ToString();
+		//GetComponent<TextMesh> ().alignment = TextAlignment.Center;
+		//GetComponent<TextMesh> ().anchor = TextAnchor.UpperCenter;
+		//GetComponent<TextMesh> ().characterSize = 0.1f;
 
 		m_speedBoost = m_state == State.FleeToSafePosition ? 1.5f : 1.0f;
 		updateAnimationState ();

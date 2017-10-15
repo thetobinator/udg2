@@ -141,7 +141,12 @@ public class SensingEntity : MonoBehaviour {
 			{
 				if (enemyObject.GetComponent<HealthComponent>() == null || enemyObject.GetComponent<HealthComponent>().isDead())
 				{
-					// ignore corpses for now
+					// ignore corpses
+					continue;
+				}
+				if (enemyObject.GetComponent<RagdollHelper> () != null && enemyObject.GetComponent<RagdollHelper> ().ragdolled)
+				{
+					// ignore ragdolls
 					continue;
 				}
 				Vector3 headPosition = transform.position;
@@ -175,7 +180,7 @@ public class SensingEntity : MonoBehaviour {
 					direction2D.Normalize();
 					HealthComponent hc = GetComponent<HealthComponent> ();
 					float relevantDotProduct = 0.707f;
-					if (hc != null && hc.initialHealth != hc.current_health) {
+					if (hc != null && hc.initialHealth != hc.getCurrentHealth()) {
 						relevantDotProduct = -1.0f;
 						// give hurt victims chance to react
 					}
