@@ -23,7 +23,7 @@ public class UMA_ApplyBehaviorsToChildren : MonoBehaviour
         }
         foreach (GameObject sourceChild in sourceChildren)
         {
-            if (!sourceChild.GetComponent<NavMeshAgent>()) { sourceChild.AddComponent(typeof(NavMeshAgent)); }
+            if (!sourceChild.GetComponent<UnityEngine.AI.NavMeshAgent>()) { sourceChild.AddComponent(typeof(UnityEngine.AI.NavMeshAgent)); }
 
 
             if (sourceChild.tag == "SpawnPoint_Human")

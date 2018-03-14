@@ -21,6 +21,7 @@ public class ZombieBehavior : SensingEntity {
 	public float initDelay = 0.0f;
 	State m_state;
 	float m_stateTime = 0.0f;
+	float m_timeWithoutMovement = 0.0f;
 	Vector3 m_forwardDirectionBeforeLookingAround;
 	Vector3 m_rightDirectionBeforeLookingAround;
 	public GameObject taskObject;
@@ -37,22 +38,9 @@ public class ZombieBehavior : SensingEntity {
 	void updateSpawnBehaviour()
 	{
 		updateSenses();
-		/*
-		if( m_localizedObjectOfInterestCandidate != null )
-		{
-			setObjectOfInterest( m_localizedObjectOfInterestCandidate );
-			m_positionOfInterest = m_objectOfInterest.GetComponent< Transform >().position;
-			m_state = State.ApproachTarget;
-			return;
-		}
-
-		approachPosition( m_positionOfInterest );
-		if( reachedPosition() )
-		*/
-		{
-			m_state = State.Idle;
-			m_positionOfInterest = transform.position;
-		}
+		m_state = State.Idle;
+		m_positionOfInterest = transform.position;
+		m_hasPlayerTask = false;
 	}
 
 	void updateWaitForComponentsBehavior()
@@ -61,20 +49,7 @@ public class ZombieBehavior : SensingEntity {
 		{
 			m_state = State.Idle;
 			m_positionOfInterest = transform.position;
-           
-			// experimental: zombies go to player
-/*
-			GameObject player = GameObject.FindGameObjectWithTag ("Player");
-			if (player != null && initDelay == 0.0f ) {
-				setObjectOfInterest (null);
-				m_positionOfInterest = player.transform.position;		
-				m_state = State.ApproachTarget;
-				m_hasPlayerTask = true;
-
-				GetComponent<Animator> ().SetBool ("attack", false);
-				GetComponent<Animator> ().SetBool ("eat", false);
-			}
-			*/
+			m_hasPlayerTask = false;
 		}
 	}
 
@@ -103,15 +78,14 @@ public class ZombieBehavior : SensingEntity {
 	void updateIdleBehaviour()
 	{
 		updateSenses ();
-		if( m_localizedObjectOfInterestCandidate != null )
-		{
-			setObjectOfInterest( m_localizedObjectOfInterestCandidate );
-			m_positionOfInterest = m_objectOfInterest.GetComponent< Transform >().position;
+		if (m_localizedObjectOfInterestCandidate != null) {
+			setObjectOfInterest (m_localizedObjectOfInterestCandidate);
+			m_positionOfInterest = m_objectOfInterest.GetComponent< Transform > ().position;
 			m_state = State.ApproachTarget;
-		}
-		else if( m_nonLocalizedObjectOfInterestCandidate != null )
-		{
+		} else if (m_nonLocalizedObjectOfInterestCandidate != null) {
 			m_state = State.Alerted;
+		} else if (m_stateTime > 3.0f ) {
+			m_hasPlayerTask = false;
 		}
 	}
 
@@ -164,6 +138,7 @@ public class ZombieBehavior : SensingEntity {
 				}
 			}			
 		} else {
+			GetComponent<UnityEngine.AI.NavMeshAgent> ().enabled = true;
 			m_state = State.Idle;
 		}
 	}
@@ -171,7 +146,7 @@ public class ZombieBehavior : SensingEntity {
 	void updateHitBehaviour()
 	{
 		if (m_stateTime > 4.0f) {
-			GetComponent<NavMeshAgent> ().enabled = true;
+			GetComponent<UnityEngine.AI.NavMeshAgent> ().enabled = true;
 			m_state = State.Idle;
 		}
 		else if (m_stateTime > 2.0f) {
@@ -221,7 +196,7 @@ public class ZombieBehavior : SensingEntity {
         //this.gameObject.transform.parent = GameObject.Find("ZombieParent").transform;
         speedMultiplier = Random.Range (0.5f, 2.5f);
 		
-		NavMeshAgent n = GetComponent<NavMeshAgent>();
+		UnityEngine.AI.NavMeshAgent n = GetComponent<UnityEngine.AI.NavMeshAgent>();
 		Animator a = GetComponent<Animator>();
 		RagdollHelper r = GetComponent<RagdollHelper> ();
 			
@@ -233,6 +208,20 @@ public class ZombieBehavior : SensingEntity {
 
 	void updateApproachBehaviour()
 	{
+		if (MainGameManager.instance.getObjectSpeed (this.gameObject) <= 0.05f) {
+			m_timeWithoutMovement += Time.deltaTime;
+			if( m_timeWithoutMovement > 3.0f && m_stateTime > 3.0f ) {
+				// not really moving for some reason
+				m_hasPlayerTask = false;
+				m_state = State.Alerted;
+				GetComponent<UnityEngine.AI.NavMeshAgent> ().SetDestination (transform.position);
+				m_timeWithoutMovement = 0.0f;
+				return;
+			}
+		} else {
+			m_timeWithoutMovement = 0.0f;
+		}
+
 		verifyObjectOfInterest ();
 		if( m_hasPlayerTask )
 		{
@@ -255,14 +244,10 @@ public class ZombieBehavior : SensingEntity {
 			m_positionOfInterest = m_objectOfInterest.GetComponent< Transform > ().position;
         }
         approachPosition(m_positionOfInterest);
-        if ( reachedPosition() )
-		{
-			if( m_objectOfInterest != null && m_positionOfInterest == m_objectOfInterest.GetComponent< Transform >().position )
-			{			
+		if (reachedPosition ()) {
+			if (m_objectOfInterest != null && m_positionOfInterest == m_objectOfInterest.GetComponent< Transform > ().position) {			
 				m_state = State.TargetInRange;
-			}
-			else
-			{
+			} else {
 				m_hasPlayerTask = false;
 				m_state = State.Alerted;
 			}
@@ -319,15 +304,22 @@ public class ZombieBehavior : SensingEntity {
 			if (delta.sqrMagnitude < 9.0) {
 				transform.position = transform.position + 0.1f * delta;
 			}
+			if ((int)(m_stateTime + 0.5f) != (int)(m_stateTime + 0.5f + Time.deltaTime)) {
+				Instantiate( MainGameManager.instance.bloodParticles, m_victimHead.transform.position, Quaternion.LookRotation(new Vector3(0,1,0), new Vector3(0,0,1)));
+			}
 			// disable collision while eating
 			setCollidersEnabled(false);
 		}
 
-		approachPosition (transform.position);
+		m_positionOfInterest = transform.position;
+		approachPosition (m_positionOfInterest);
 
 		if (m_stateTime > 6.8f ) { // full playback of animation
 			// enable collision again
 			setCollidersEnabled(true);
+			setObjectOfInterest( null );
+			m_positionOfInterest = transform.position;
+			m_hasPlayerTask = false;
 			m_state = State.ApproachTarget;
 		}
 	}
@@ -414,11 +406,16 @@ public class ZombieBehavior : SensingEntity {
 			m_animationFlags |= (uint)AnimationFlags.Run;
 		}
 
+		//GetComponent<ShowTextMeshInEditor> ().gameText = m_state.ToString() + "/" + GetComponent<UnityEngine.AI.NavMeshAgent>().enabled + "/" + GetComponent<HealthComponent>().enabled + "/" + GetComponent<HealthComponent> ().getCurrentHealth () + "/" + MainGameManager.instance.getObjectSpeed(this.gameObject);
+		//GetComponent<TextMesh> ().alignment = TextAlignment.Center;
+		//GetComponent<TextMesh> ().anchor = TextAnchor.UpperCenter;
+		//GetComponent<TextMesh> ().characterSize = 0.1f;
+
 		updateAnimationState ();
 		
-        NavMeshAgent nma = GetComponent<NavMeshAgent>();
+        UnityEngine.AI.NavMeshAgent nma = GetComponent<UnityEngine.AI.NavMeshAgent>();
         if (!nma) { return; }
-		GetComponent<NavMeshAgent> ().speed = 1.2f * speedMultiplier;//m_hasPlayerTask ? 1.2f : 1.2f;
+		GetComponent<UnityEngine.AI.NavMeshAgent> ().speed = 1.2f * speedMultiplier;
     }
 
 	public void die()
@@ -442,6 +439,7 @@ public class ZombieBehavior : SensingEntity {
     public void handleBulletImpact( Collision collision )
 	{
 		dealSomeDamageAndTurnIntoRagdoll ();
+		Instantiate( MainGameManager.instance.bloodParticles, collision.transform.position, collision.transform.rotation);
 	}
 
 	public void handleKicked( GameObject kicker )
@@ -587,12 +585,12 @@ public class ZombieBehavior : SensingEntity {
 		base.Update ();
         updateState();
     
-        if (GetComponent<NavMeshAgent>().enabled)
+        if (GetComponent<UnityEngine.AI.NavMeshAgent>().enabled)
         {
            // zombieKeyboardInput(); // passed control to a keyboard script? Probably A good idea
             Vector3 movement = GetComponent<Transform>().position - m_oldPosition;
             m_oldPosition = GetComponent<Transform>().position;
-            Vector3 diff = GetComponent<Transform>().position - GetComponent<NavMeshAgent>().destination;
+            Vector3 diff = GetComponent<Transform>().position - GetComponent<UnityEngine.AI.NavMeshAgent>().destination;
     
 			if (GetComponent<Animator> ()) {
 				if (diff.magnitude > 0.7f) {

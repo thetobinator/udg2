@@ -14,6 +14,7 @@ public class SensingEntity : MonoBehaviour {
 	}
 
 	public float speedMultiplier = 1.0f;
+	protected float m_speedBoost = 1.0f;
 	protected uint m_animationFlags = 0u;
 	protected float m_earQueryInterval = 0.5f;
 	protected float m_eyeQueryInterval = 0.5f;
@@ -25,7 +26,6 @@ public class SensingEntity : MonoBehaviour {
 	private float m_runnerDetectSqrDistanceThreshold = 64.0f;
 	private float m_time = 0.0f;
 	private uint m_postProcessHumanRagdoll = 0u;
-	private RuntimeAnimatorController m_animationControllerBeforeRagdolling = null;
 
 	protected void Start()
 	{
@@ -37,12 +37,7 @@ public class SensingEntity : MonoBehaviour {
 		m_time += Time.deltaTime;
 		if (m_postProcessHumanRagdoll > 0u) {
 			--m_postProcessHumanRagdoll;
-			if (m_postProcessHumanRagdoll == 2u) {
-				m_animationControllerBeforeRagdolling = GetComponent<Animator> ().runtimeAnimatorController;
-				GetComponent<Animator> ().runtimeAnimatorController = null;
-			} else if (m_postProcessHumanRagdoll == 1u) {
-				GetComponent<Animator> ().runtimeAnimatorController = m_animationControllerBeforeRagdolling;
-			} else if (m_postProcessHumanRagdoll == 0u) {
+			if (m_postProcessHumanRagdoll == 0u) {
 				gameObject.AddComponent<ZombieBehavior> ();
 				gameObject.GetComponent<ZombieBehavior> ().initDelay = 8.0f;
 				Destroy (this);
@@ -82,13 +77,13 @@ public class SensingEntity : MonoBehaviour {
 
 	protected void approachPosition( Vector3 targetPosition )
 	{
-		NavMeshAgent nma = GetComponent<NavMeshAgent>();
+		UnityEngine.AI.NavMeshAgent nma = GetComponent<UnityEngine.AI.NavMeshAgent>();
 		if( nma == null || !nma.enabled || !nma.isOnNavMesh )
 		{
 			return;
 		}
-		NavMeshHit hit;
-		if( NavMesh.SamplePosition( transform.position, out hit, 3, NavMesh.AllAreas ) )
+		UnityEngine.AI.NavMeshHit hit;
+		if( UnityEngine.AI.NavMesh.SamplePosition( transform.position, out hit, 3, UnityEngine.AI.NavMesh.AllAreas ) )
 		{
 			nma.SetDestination( targetPosition );
 		}
@@ -96,7 +91,7 @@ public class SensingEntity : MonoBehaviour {
 
 	protected bool reachedPosition()
 	{
-		NavMeshAgent nma = GetComponent<NavMeshAgent>();
+		UnityEngine.AI.NavMeshAgent nma = GetComponent<UnityEngine.AI.NavMeshAgent>();
 		if( nma == null )
 		{
 			return false;
@@ -146,7 +141,12 @@ public class SensingEntity : MonoBehaviour {
 			{
 				if (enemyObject.GetComponent<HealthComponent>() == null || enemyObject.GetComponent<HealthComponent>().isDead())
 				{
-					// ignore corpses for now
+					// ignore corpses
+					continue;
+				}
+				if (enemyObject.GetComponent<RagdollHelper> () != null && enemyObject.GetComponent<RagdollHelper> ().ragdolled)
+				{
+					// ignore ragdolls
 					continue;
 				}
 				Vector3 headPosition = transform.position;
@@ -180,7 +180,7 @@ public class SensingEntity : MonoBehaviour {
 					direction2D.Normalize();
 					HealthComponent hc = GetComponent<HealthComponent> ();
 					float relevantDotProduct = 0.707f;
-					if (hc != null && hc.initialHealth != hc.current_health) {
+					if (hc != null && hc.initialHealth != hc.getCurrentHealth()) {
 						relevantDotProduct = -1.0f;
 						// give hurt victims chance to react
 					}
@@ -246,7 +246,7 @@ public class SensingEntity : MonoBehaviour {
 
 	public bool turnIntoRagdoll()
 	{
-		NavMeshAgent n = GetComponent<NavMeshAgent>();
+		UnityEngine.AI.NavMeshAgent n = GetComponent<UnityEngine.AI.NavMeshAgent>();
 		Animator a = GetComponent<Animator>();
 		HumanBehavior h = GetComponent<HumanBehavior>();
 		ZombieBehavior z = GetComponent<ZombieBehavior>();
@@ -262,7 +262,7 @@ public class SensingEntity : MonoBehaviour {
 			if (h != null) {
 				h.die ();
 				if (!hc.wasKilledBy (null)) {
-					m_postProcessHumanRagdoll = 3u;
+					m_postProcessHumanRagdoll = 1u;
 				}
 				result = true;
 			} else if (z != null) {
@@ -279,7 +279,7 @@ public class SensingEntity : MonoBehaviour {
 	protected void updateAnimationState()
 	{
 		bool isWalking = (m_animationFlags & (uint)AnimationFlags.Walk) != 0u;
-		float animationSpeedMultiplier = isWalking ? 2.5f : speedMultiplier * 0.6f;
+		float animationSpeedMultiplier = m_speedBoost * (isWalking ? 2.5f : speedMultiplier * 0.6f);
 		Animator animatorComponent = GetComponent<Animator> ();
 		if (animatorComponent != null && animatorComponent.enabled && animatorComponent.runtimeAnimatorController != null) {
 			animatorComponent.SetBool ("walk", isWalking );

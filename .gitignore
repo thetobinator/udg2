@@ -5,7 +5,7 @@ build/
 desktop.ini
 *.sln
 *.csproj
-udg2.userprefs
+*.userprefs
 ProjectSettings/QualitySettings.asset
 obj/Debug/DesignTimeResolveAssemblyReferencesInput.cache
 udg2-csharp.v12.suo

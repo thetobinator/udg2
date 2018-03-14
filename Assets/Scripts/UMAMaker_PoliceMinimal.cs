@@ -139,7 +139,7 @@ public class UMAMaker_PoliceMinimal : MonoBehaviour
         GO.transform.localPosition = Vector3.zero;
         GO.transform.localRotation = Quaternion.identity;
 
-        GO.AddComponent(typeof(NavMeshAgent));
+        GO.AddComponent(typeof(UnityEngine.AI.NavMeshAgent));
         GO.AddComponent(typeof(CapsuleCollider));
 
     }

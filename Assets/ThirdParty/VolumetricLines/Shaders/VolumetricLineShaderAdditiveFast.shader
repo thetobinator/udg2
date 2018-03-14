@@ -1,3 +1,5 @@
+// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
 /// Render a single volumetric line using an additive shader which does not support changing the color
 ///
 /// Based on the Volumetric lines algorithm by Sébastien Hillaire
@@ -61,9 +63,9 @@
                 v2f o;
                 o.uv = TRANSFORM_TEX (v.texcoord, _MainTex);  
                 
-                float4 vMVP = mul(UNITY_MATRIX_MVP, v.vertex);
+                float4 vMVP = UnityObjectToClipPos(v.vertex);
                 float4 otherPos = float4(v.normal.xyz, 1.0);
-                float4 otherMVP = mul(UNITY_MATRIX_MVP, otherPos);
+                float4 otherMVP = UnityObjectToClipPos(otherPos);
                 float2 lineDirProj = _LineWidth * normalize((vMVP.xy/vMVP.w) - (otherMVP.xy/otherMVP.w));
 
 				float4 vMV = mul(UNITY_MATRIX_MV, v.vertex);

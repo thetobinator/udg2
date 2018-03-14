@@ -353,7 +353,7 @@ public class UMAMaker1_Zombies: MonoBehaviour {
         GO.transform.localPosition = Vector3.zero;
         GO.transform.localRotation = Quaternion.identity;
 
-        GO.AddComponent(typeof(NavMeshAgent));
+        GO.AddComponent(typeof(UnityEngine.AI.NavMeshAgent));
         GO.AddComponent(typeof(CapsuleCollider));
         var goCol = GO.GetComponent<CapsuleCollider>();
         goCol.center = new Vector3(0f, 0.78f, 0f);
