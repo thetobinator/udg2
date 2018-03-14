@@ -521,7 +521,8 @@ namespace UMAAssetBundleManager
 
 				if (GUILayout.Button("Clean the Cache"))
 				{
-					_statusMessage = Caching.CleanCache() ? "Cache Cleared." : "Error clearing cache.";
+					_statusMessage = Caching.RemoveCache(Caching.defaultCache) ? "Cache Cleared." : "Error clearing cache.";
+                    // caching command change 03 13 2018 to conform with Unity2017.3.1f -- BILL
 				}
 				EditorGUILayout.Space();
 			}

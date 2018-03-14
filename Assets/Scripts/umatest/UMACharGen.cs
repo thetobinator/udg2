@@ -209,9 +209,12 @@ public class UMACharGen : MonoBehaviour
 
 	string createName(string sex)
 	{   string newName = "";
-		string firstName = "";
-		HumanNameLists humanNameList = GameObject.Find("HumanNamesList").GetComponent<HumanNameLists>();
-		string lastName = humanNameList.lastNames[Random.Range(0, humanNameList.lastNames.Count - 1)];
+		string firstName = "human";
+        string lastName = "being";
+        // 03 13 2018 this is causing a lot  of lag in the Editor if HumanNameLists is selected -- BILL
+        /*
+        HumanNameLists humanNameList = GameObject.Find("HumanNamesList").GetComponent<HumanNameLists>();
+		lastName = humanNameList.lastNames[Random.Range(0, humanNameList.lastNames.Count - 1)];
 		if (sex == "Female")
 		{        
 			firstName = humanNameList.femaleNames[Random.Range(0, humanNameList.femaleNames.Count - 1)];        
@@ -220,7 +223,9 @@ public class UMACharGen : MonoBehaviour
 		{
 			firstName = humanNameList.maleNames[Random.Range(0, humanNameList.maleNames.Count - 1)];
 		}
-		newName = firstName + " " + lastName;
+        */
+
+        newName = firstName + " " + lastName;
 		return newName;
 	}
 

@@ -365,7 +365,7 @@ namespace UMAAssetBundleManager
 						return false;
 				case BuildTarget.StandaloneOSXIntel:
 				case BuildTarget.StandaloneOSXIntel64:
-				case BuildTarget.StandaloneOSXUniversal:
+				case BuildTarget.StandaloneOSX:
 					if (currentEnvironment.IndexOf("OSX") > -1)
 						return true;
 					else
@@ -393,7 +393,7 @@ namespace UMAAssetBundleManager
 					return "/test.exe";
 				case BuildTarget.StandaloneOSXIntel:
 				case BuildTarget.StandaloneOSXIntel64:
-				case BuildTarget.StandaloneOSXUniversal:
+				case BuildTarget.StandaloneOSX:
 					return "/test.app";
 #if !UNITY_5_4_OR_NEWER
                 case BuildTarget.WebPlayer:
