@@ -365,7 +365,7 @@ namespace UMAAssetBundleManager
 						return false;
 				case BuildTarget.StandaloneOSXIntel:
 				case BuildTarget.StandaloneOSXIntel64:
-				case BuildTarget.StandaloneOSX:
+				//case BuildTarget.StandaloneOSX: :TO: was this the deprecated good old OS X PPC target?
 					if (currentEnvironment.IndexOf("OSX") > -1)
 						return true;
 					else
@@ -393,7 +393,7 @@ namespace UMAAssetBundleManager
 					return "/test.exe";
 				case BuildTarget.StandaloneOSXIntel:
 				case BuildTarget.StandaloneOSXIntel64:
-				case BuildTarget.StandaloneOSX:
+				//case BuildTarget.StandaloneOSX: :TO: was this the deprecated good old OS X PPC target?
 					return "/test.app";
 #if !UNITY_5_4_OR_NEWER
                 case BuildTarget.WebPlayer:
