@@ -133,7 +133,7 @@ public class UMACharGen : MonoBehaviour
 
 		umaDynamicAvatar = GO.AddComponent<UMADynamicAvatar>();
 		umaDynamicAvatar.animationController = animationController;
-		GO.AddComponent<RagdollCreatorTest>();
+		GO.AddComponent<RagdollCreator>();
 		if (name.Contains ("Zombie")) {
 
 			ZombieBehavior zbh = GO.AddComponent<ZombieBehavior> ();

@@ -51,7 +51,7 @@ public class HumanBehavior : SensingEntity {
 
 	void updateWaitForComponentsBehaviour()
 	{
-		if( GetComponent<Animator>() == null || ( GetComponent<RagdollCreatorTest>() != null && handBone == null ) )
+		if( GetComponent<Animator>() == null || ( GetComponent<RagdollCreator>() != null && handBone == null ) )
 		{
 			return;
 		}
