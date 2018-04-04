@@ -238,14 +238,14 @@ public class ZombieBehavior : SensingEntity {
 		{
 			setObjectOfInterest( m_localizedObjectOfInterestCandidate );
 		}
-
+        //Debug.Log(m_objectOfInterest);
 		if( m_objectOfInterest != null )
 		{
 			m_positionOfInterest = m_objectOfInterest.GetComponent< Transform > ().position;
         }
         approachPosition(m_positionOfInterest);
 		if (reachedPosition ()) {
-			if (m_objectOfInterest != null && m_positionOfInterest == m_objectOfInterest.GetComponent< Transform > ().position) {			
+			if (m_objectOfInterest != null && m_objectOfInterest.name != "You" && m_positionOfInterest == m_objectOfInterest.GetComponent< Transform > ().position) {			
 				m_state = State.TargetInRange;
 			} else {
 				m_hasPlayerTask = false;
@@ -536,8 +536,10 @@ public class ZombieBehavior : SensingEntity {
         m_hasPlayerTask = false;
         m_state = State.Idle;
         GameObject[] taggedObjects = GameObject.FindGameObjectsWithTag(Tag);
+        // if there is more than one tag object
         if (taggedObjects.Length >= 1)
         {
+            // pick a random object among tagged to follow
             Random.InitState(Random.Range(0,(int)Time.time)+(int)Time.time);
             int RandNum = Random.Range(0, taggedObjects.Length);
             taskObject = taggedObjects[RandNum];
@@ -545,6 +547,7 @@ public class ZombieBehavior : SensingEntity {
             if (taskObject)
             {               
                 setObjectOfInterest(taskObject);
+                //Debug.Log(taskObject);
                 m_oldPosition = GetComponent<Transform>().position;
                 m_state = State.ApproachTarget;
                 m_hasPlayerTask = true;             
