@@ -521,7 +521,7 @@ namespace UMAAssetBundleManager
 
 				if (GUILayout.Button("Clean the Cache"))
 				{
-					_statusMessage = Caching.CleanCache() ? "Cache Cleared." : "Error clearing cache.";
+					_statusMessage = Caching.ClearCache() ? "Cache Cleared." : "Error clearing cache.";
 				}
 				EditorGUILayout.Space();
 			}

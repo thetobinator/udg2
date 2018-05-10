@@ -7,9 +7,13 @@ using System.Collections.Generic;
 
 public class HumanNameLists : MonoBehaviour
 {
+    [HideInInspector]
     public List<string> femaleNames;
+    [HideInInspector]
     public List<string> maleNames;
-    public List<string> ghettoNames;
+    [HideInInspector]
+    public List<string> culturalNames;
+    [HideInInspector]
     public List<string> lastNames;
 
     // Use this for initialization
@@ -17,11 +21,11 @@ public class HumanNameLists : MonoBehaviour
 
       List_TextMesh fem = GameObject.Find("femaleNames").GetComponent<List_TextMesh>();
         List_TextMesh man = GameObject.Find("maleNames").GetComponent<List_TextMesh>();
-        List_TextMesh ghe = GameObject.Find("ghettoNames").GetComponent<List_TextMesh>();
+        List_TextMesh cul = GameObject.Find("culturalNames").GetComponent<List_TextMesh>();
         List_TextMesh las = GameObject.Find("lastNames").GetComponent<List_TextMesh>();
         femaleNames = fem.item;
         maleNames = man.item;
-        ghettoNames = ghe.item;
+        culturalNames = cul.item;
         lastNames = las.item;
 
     }

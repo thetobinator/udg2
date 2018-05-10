@@ -28,6 +28,7 @@ public class ZombieBehavior : SensingEntity {
 	bool m_hasPlayerTask = false;
 	Vector3 m_oldPosition;
 	GameObject m_victimHead = null;
+    float m_timeWithoutMovement = 0.0f;
 
     public bool hasPlayerTask()
 	{
@@ -231,45 +232,63 @@ public class ZombieBehavior : SensingEntity {
 		}
 	}
 
-	void updateApproachBehaviour()
-	{
-		verifyObjectOfInterest ();
-		if( m_hasPlayerTask )
-		{
-			setLocalizedObjectOfInterestCandidate (null);
-			setNonLocalizedObjectOfInterestCandidate (null);
-		}
-		else
-		{
-			updateSenses ();
-			return;// do not approach anybody if not given a command
-		}
+    void updateApproachBehaviour()
+    {
+        if (MainGameManager.instance.getObjectSpeed(this.gameObject) <= 0.05f)
+        {
+            m_timeWithoutMovement += Time.deltaTime;
+            if (m_timeWithoutMovement > 3.0f && m_stateTime > 3.0f)
+            {
+                // not really moving for some reason
+                m_hasPlayerTask = false;
+                m_state = State.Alerted;
+                GetComponent<UnityEngine.AI.NavMeshAgent>().SetDestination(transform.position);
+                m_timeWithoutMovement = 0.0f;
+                return;
+            }
+        }
+        else
+        {
+            m_timeWithoutMovement = 0.0f;
+        }
 
-		if( m_localizedObjectOfInterestCandidate != null && !m_hasPlayerTask )
-		{
-			setObjectOfInterest( m_localizedObjectOfInterestCandidate );
-		}
+        verifyObjectOfInterest();
+        if (m_hasPlayerTask)
+        {
+            setLocalizedObjectOfInterestCandidate(null);
+            setNonLocalizedObjectOfInterestCandidate(null);
+        }
+        else
+        {
+            updateSenses();
+            return;// do not approach anybody if not given a command
+        }
 
-		if( m_objectOfInterest != null )
-		{
-			m_positionOfInterest = m_objectOfInterest.GetComponent< Transform > ().position;
+        if (m_localizedObjectOfInterestCandidate != null && !m_hasPlayerTask)
+        {
+            setObjectOfInterest(m_localizedObjectOfInterestCandidate);
+        }
+        //Debug.Log(m_objectOfInterest);
+        if (m_objectOfInterest != null)
+        {
+            m_positionOfInterest = m_objectOfInterest.GetComponent<Transform>().position;
         }
         approachPosition(m_positionOfInterest);
-        if ( reachedPosition() )
-		{
-			if( m_objectOfInterest != null && m_positionOfInterest == m_objectOfInterest.GetComponent< Transform >().position )
-			{			
-				m_state = State.TargetInRange;
-			}
-			else
-			{
-				m_hasPlayerTask = false;
-				m_state = State.Alerted;
-			}
-		}
-	}
+        if (reachedPosition())
+        {
+            if (m_objectOfInterest != null && m_objectOfInterest.name != "You" && m_positionOfInterest == m_objectOfInterest.GetComponent<Transform>().position)
+            {
+                m_state = State.TargetInRange;
+            }
+            else
+            {
+                m_hasPlayerTask = false;
+                m_state = State.Alerted;
+            }
+        }
+    }
 
-	void updateTargetInRangeBehaviour()
+    void updateTargetInRangeBehaviour()
 	{
 		m_animationFlags |= (uint)AnimationFlags.Attack;
 		m_state = State.Attack;

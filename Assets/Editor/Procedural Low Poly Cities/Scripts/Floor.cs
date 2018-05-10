@@ -203,8 +203,8 @@ namespace ProceduralCity
         public Vector3 CreateFloor(Vector3 position)
         {
             GenerateFloor();
-            floor = this.transform.FindChild("Floor").gameObject;
-            floorAddOns = this.transform.FindChild("FloorAddOns").gameObject;
+            floor = this.transform.Find("Floor").gameObject;
+            floorAddOns = this.transform.Find("FloorAddOns").gameObject;
             parentInfo = this.transform.parent.GetComponent<Building>();
 
             floor.GetComponent<MeshRenderer>().material = this.transform.parent.GetComponent<Building>().chosenMat;

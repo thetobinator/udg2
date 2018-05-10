@@ -218,10 +218,10 @@ public class TestCustomizerDD : MonoBehaviour
 		}
 		// we also need to make the raceChangeOptions toggles match the settings in the component
 		Toggle[] thisChangeRaceToggles = null;
-		if(changeRaceDropdown.template.FindChild("ChangeRaceOptsHolder") != null)
-			if(changeRaceDropdown.template.FindChild("ChangeRaceOptsHolder").FindChild("ChangeRaceToggles") != null)
-				if(changeRaceDropdown.template.FindChild("ChangeRaceOptsHolder").FindChild("ChangeRaceToggles").GetComponentsInChildren<Toggle>().Length != 0)
-					thisChangeRaceToggles = changeRaceDropdown.template.FindChild("ChangeRaceOptsHolder").FindChild("ChangeRaceToggles").GetComponentsInChildren<Toggle>();
+		if(changeRaceDropdown.template.Find("ChangeRaceOptsHolder") != null)
+			if(changeRaceDropdown.template.Find("ChangeRaceOptsHolder").Find("ChangeRaceToggles") != null)
+				if(changeRaceDropdown.template.Find("ChangeRaceOptsHolder").Find("ChangeRaceToggles").GetComponentsInChildren<Toggle>().Length != 0)
+					thisChangeRaceToggles = changeRaceDropdown.template.Find("ChangeRaceOptsHolder").Find("ChangeRaceToggles").GetComponentsInChildren<Toggle>();
 		if(thisChangeRaceToggles != null)
 		for(int i = 0; i < thisChangeRaceToggles.Length; i++)
 		{
@@ -313,14 +313,14 @@ public class TestCustomizerDD : MonoBehaviour
 		{
 			if (slot == "None")
 				continue;
-			if (wardrobeDropdownPanel.transform.FindChild(slot + "DropdownHolder") == null)
+			if (wardrobeDropdownPanel.transform.Find(slot + "DropdownHolder") == null)
 			{
 				GameObject thisWardrobeDropdown = Instantiate(wardrobeDrodownPrefab) as GameObject;
 				thisWardrobeDropdown.transform.SetParent(wardrobeDropdownPanel.transform, false);
 				thisWardrobeDropdown.GetComponent<CSWardrobeSlotChangerDD>().customizerScript = this;
 				thisWardrobeDropdown.GetComponent<CSWardrobeSlotChangerDD>().wardrobeSlotToChange = slot;
 				thisWardrobeDropdown.name = slot + "DropdownHolder";
-				thisWardrobeDropdown.transform.FindChild("SlotLabel").GetComponent<Text>().text = slot;
+				thisWardrobeDropdown.transform.Find("SlotLabel").GetComponent<Text>().text = slot;
 				thisWardrobeDropdown.GetComponent<Dropdown>().onValueChanged.AddListener(thisWardrobeDropdown.GetComponent<CSWardrobeSlotChangerDD>().ChangeWardrobeSlot);
 			}
 		}
@@ -458,7 +458,7 @@ public class TestCustomizerDD : MonoBehaviour
 				thisColorDropdown.GetComponent<CSColorChangerDD>().customizerScript = this;
 				thisColorDropdown.GetComponent<CSColorChangerDD>().colorToChange = colorType.name;
 				thisColorDropdown.name = colorType.name + "DropdownHolder";
-				thisColorDropdown.transform.FindChild("SlotLabel").GetComponent<Text>().text = colorType.name + " Color";
+				thisColorDropdown.transform.Find("SlotLabel").GetComponent<Text>().text = colorType.name + " Color";
 				thisColorDropdown.GetComponent<DropdownWithColor>().onValueChanged.AddListener(thisColorDropdown.GetComponent<CSColorChangerDD>().ChangeColor);
 				SetUpColorDropdownValue(thisColorDropdown.GetComponent<CSColorChangerDD>(), colorType);
 			}
