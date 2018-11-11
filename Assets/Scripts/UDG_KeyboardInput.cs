@@ -10,21 +10,22 @@ public class UDG_KeyboardInput : MonoBehaviour {
         MainGameManager instance = (MainGameManager) this.GetComponent<MainGameManager>();
         if (z != null)
         {
+            // udg Follow Player
             if (Input.GetKeyDown("f")) {
                 z.GoToTag("Player");
                 instance.zombieGroupSize =  GameObject.FindGameObjectsWithTag("Zombie").Length;
             }
-
+            // udg Rush
             if (Input.GetKeyDown("r")) {
                 z.GoToTag("Human");
                instance.zombieGroupSize = GameObject.FindGameObjectsWithTag("Zombie").Length;
             }
-
+            // udg Barricade
             if (Input.GetKeyDown("b")) {
                 z.GoToTag("Barricade");
               instance.zombieGroupSize = GameObject.FindGameObjectsWithTag("Zombie").Length;
             }
-
+            // udg Window
             if (Input.GetKeyDown("g")) {
                 z.GoToTag("Window");
                 instance.zombieGroupSize = GameObject.FindGameObjectsWithTag("Zombie").Length;

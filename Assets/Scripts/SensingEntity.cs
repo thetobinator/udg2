@@ -14,6 +14,7 @@ public class SensingEntity : MonoBehaviour {
 	}
 
 	public float speedMultiplier = 1.0f;
+	protected float m_speedBoost = 1.0f;
 	protected uint m_animationFlags = 0u;
 	protected float m_earQueryInterval = 0.5f;
 	protected float m_eyeQueryInterval = 0.5f;
@@ -140,7 +141,12 @@ public class SensingEntity : MonoBehaviour {
 			{
 				if (enemyObject.GetComponent<HealthComponent>() == null || enemyObject.GetComponent<HealthComponent>().isDead())
 				{
-					// ignore corpses for now
+					// ignore corpses
+					continue;
+				}
+				if (enemyObject.GetComponent<RagdollHelper> () != null && enemyObject.GetComponent<RagdollHelper> ().ragdolled)
+				{
+					// ignore ragdolls
 					continue;
 				}
 				Vector3 headPosition = transform.position;
@@ -174,7 +180,7 @@ public class SensingEntity : MonoBehaviour {
 					direction2D.Normalize();
 					HealthComponent hc = GetComponent<HealthComponent> ();
 					float relevantDotProduct = 0.707f;
-					if (hc != null && hc.initialHealth != hc.current_health) {
+					if (hc != null && hc.initialHealth != hc.getCurrentHealth()) {
 						relevantDotProduct = -1.0f;
 						// give hurt victims chance to react
 					}
@@ -273,7 +279,7 @@ public class SensingEntity : MonoBehaviour {
 	protected void updateAnimationState()
 	{
 		bool isWalking = (m_animationFlags & (uint)AnimationFlags.Walk) != 0u;
-		float animationSpeedMultiplier = isWalking ? 2.5f : speedMultiplier * 0.6f;
+		float animationSpeedMultiplier = m_speedBoost * (isWalking ? 2.5f : speedMultiplier * 0.6f);
 		Animator animatorComponent = GetComponent<Animator> ();
 		if (animatorComponent != null && animatorComponent.enabled && animatorComponent.runtimeAnimatorController != null) {
 			animatorComponent.SetBool ("walk", isWalking );
