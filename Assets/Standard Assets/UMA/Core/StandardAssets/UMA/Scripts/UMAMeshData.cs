@@ -481,7 +481,7 @@ namespace UMA
 
 			Mesh mesh = renderer.sharedMesh;
 #if UNITY_EDITOR
-			if (UnityEditor.PrefabUtility.IsComponentAddedToPrefabInstance(renderer))
+			if (UnityEditor.PrefabUtility.IsPartOfPrefabInstance(renderer))
 			{
 				Debug.LogError("Cannot apply changes to prefab!");
 			}

@@ -12,6 +12,7 @@ public class HumanBehavior : SensingEntity {
 		StandAndShoot,		// shoot at localized zombie
 		Kick,				// kick to defend self
 		RunOff,				// run away from one of the localized zombies
+		FleeToSafePosition,	// run to a safe point
 		Dead,				// dead, this time really
 	};
 	
@@ -20,6 +21,7 @@ public class HumanBehavior : SensingEntity {
 	State m_state;
 
 	float m_stateTime = 0.0f;
+	float m_fleeCooldown = 4.0f;
 
 	Vector3 m_oldPosition;
 	bool m_hasGun;
@@ -49,7 +51,7 @@ public class HumanBehavior : SensingEntity {
 
 	void updateWaitForComponentsBehaviour()
 	{
-		if( GetComponent<Animator>() == null || ( GetComponent<RagdollCreatorTest>() != null && handBone == null ) )
+		if( GetComponent<Animator>() == null || ( GetComponent<RagdollCreator>() != null && handBone == null ) )
 		{
 			return;
 		}
@@ -136,6 +138,8 @@ public class HumanBehavior : SensingEntity {
 	void updateRunOffBehaviour()
 	{
 		updateSenses ();
+
+		m_fleeCooldown -= Time.deltaTime;
 		
 		if( m_localizedObjectOfInterestCandidate != null )
 		{
@@ -154,7 +158,56 @@ public class HumanBehavior : SensingEntity {
 
 		m_targetPosition = getTargetPositionForDangerPosition (m_positionOfInterest);
 		approachPosition( m_targetPosition );
-		if (reachedPosition () && m_stateTime > 0.5f ) {
+		if (reachedPosition () && m_stateTime > 0.5f) {
+			m_state = State.Alerted;
+		} else if ( m_fleeCooldown <= 0.0f) {
+			m_targetPosition = getSafePosition ();
+			m_fleeCooldown = 4.0f;
+			m_state = State.FleeToSafePosition;
+		} else {
+			m_animationFlags |= (uint)AnimationFlags.Walk;
+		}
+	}
+
+	private Vector3 getSafePosition()
+	{
+		GameObject[] safePoints = GameObject.FindGameObjectsWithTag("SafePoint_Human");
+		int nearestSafepointIndex = -1;
+
+		if (safePoints.Length == 0) {
+			print ("No safe points found! Cannot flee");
+			return new Vector3(0,0,0);
+		} else if (safePoints.Length == 1) {
+			return safePoints [0].transform.position;
+		}
+
+		float minSqrDistance = -1.0f;
+		for (int i = 0; i < safePoints.Length; ++i) {
+			float sqrDistance = (transform.position - safePoints[i].transform.position).sqrMagnitude;
+			if (minSqrDistance == -1.0f || sqrDistance < minSqrDistance) {
+				nearestSafepointIndex = i;
+				minSqrDistance = sqrDistance;
+			}
+		}
+
+		// pick a random safe point that is not the nearest
+		for (;;) {
+			int rnd = Random.Range (0, safePoints.Length - 1);
+			if (rnd != nearestSafepointIndex) {
+				return safePoints [rnd].transform.position;
+			}
+		}
+
+		//return transform.position;
+	}
+
+	void updateFleeToSafePosition()
+	{
+		// no roundhouse kicks in this mode, assume the target position equals a safe position
+		approachPosition( m_targetPosition );
+		if (reachedPosition() || m_stateTime > 4.0f) {
+			m_targetPosition = transform.position;
+			approachPosition (m_targetPosition);
 			m_state = State.Alerted;
 		} else {
 			m_animationFlags |= (uint)AnimationFlags.Walk;
@@ -204,6 +257,7 @@ public class HumanBehavior : SensingEntity {
 
 	void updateKickBehaviour()
 	{
+		m_fleeCooldown -= Time.deltaTime;
 		setCollidersEnabled (false);
 		if (m_stateTime < 0.7f) {
 			m_animationFlags |= (uint)AnimationFlags.Walk;
@@ -276,6 +330,10 @@ public class HumanBehavior : SensingEntity {
 		case State.RunOff:
 			updateRunOffBehaviour();
 			break;
+
+		case State.FleeToSafePosition:
+			updateFleeToSafePosition();
+			break;
 			
 		case State.Dead:
 			break;
@@ -290,6 +348,12 @@ public class HumanBehavior : SensingEntity {
 			m_stateTime += Time.deltaTime;	
 		}
 
+		//GetComponent<ShowTextMeshInEditor> ().gameText = m_state.ToString();
+		//GetComponent<TextMesh> ().alignment = TextAlignment.Center;
+		//GetComponent<TextMesh> ().anchor = TextAnchor.UpperCenter;
+		//GetComponent<TextMesh> ().characterSize = 0.1f;
+
+		m_speedBoost = m_state == State.FleeToSafePosition ? 1.5f : 1.0f;
 		updateAnimationState ();
     }
 
@@ -311,6 +375,7 @@ public class HumanBehavior : SensingEntity {
 			if( h.isDead() ){
 				turnIntoRagdoll();
 			}
+			Instantiate( MainGameManager.instance.bloodParticles, collision.transform.position, collision.transform.rotation);
 		}
 	}
 
@@ -331,7 +396,7 @@ public class HumanBehavior : SensingEntity {
 		base.Update ();
 		updateState();
 
-		GetComponent<UnityEngine.AI.NavMeshAgent>().speed = 1.5f;
+		GetComponent<UnityEngine.AI.NavMeshAgent>().speed = 1.5f * m_speedBoost;
 
 		Vector3 movement = GetComponent<Transform> ().position - m_oldPosition;
 		m_oldPosition = GetComponent<Transform> ().position;

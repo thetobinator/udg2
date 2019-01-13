@@ -123,7 +123,7 @@ namespace ProceduralCity
 
             checksum = newChecksum;
 
-            Random.seed = seed;
+            Random.InitState(seed);
 
             GenerateTree(); // Update tree mesh
             

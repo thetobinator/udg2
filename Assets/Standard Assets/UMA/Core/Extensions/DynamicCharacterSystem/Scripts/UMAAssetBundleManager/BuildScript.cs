@@ -251,7 +251,8 @@ namespace UMAAssetBundleManager
             buildPlayerOptions.assetBundleManifestPath = GetAssetBundleManifestFilePath();
             buildPlayerOptions.target = EditorUserBuildSettings.activeBuildTarget;
             buildPlayerOptions.options = option;
-buildError = BuildPipeline.BuildPlayer(buildPlayerOptions).ToString();
+            BuildPipeline.BuildPlayer(buildPlayerOptions);
+			// :TO: buildError remains empty for now
 #endif
 			//after the build completes destroy the serverURL file
 			if (SimpleWebServer.serverStarted && CanRunLocally(EditorUserBuildSettings.activeBuildTarget))
@@ -365,7 +366,7 @@ buildError = BuildPipeline.BuildPlayer(buildPlayerOptions).ToString();
 						return false;
 				case BuildTarget.StandaloneOSXIntel:
 				case BuildTarget.StandaloneOSXIntel64:
-				case BuildTarget.StandaloneOSX:
+				//case BuildTarget.StandaloneOSX: :TO: was this the deprecated good old OS X PPC target?
 					if (currentEnvironment.IndexOf("OSX") > -1)
 						return true;
 					else
@@ -393,7 +394,7 @@ buildError = BuildPipeline.BuildPlayer(buildPlayerOptions).ToString();
 					return "/test.exe";
 				case BuildTarget.StandaloneOSXIntel:
 				case BuildTarget.StandaloneOSXIntel64:
-				case BuildTarget.StandaloneOSX:
+				//case BuildTarget.StandaloneOSX: :TO: was this the deprecated good old OS X PPC target?
 					return "/test.app";
 #if !UNITY_5_4_OR_NEWER
                 case BuildTarget.WebPlayer:

@@ -25,8 +25,9 @@ public static class MeshSaverEditor {
 		if (string.IsNullOrEmpty(path)) return;
         
 		path = FileUtil.GetProjectRelativePath(path);
+        if (string.IsNullOrEmpty(path)) return;
 
-		Mesh meshToSave = (makeNewInstance) ? Object.Instantiate(mesh) as Mesh : mesh;
+        Mesh meshToSave = (makeNewInstance) ? Object.Instantiate(mesh) as Mesh : mesh;
 		
         if (optimizeMesh)
             ;

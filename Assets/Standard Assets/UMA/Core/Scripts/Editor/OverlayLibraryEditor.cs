@@ -164,7 +164,7 @@ public class OverlayLibraryEditor : Editor {
 						if(compress.boolValue){
 #if UNITY_5_5_OR_NEWER
                             textureImporter.textureCompression = TextureImporterCompression.CompressedHQ;
-                            textureImporter.compressionQuality = (int)TextureCompressionQuality.Best;                               
+                            textureImporter.compressionQuality = (int)UnityEngine.TextureCompressionQuality.Best;                               
 #else
                             textureImporter.textureFormat = TextureImporterFormat.AutomaticCompressed;
                             textureImporter.compressionQuality = (int)TextureCompressionQuality.Best;

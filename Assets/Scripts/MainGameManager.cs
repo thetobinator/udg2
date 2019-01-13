@@ -27,6 +27,7 @@ public class MainGameManager : MainGameInit
     public GameObject gun;
     public GameObject destinationMarker;
     public GameObject ragdollTemplatePrefab;
+	public GameObject bloodParticles;
     private GameObject m_ragdollTemplate;
 
 
@@ -115,9 +116,15 @@ public class MainGameManager : MainGameInit
 
 
 
-    class ZombieCommander
+    public class ZombieCommander
 	{
- 
+		static public bool isControllable(GameObject zombie){
+			ZombieBehavior zb = zombie.GetComponent<ZombieBehavior>();
+			HealthComponent hc = zombie.GetComponent<HealthComponent>();
+			UnityEngine.AI.NavMeshAgent na = zombie.GetComponent<UnityEngine.AI.NavMeshAgent>();
+			return zb != null && zb.enabled && hc != null && hc.enabled && !hc.isDead () && na != null && na.enabled;
+		}
+
         void zombieTargetUpdate(RaycastHit hit)
         {          
             GameObject[] zombies = GameObject.FindGameObjectsWithTag("Zombie");
@@ -129,10 +136,7 @@ public class MainGameManager : MainGameInit
                 foreach (GameObject zombie in zombies)
                 {
                     ZombieBehavior zb = zombie.GetComponent<ZombieBehavior>();
-                    HealthComponent hc = zombie.GetComponent<HealthComponent>();
-                    UnityEngine.AI.NavMeshAgent na = zombie.GetComponent<UnityEngine.AI.NavMeshAgent>();
-                    if (zb != null && zb.enabled && zb.hasPlayerTask() == acceptedTaskFlag
-                        && hc != null && hc.enabled && !hc.isDead() && na != null && na.enabled)
+					if (isControllable(zombie) && zb.hasPlayerTask() == acceptedTaskFlag)
                     {
                         float sqrDistance = (hit.point - zb.transform.position).sqrMagnitude;
                         if (minSqrDistance == -1.0f || sqrDistance < minSqrDistance)
