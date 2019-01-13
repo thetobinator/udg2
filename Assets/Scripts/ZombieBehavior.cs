@@ -29,7 +29,6 @@ public class ZombieBehavior : SensingEntity {
 	bool m_hasPlayerTask = false;
 	Vector3 m_oldPosition;
 	GameObject m_victimHead = null;
-    float m_timeWithoutMovement = 0.0f;
 
     public bool hasPlayerTask()
 	{

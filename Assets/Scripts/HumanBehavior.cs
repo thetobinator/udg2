@@ -176,6 +176,7 @@ public class HumanBehavior : SensingEntity {
 
 		if (safePoints.Length == 0) {
 			print ("No safe points found! Cannot flee");
+			return new Vector3(0,0,0);
 		} else if (safePoints.Length == 1) {
 			return safePoints [0].transform.position;
 		}

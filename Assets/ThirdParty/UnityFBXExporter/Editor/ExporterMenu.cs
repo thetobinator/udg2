@@ -74,7 +74,7 @@ namespace UnityFBXExporter
 
 			if(newPath != null && newPath.Length != 0)
 			{
-				bool isSuccess = FBXExporter.ExportGameObjToFBX(currentGameObject, newPath, copyMaterials, copyTextures);
+				bool isSuccess = false;//FBXExporter.ExportGameObjToFBX(currentGameObject, newPath, copyMaterials, copyTextures);
 
 				if(isSuccess == false)
 					EditorUtility.DisplayDialog("Warning", "The extension probably wasn't an FBX file, could not export.", "Okay");

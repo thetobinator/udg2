@@ -251,7 +251,8 @@ namespace UMAAssetBundleManager
             buildPlayerOptions.assetBundleManifestPath = GetAssetBundleManifestFilePath();
             buildPlayerOptions.target = EditorUserBuildSettings.activeBuildTarget;
             buildPlayerOptions.options = option;
-            buildError = BuildPipeline.BuildPlayer(buildPlayerOptions);
+            BuildPipeline.BuildPlayer(buildPlayerOptions);
+			// :TO: buildError remains empty for now
 #endif
 			//after the build completes destroy the serverURL file
 			if (SimpleWebServer.serverStarted && CanRunLocally(EditorUserBuildSettings.activeBuildTarget))
