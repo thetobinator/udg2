@@ -32,6 +32,8 @@ public class UMACharGen : MonoBehaviour
 	private GameObject m_createdObject = null;
 	private int m_spawnCount = 0;
 
+	private float m_deathSpawnDelay = 0.5f;
+
 	static Dictionary<string,string> s_slotMap = new Dictionary<string,string>();
 	static Dictionary<string,string> s_overlayMap = new Dictionary<string,string>();
 
@@ -50,7 +52,12 @@ public class UMACharGen : MonoBehaviour
 	void Update()
 	{
 		if (m_createdObject.GetComponent<HealthComponent> ().isDead ()) {
-			m_createdObject = CreateCharacterInstance (name + "( generated object " + m_spawnCount + ")");
+			if (m_deathSpawnDelay <= 0.0f) {
+				m_createdObject = CreateCharacterInstance (name + "( generated object " + m_spawnCount + ")");
+				m_deathSpawnDelay = 0.5f;
+			} else {
+				m_deathSpawnDelay -= Time.deltaTime;
+			}
 
 			++m_spawnCount;
 		}
