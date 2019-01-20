@@ -312,4 +312,13 @@ public class SensingEntity : MonoBehaviour {
 		}
 		*/
 	}
+
+	public void handleVehicleImpact(Collision collision)
+	{
+		HealthComponent h = GetComponent<HealthComponent>();
+		if( h != null && h.enabled ){
+			h.dealDamage( h.getCurrentHealth()+1, null );
+			turnIntoRagdoll();
+		}
+	}
 }
