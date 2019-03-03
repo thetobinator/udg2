@@ -26,6 +26,7 @@ public class SensingEntity : MonoBehaviour {
 	private float m_runnerDetectSqrDistanceThreshold = 64.0f;
 	private float m_time = 0.0f;
 	private uint m_postProcessHumanRagdoll = 0u;
+	private Vector3 m_forceToApplyToRagdoll = new Vector3(0,0,0);
 
 	protected void Start()
 	{
@@ -34,6 +35,18 @@ public class SensingEntity : MonoBehaviour {
 
 	protected void Update()
 	{
+		if (m_forceToApplyToRagdoll.sqrMagnitude > 0.0f )
+		{
+			bool foundOne = false;
+			foreach (Rigidbody child in GetComponentsInChildren<Rigidbody>()) {
+				child.AddForce(m_forceToApplyToRagdoll, ForceMode.VelocityChange);
+				foundOne = true;
+			}
+			if (foundOne) {
+				m_forceToApplyToRagdoll.Set(0,0,0);
+			}
+		}
+
 		m_time += Time.deltaTime;
 		if (m_postProcessHumanRagdoll > 0u) {
 			--m_postProcessHumanRagdoll;
@@ -313,12 +326,13 @@ public class SensingEntity : MonoBehaviour {
 		*/
 	}
 
-	public void handleVehicleImpact(Collision collision)
+	public void handleVehicleImpact(Collision collision, Vector3 force)
 	{
 		HealthComponent h = GetComponent<HealthComponent>();
 		if( h != null && h.enabled ){
 			h.dealDamage( h.getCurrentHealth()+1, null );
 			turnIntoRagdoll();
+			m_forceToApplyToRagdoll = force;
 		}
 	}
 }
